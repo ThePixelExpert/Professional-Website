@@ -1,0 +1,13 @@
+Short Bio / picture
+
+links to email, linkedin github, and resume (with icon click link)
+
+Show Technical skills w/icon and one or two word description of what it is
+
+Projects with headers like :
+
+NASA,Personal, Work in Progress
+
+Experience
+
+References

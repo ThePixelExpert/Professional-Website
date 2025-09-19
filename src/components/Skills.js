@@ -1,4 +1,3 @@
-
 import { 
   FaLinux, FaRaspberryPi, FaDocker, FaNetworkWired, FaBolt, FaReact, FaNodeJs 
 } from "react-icons/fa";
@@ -29,16 +28,18 @@ const skills = [
 function Skills() {
   return (
     <div className="skills-grid">
-      <h1 className>Skills</h1>
-      <div className="skills-row" style={{flexWrap: 'wrap'}}>
-        {skills.map((skill) => (
-          <div className="skill" key={skill.name}>
-            {skill.icon}
-            <span className="skill-name">{skill.name}</span>
-            <span className="skill-desc">{skill.desc}</span>
-          </div>
-        ))}
-      </div>
+      <section className="section" id="skills">
+        <h1 className>Skills</h1>
+        <div className="skills-row" style={{flexWrap: 'wrap'}}>
+          {skills.map((skill) => (
+            <div className="skill" key={skill.name}>
+              {skill.icon}
+              <span className="skill-name">{skill.name}</span>
+              <span className="skill-desc">{skill.desc}</span>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import Banner from "./components/Banner";
 import Header from "./components/Header";
 import Skills from "./components/Skills";
 import Projects from "./components/Projects";
@@ -9,6 +10,7 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
+      <Banner />
       <Header />
       <Skills />
       <Projects />

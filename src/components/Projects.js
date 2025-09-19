@@ -63,6 +63,9 @@ function Projects() {
             </div>
           </div>
         </div>
+        <div className="show-all">
+          <a className="show-all-btn" href="#/all-projects">Show all projects</a>
+        </div>
       </div>
     </section>
   );

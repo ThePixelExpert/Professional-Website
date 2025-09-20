@@ -1,0 +1,19 @@
+{
+  "name": "edwards-engineering-backend",
+  "version": "1.0.0",
+  "description": "Backend for Edwards Engineering contact form",
+  "main": "express-backend.js",
+  "scripts": {
+    "start": "node express-backend.js",
+    "dev": "nodemon express-backend.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "nodemailer": "^6.9.1",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

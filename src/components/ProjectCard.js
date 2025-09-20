@@ -1,9 +1,9 @@
 import React from 'react';
 import './ProjectCard.css';
 
-export default function ProjectCard({ project }) {
+export default function ProjectCard({ project, imageLeft = false }) {
   return (
-    <div className="project-card">
+    <div className={`project-card ${imageLeft ? 'image-left' : 'image-right'}`}>
       <div className="project-card-content">
         <h3>{project.title}</h3>
         {project.patent && <p><strong>Patent:</strong> {project.patent}</p>}

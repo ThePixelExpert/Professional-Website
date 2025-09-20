@@ -3,8 +3,8 @@ import BigstockImg from '../assets/bigstock-Medical-doctor-working-with-he-89442
 import SSRGImg from '../assets/SSRG_Actuator_Mechanical_System_V2.jpg';
 import FinalAssemblyImg from '../assets/Final-Assembled-2 1388X1050.jpg';
 import Kube from '../assets/Kube.png';
-import ProfilePic from '../assets/ProfilePic.JPG';
 import Autodesk from '../assets/autodesk-fusion-360-product-icon-social-400.png';
+import BlendySpectrumImg from '../assets/blendy_spectrum_pic.png';
 
 const projects = [
   {
@@ -44,7 +44,7 @@ const projects = [
     id: 'blendbot',
     title: 'BlendBot Ink Mixer',
     group: 'Other',
-    img: ProfilePic,
+    img: BlendySpectrumImg,
     highlights: [
       'Automates mixing of high‑viscosity screen printing ink in 5‑gallon buckets, replacing unreliable drill methods.',
       'Compact planetary gear system with multiple whisk attachments and a safety lid; variable‑speed controller.'

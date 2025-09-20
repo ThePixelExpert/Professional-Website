@@ -10,7 +10,7 @@ function Projects() {
         <div className="container">
           <h2 className="main-section-title">Projects</h2>
           
-          <ProjectGrid showAll={false} maxPerGroup={2} />
+          <ProjectGrid showAll={false} maxPerGroup={2} alternateImages={true} />
 
           <div style={{ textAlign: 'center', marginTop: '1.6rem' }}>
             <a className="show-all-btn" href="#/all-projects">Show all projects</a>

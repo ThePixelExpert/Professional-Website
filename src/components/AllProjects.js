@@ -13,7 +13,7 @@ export default function AllProjects() {
       <div className="container">
         <h2>All Projects</h2>
         
-        <ProjectGrid showAll={true} />
+        <ProjectGrid showAll={true} alternateImages={true} />
       </div>
     </div>
   );

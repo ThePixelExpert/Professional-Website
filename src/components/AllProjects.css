@@ -1,3 +1,4 @@
+/* AllProjects.css */
 .all-projects-page .container {
   padding: 24px;
 }
@@ -31,4 +32,46 @@
 .project-group .project-group-label { 
   margin-bottom: 12px; 
   text-align: left; 
+}
+
+/* Mobile Responsiveness for AllProjects */
+@media (max-width: 768px) {
+  .all-projects-page .container {
+    padding: 1rem;
+  }
+  
+  .category-nav {
+    gap: 0.5rem;
+    margin: 0.5rem 0 1rem 0;
+    justify-content: center;
+  }
+  
+  .category-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: fit-content;
+    text-align: center;
+  }
+  
+  .project-group {
+    margin-top: 1.5rem;
+  }
+  
+  .back-link {
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .category-btn {
+    width: 100%;
+    text-align: center;
+  }
 }

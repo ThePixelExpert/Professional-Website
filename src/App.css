@@ -38,11 +38,12 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 2.5rem;
-  position: fixed;
+  position: fixed !important;
   top: 0;
-  z-index: 1000;
+  z-index: 3000;
   box-shadow: 0 2px 12px 0 rgba(30,60,120,0.10);
   gap: 2.5rem;
+  overflow: visible;
 }
 
 .App {
@@ -50,11 +51,36 @@ html, body {
   color: #111;
 }
 
+.container {
+  padding: 24px;
+}
+
 .banner-title {
   font-size: 1.7rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: #fff;
+}
+
+.banner-title.small {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+
+.banner-logo {
+  width: auto;
+  height: 3.5rem; /* back to reasonable size that fits within banner */
+  object-fit: cover;
+  display: block;
+  margin-top: 0;
+}
+
+@media (max-width: 700px) {
+  .banner-logo { height: 3rem; margin-top: 0; }
+  .App { padding-top: 5.2rem; }
+  .section { scroll-margin-top: 5.2rem; }
 }
 .banner-links {
   list-style: none;
@@ -77,193 +103,41 @@ html, body {
   color: #ffe082;
   border-bottom: 2px solid #ffe082;
 }
-.project-card-horizontal.image-left {
-  flex-direction: row;
-}
-.project-card-horizontal.image-left .project-image-placeholder {
-  order: 0;
-  margin-right: 1.3rem;
-  margin-left: 0;
-}
-.project-card-horizontal.image-left .project-card-content {
-  order: 1;
-}
-.project-card-horizontal.image-right {
-  flex-direction: row;
-}
-.project-card-horizontal.image-right .project-image-placeholder {
-  order: 1;
-  margin-left: 1.3rem;
-  margin-right: 0;
-}
-.project-card-horizontal.image-right .project-card-content {
-  order: 0;
-}
-/* Horizontal card layout for NASA projects */
-.project-card-horizontal {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  width: 100%;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 1.5rem 2rem;
-  gap: 2rem;
-  margin-bottom: 2.2rem;
-}
-.project-card-horizontal .project-image-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 480px;
-  max-width: 480px;
-  min-width: 220px;
-  overflow: hidden;
-  background: none;
-}
-.project-card-horizontal .project-image-placeholder img {
-  height: 100%;
-  width: auto;
-  border-radius: 10px;
-  display: block;
-  object-fit: cover;
-  margin: 0 auto;
-}
-.project-card-content {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  width: 100%;
-  padding-right: 1.2rem;
-}
 
-/* Placeholder for NASA project images */
-.project-image-placeholder {
-  width: 100%;
-  height: 120px;
-  background: linear-gradient(135deg, #e3eaf6 60%, #f7fafd 100%);
-  align-items: center;
-  justify-content: center;
-  align-items: center;
-  justify-content: center;
-  color: #b0b8c9;
-  font-size: 1.05rem;
-  font-weight: 500;
-  margin-bottom: 1.1rem;
-  border: 1px dashed #c3d2e6;
-  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.03);
-  letter-spacing: 0.01em;
-}
-/* Project group label (pill/tag style) */
-.project-group-label {
+.banner-links.banner-categories {
+  list-style: none;
   display: flex;
-  align-items: center;
-  font-size: 1.08rem;
-  font-weight: 700;
-  color: #1a237e;
-  margin: 0 0 1.1rem 0;
-  letter-spacing: 0.01em;
-  text-align: left;
-}
-.project-group-label::before {
-  content: '';
-  display: inline-block;
-  width: 5px;
-  height: 1.5em;
-  background: #1976d2;
-  border-radius: 3px;
-  margin-right: 0.7em;
-  opacity: 0.85;
-}
-/* Main section and subsection titles for Projects */
-.main-section-title {
-  text-align: center;
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin-bottom: 2.1rem;
-  color: #222;
-  letter-spacing: 0.01em;
-}
-
-.subsection-title {
-  text-align: left;
-  font-size: 1.13rem;
-  font-weight: 600;
-  margin: 1.2rem 0 0.7rem 0;
-  color: #1976d2;
-  letter-spacing: 0.01em;
-  opacity: 0.92;
-}
-
-.subsection-separator {
-  width: auto;
-  min-width: 0;
-  max-width: none;
-  min-height: 120px;
-  max-width: 400px;
-  max-height: 240px;
-  margin-bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-/* Make images fill the placeholder */
-.project-card-horizontal .project-image-placeholder img {
-  width: 350px;
-  height: auto;
-  max-width: 100%;
-  max-height: 260px;
-  border-radius: 10px;
-  display: block;
-  object-fit: contain;
-  margin: auto;
-}
-
-.project-card, .experience-card {
-  background: rgba(247,247,250,0.92);
-  border-radius: 14px;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.06);
-  padding: 1.7rem 2rem 1.3rem 2rem;
-  min-width: 260px;
-  max-width: none;
-  width: 100%;
-  flex: 1 1 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  transition: box-shadow 0.2s, background 0.2s;
-}
-.project-card:hover, .experience-card:hover {
-  background: #f0f4fa;
-  box-shadow: 0 4px 16px 0 rgba(0,0,0,0.10);
-}
-.project-card h3, .experience-card h3 {
-  margin-top: 0;
-  margin-bottom: 0.7rem;
-  font-size: 1.25rem;
-  color: #1976d2;
-}
-.project-card ul, .experience-card ul {
-  padding-left: 1.1em;
+  gap: 2.2rem;
   margin: 0;
-  color: #444;
-  font-size: 1.05rem;
+  padding: 0;
 }
-.project-card li, .experience-card li {
-  margin-bottom: 0.5em;
-  line-height: 1.5;
+.banner-links.banner-categories li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: color 0.2s, border-bottom 0.2s;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
 }
-/* Prevent any component from being directly on a corner */
-body, #root {
-  padding: 32px;
-  box-sizing: border-box;
+.banner-links.banner-categories li a:hover {
+  color: #ffe082;
+  border-bottom: 2px solid #ffe082;
+}
+.banner-back-link {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 2.2rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.2s, border-bottom 0.2s;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+}
+.banner-back-link:hover {
+  color: #ffe082;
+  border-bottom: 2px solid #ffe082;
 }
 
 .section, .profile-bio, .profile-pic, .links, .skills-grid, .card, .main-container {
@@ -294,21 +168,16 @@ body, #root {
   border: none;
 }
 
-/* Distinct style for Projects section */
-.projects-section {
-  background: linear-gradient(135deg, #f5f8fd 60%, #eaf1fb 100%);
-  border: 1.5px solid #dbe6f7;
-  border-radius: 22px;
-  box-shadow: 0 4px 24px 0 rgba(30,60,120,0.07);
+/* Distinct style for sections */
+.section {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   padding: 2.7rem 2.7rem 2.2rem 2.7rem;
   margin: 2.5rem auto;
   max-width: 1200px;
   width: 100%;
-  transition: box-shadow 0.2s, border 0.2s;
-}
-.projects-section:hover {
-  box-shadow: 0 8px 32px 0 rgba(30,60,120,0.13);
-  border-color: #b6c8e6;
 }
 
 .profile-bio {
@@ -437,14 +306,14 @@ footer.section {
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.04));
 }
 
-.projects-grid {
-  width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
+/* Main section titles */
+.main-section-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 2.1rem;
+  color: #222;
+  letter-spacing: 0.01em;
 }
 
 .section#references {

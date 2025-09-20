@@ -10,7 +10,7 @@ function Header() {
         className="profile-pic"
       />
       <div className="profile-bio">
-        <h1 className>Logan Edwards</h1>
+        <h1>Logan Edwards</h1>
         <p>Undergraduate student at NYIT majoring in Electrical and Computer Engineering. Project Manager at Entrepreneurship and Technology Innovation Center, NYIT.</p>
         <div className="links">
           <a href="mailto:lmedwards.professional@gmail.com"><FaEnvelope /></a>

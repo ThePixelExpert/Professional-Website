@@ -1,7 +1,13 @@
 // Option 2: Frontend component for Express backend
-// Replace your Contact.js handleSubmit function with this version:
+// This is an example of how to modify your Contact.js handleSubmit function
+// Copy the handleSubmit function below and replace it in your Contact.js file
 
-const handleSubmitWithBackend = async (e) => {
+/*
+To use this with your Express backend:
+
+1. Replace the handleSubmit function in your Contact.js with this version:
+
+const handleSubmit = async (e) => {
   e.preventDefault();
   setIsSubmitting(true);
   
@@ -35,3 +41,9 @@ const handleSubmitWithBackend = async (e) => {
     setIsSubmitting(false);
   }
 };
+
+2. Make sure your Express backend is running on port 3001
+3. Update the URL if your backend is on a different port or domain
+
+Note: This file is just documentation - the actual implementation goes in Contact.js
+*/

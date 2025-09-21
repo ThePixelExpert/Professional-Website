@@ -5,7 +5,7 @@ param(
     [string]$MasterNode = "192.168.0.40",
     [string[]]$WorkerNodes = @("192.168.0.41", "192.168.0.42", "192.168.0.43"),
     [string]$SshUser = "pi",
-    [string]$SshPass = "Lomo2715!",
+    [string]$SshPass = $env:SSH_PASSWORD ?? "change_me",
     [string]$ProjectDir = "~/Professional-website"
 )
 

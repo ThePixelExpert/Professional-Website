@@ -1,0 +1,24 @@
+# Ansible Inventory Template
+# Copy this to inventory/hosts.yml and fill in your actual credentials
+
+[master]
+master ansible_host=192.168.0.40 ansible_user=pi ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[workers]
+node1 ansible_host=192.168.0.41 ansible_user=pi ansible_ssh_private_key_file=~/.ssh/id_rsa
+node2 ansible_host=192.168.0.42 ansible_user=pi ansible_ssh_private_key_file=~/.ssh/id_rsa
+node3 ansible_host=192.168.0.43 ansible_user=pi ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[k3s_cluster:children]
+master
+workers
+
+[k3s_cluster:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+project_path=/home/pi/Professional-website
+image_tag={{ ansible_date_time.epoch }}
+
+# Alternative: If using password authentication (less secure)
+# ansible_ssh_pass={{ vault_ssh_password }}
+# Then create an encrypted vault file: ansible-vault create group_vars/all/vault.yml

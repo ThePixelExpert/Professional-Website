@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import AllProjects from './components/AllProjects';
+import InfrastructureDocs from './components/InfrastructureDocs';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -13,6 +14,12 @@ function render() {
     root.render(
       <React.StrictMode>
         <AllProjects />
+      </React.StrictMode>
+    );
+  } else if (hash.startsWith('#/infrastructure-docs')) {
+    root.render(
+      <React.StrictMode>
+        <InfrastructureDocs />
       </React.StrictMode>
     );
   } else {

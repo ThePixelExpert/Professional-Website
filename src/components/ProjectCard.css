@@ -64,6 +64,37 @@
   line-height: 1.5;
 }
 
+/* Project Links Styling */
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.project-links a {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  background: rgba(25, 118, 210, 0.08);
+  transition: all 0.2s ease;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.project-links a:hover {
+  background: rgba(25, 118, 210, 0.15);
+  transform: translateY(-1px);
+}
+
+.link-separator {
+  color: #666;
+  margin: 0 0.3rem;
+  font-weight: normal;
+}
+
 .project-image-placeholder {
   flex: 0 0 300px; /* Fixed width, don't grow or shrink */
   width: 300px;

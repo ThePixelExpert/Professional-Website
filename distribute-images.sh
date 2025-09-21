@@ -9,7 +9,7 @@ set -e
 MASTER_NODE="192.168.0.40"
 WORKER_NODES=("192.168.0.41" "192.168.0.42" "192.168.0.43")
 SSH_USER="pi"
-SSH_PASS="Lomo2715!"
+SSH_PASS="${SSH_PASSWORD:-change_me}"
 PROJECT_DIR="~/Professional-website"
 
 # Colors for output

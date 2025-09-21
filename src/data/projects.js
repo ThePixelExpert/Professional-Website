@@ -3,7 +3,6 @@ import BigstockImg from '../assets/bigstock-Medical-doctor-working-with-he-89442
 import SSRGImg from '../assets/SSRG_Actuator_Mechanical_System_V2.jpg';
 import FinalAssemblyImg from '../assets/Final-Assembled-2 1388X1050.jpg';
 import Kube from '../assets/Kube.png';
-import Autodesk from '../assets/autodesk-fusion-360-product-icon-social-400.png';
 import BlendySpectrumImg from '../assets/blendy_spectrum_pic.png';
 
 const projects = [
@@ -54,18 +53,22 @@ const projects = [
     ]
   },
   {
-    id: 'kube-demo',
-    title: 'Kubernetes Demo',
-    group: 'Other',
+    id: 'k3s-cluster',
+    title: 'K3s Cluster Infrastructure & CI/CD',
+    group: 'Infrastructure',
     img: Kube,
-    highlights: ['Kubernetes cluster examples and demos']
-  },
-  {
-    id: 'autodesk',
-    title: 'Autodesk Work',
-    group: 'Other',
-    img: Autodesk,
-    highlights: ['CAD & modeling samples']
+    highlights: [
+      'Built production K3s Kubernetes cluster on 4 Raspberry Pi nodes with automated CI/CD pipeline.',
+      'Implemented container registry, Ansible automation, and load balancing with MetalLB.',
+      'Reduced deployment time from 30 minutes manual process to 6-minute automated deployment.',
+      'Integrated Let\'s Encrypt SSL certificates and rolling updates for zero-downtime deployments.'
+    ],
+    technologies: ['Kubernetes', 'Docker', 'Ansible', 'Raspberry Pi', 'Linux', 'MetalLB', 'Let\'s Encrypt'],
+    links: [
+      { label: 'Live Site', url: 'https://edwardsengineering.org' },
+      { label: 'Documentation', url: '#/infrastructure-docs' },
+      { label: 'GitHub Repo', url: 'https://github.com/ThePixelExpert/Professional-Website' }
+    ]
   }
 ];
 

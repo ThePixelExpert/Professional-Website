@@ -15,9 +15,12 @@ export default function ProjectCard({ project, imageLeft = false }) {
           </ul>
         )}
         {project.links && (
-          <p>
+          <p className="project-links">
             {project.links.map((l, i) => (
-              <a key={i} href={l.url} target="_blank" rel="noreferrer">{l.label}</a>
+              <React.Fragment key={i}>
+                <a href={l.url} target="_blank" rel="noreferrer">{l.label}</a>
+                {i < project.links.length - 1 && <span className="link-separator"> • </span>}
+              </React.Fragment>
             ))}
           </p>
         )}

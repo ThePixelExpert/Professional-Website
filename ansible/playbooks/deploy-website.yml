@@ -1,0 +1,123 @@
+---
+- name: Edwards Engineering Website Deployment
+  hosts: localhost
+  gather_facts: true
+  vars:
+    timestamp: "{{ ansible_date_time.epoch }}"
+    
+  tasks:
+    - name: Display deployment information
+      debug:
+        msg: |
+          Starting deployment with timestamp: {{ timestamp }}
+          Project path: /home/pi/Professional-website
+          Frontend image: localhost:5000/edwards-frontend:latest
+          Backend image: localhost:5000/edwards-backend:latest
+
+- name: Build and Push Docker Images
+  hosts: master
+  gather_facts: false
+  vars:
+    timestamp: "{{ hostvars['localhost']['timestamp'] }}"
+    
+  tasks:
+    - name: Check project directory exists
+      stat:
+        path: /home/pi/Professional-website
+      register: project_dir
+
+    - name: Fail if project directory missing
+      fail:
+        msg: "Project directory /home/pi/Professional-website not found"
+      when: not project_dir.stat.exists
+
+    - name: Build frontend Docker image
+      shell: |
+        cd /home/pi/Professional-website
+        docker build -f Dockerfile.frontend -t localhost:5000/edwards-frontend:latest .
+      register: frontend_build
+      
+    - name: Build backend Docker image
+      shell: |
+        cd /home/pi/Professional-website
+        docker build -f Dockerfile.backend -t localhost:5000/edwards-backend:latest .
+      register: backend_build
+
+    - name: Push frontend image to registry
+      shell: docker push localhost:5000/edwards-frontend:latest
+      register: frontend_push
+
+    - name: Push backend image to registry
+      shell: docker push localhost:5000/edwards-backend:latest
+      register: backend_push
+
+    - name: Display build and push results
+      debug:
+        msg: |
+          Build Results:
+          Frontend build: {{ 'SUCCESS' if frontend_build.rc == 0 else 'FAILED' }}
+          Backend build: {{ 'SUCCESS' if backend_build.rc == 0 else 'FAILED' }}
+          Frontend push: {{ 'SUCCESS' if frontend_push.rc == 0 else 'FAILED' }}
+          Backend push: {{ 'SUCCESS' if backend_push.rc == 0 else 'FAILED' }}
+
+- name: Update Kubernetes Deployments
+  hosts: master
+  gather_facts: false
+  vars:
+    timestamp: "{{ hostvars['localhost']['timestamp'] }}"
+    
+  tasks:
+    - name: Restart frontend deployment to pull latest image
+      shell: |
+        sudo k3s kubectl rollout restart deployment/frontend-deployment --namespace=default
+      register: frontend_restart
+
+    - name: Restart backend deployment to pull latest image
+      shell: |
+        sudo k3s kubectl rollout restart deployment/backend-deployment --namespace=default
+      register: backend_restart
+
+    - name: Wait for frontend deployment rollout
+      shell: |
+        sudo k3s kubectl rollout status deployment/frontend-deployment --namespace=default --timeout=300s
+      register: frontend_status
+
+    - name: Wait for backend deployment rollout
+      shell: |
+        sudo k3s kubectl rollout status deployment/backend-deployment --namespace=default --timeout=300s
+      register: backend_status
+
+    - name: Get pod status
+      shell: sudo k3s kubectl get pods --namespace=default -l app=frontend
+      register: frontend_pods
+
+    - name: Get service status
+      shell: sudo k3s kubectl get services --namespace=default
+      register: services_status
+
+    - name: Display deployment status
+      debug:
+        msg: |
+          ========================================
+          DEPLOYMENT STATUS
+          ========================================
+          Frontend rollout: {{ 'SUCCESS' if frontend_status.rc == 0 else 'FAILED' }}
+          Backend rollout: {{ 'SUCCESS' if backend_status.rc == 0 else 'FAILED' }}
+          
+          Frontend Pods:
+          {{ frontend_pods.stdout }}
+          
+          Services:
+          {{ services_status.stdout }}
+          ========================================
+
+    - name: Final deployment summary
+      debug:
+        msg: |
+          ========================================
+          DEPLOYMENT COMPLETED
+          ========================================
+          Timestamp: {{ timestamp }}
+          Website should be available at: https://edwardsengineering.org
+          Check status: kubectl get pods -n default
+          ========================================

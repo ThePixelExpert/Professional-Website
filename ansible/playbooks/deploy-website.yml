@@ -1,0 +1,33 @@
+---
+- name: Deploy Edwards Engineering Website
+  hosts: master
+  become: true
+
+  tasks:
+    - name: Read image tag from file
+      slurp:
+        src: /home/pi/Professional-Website/ansible/tag.txt
+      register: tagfile
+
+    - name: Set image tag fact
+      set_fact:
+        image_tag: "{{ tagfile['content'] | b64decode | trim }}"
+
+    - name: Update frontend image tag in deployment YAML
+      replace:
+        path: /home/pi/Professional-Website/k8s/frontend/deployment.yaml
+        regexp: 'image: 192.168.0.40:5000/edwards-frontend:[^\s]+'
+        replace: 'image: 192.168.0.40:5000/edwards-frontend:{{ image_tag }}'
+
+    - name: Update backend image tag in deployment YAML
+      replace:
+        path: /home/pi/Professional-Website/k8s/backend/deployment.yaml
+        regexp: 'image: 192.168.0.40:5000/edwards-backend:[^\s]+'
+        replace: 'image: 192.168.0.40:5000/edwards-backend:{{ image_tag }}'
+
+    - name: Apply frontend deployment
+      shell: sudo k3s kubectl apply -f /home/pi/Professional-Website/k8s/frontend/deployment.yaml
+
+    - name: Apply backend deployment
+      shell: sudo k3s kubectl apply -f /home/pi/Professional-Website/k8s/backend/deployment.yaml
+     

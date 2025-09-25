@@ -2,15 +2,17 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY contact-backend/package*.json ./
+# Install dependencies first (cacheable)
+COPY contact-backend/package.json contact-backend/package-lock.json ./
 RUN npm install
 
-# Copy source code
-COPY contact-backend/ ./
+# Copy backend source files
+COPY contact-backend/server.js ./
+COPY contact-backend/.env ./
+# If you have other backend files (e.g., routes, utils), add them here:
+# COPY contact-backend/routes/ ./routes/
+# COPY contact-backend/utils/ ./utils/
+# (repeat for any other folders/files your backend needs)
 
-# Expose port
 EXPOSE 3001
-
-# Start the application
 CMD ["npm", "start"]

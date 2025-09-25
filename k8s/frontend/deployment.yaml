@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: edwards-engineering-frontend:latest
+        image: 192.168.0.40:5000/edwards-frontend:<tag>
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
@@ -39,4 +39,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: ClusterIP  # Changed from LoadBalancer for ingress
+  type: LoadBalancer

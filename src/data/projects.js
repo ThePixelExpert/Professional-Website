@@ -9,7 +9,7 @@ const projects = [
   {
     id: 'nasa-digital-to-analog',
     title: 'Digital to Analog Transformation',
-    group: 'NASA',
+    group: 'Produced NASA',
     img: BigstockImg,
     patent: 'US10085662, NASA MSC-TOPS-67',
     highlights: [
@@ -65,7 +65,7 @@ const projects = [
     ],
     technologies: ['Kubernetes', 'Docker', 'Ansible', 'Raspberry Pi', 'Linux', 'MetalLB', 'Let\'s Encrypt'],
     links: [
-      { label: 'Live Site', url: 'https://edwardsengineering.org' },
+  { label: 'Live Site', url: 'https://edwardstech.dev' },
       { label: 'Documentation', url: '#/infrastructure-docs' },
       { label: 'GitHub Repo', url: 'https://github.com/ThePixelExpert/Professional-Website' }
     ]

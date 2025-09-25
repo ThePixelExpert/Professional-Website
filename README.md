@@ -1,6 +1,6 @@
 # Edwards Engineering Professional Website
 
-**Live Site:** [https://edwardsengineering.org](https://edwardsengineering.org)
+**Live Site:** [https://edwardstech.dev](https://edwardstech.dev)
 
 ## Overview
 React-based professional website running on a K3s Kubernetes cluster with automated CI/CD pipeline.
@@ -47,7 +47,7 @@ ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml
             │  4 x RPi Nodes  │
             └─────────────────┘
                      │
-              [edwardsengineering.org]
+              [edwardstech.dev]
 ```
 
 ## Available Scripts
@@ -78,7 +78,7 @@ ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml
 1. Make changes to source code
 2. Test locally with `npm start`
 3. Deploy with `ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml`
-4. Verify at https://edwardsengineering.org
+4. Verify at https://edwardstech.dev
 
 ---
 

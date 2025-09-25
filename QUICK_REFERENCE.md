@@ -28,7 +28,7 @@ ssh pi@192.168.0.43  # node3
 ### Status Checks
 ```bash
 # Website status
-curl -I https://edwardsengineering.org
+curl -I https://edwardstech.dev
 
 # Cluster nodes
 sudo k3s kubectl get nodes -o wide
@@ -80,7 +80,7 @@ sudo k3s kubectl logs -f deployment/frontend-deployment
 ### Access Information
 - **Authentication:** SSH key-based
 - **Registry:** http://192.168.0.40:5000
-- **Website:** https://edwardsengineering.org
+- **Website:** https://edwardstech.dev
 - **Ansible Directory:** ~/ansible (on master node)
 
 ## File Locations

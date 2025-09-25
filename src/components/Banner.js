@@ -15,7 +15,9 @@ function Banner({ sections = defaultSections, showBack = false, backHref = "#/",
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <div className="banner-logo-text">
           <span className="logo-edwards">EDWARDS</span>
-          <span className="logo-engineering">ENGINEERING</span>
+          <span className="logo-engineering">TECH</span>
+          <span className="logo-engineering">SOLUTIONS</span>
+
         </div>
       </div>
 

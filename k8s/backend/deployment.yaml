@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: edwards-engineering-backend:latest
+        image: 192.168.0.40:5000/edwards-backend:<tag>
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3001
@@ -34,7 +34,7 @@ spec:
               name: email-secret
               key: email-password
         - name: FRONTEND_URL
-          value: "https://edwardsengineering.org"
+          value: "https://edwardstech.dev"
         resources:
           requests:
             memory: "128Mi"
@@ -54,4 +54,4 @@ spec:
     - protocol: TCP
       port: 3001
       targetPort: 3001
-  type: ClusterIP
+  type: LoadBalancer

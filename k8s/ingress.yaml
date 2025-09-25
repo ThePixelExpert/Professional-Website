@@ -9,15 +9,15 @@ metadata:
 spec:
   tls:
   - hosts:
-    - edwardsengineering.org
-    - www.edwardsengineering.org
+      - www.edwardstech.dev
+      - edwardstech.dev
     secretName: edwards-engineering-tls
   rules:
-  - host: edwardsengineering.org
+  - host: www.edwardstech.dev
     http:
       paths:
-      - path: /api
-        pathType: Prefix
+      - path: /api   
+        pathType: Prefix 
         backend:
           service:
             name: backend-service
@@ -30,7 +30,7 @@ spec:
             name: frontend-service
             port:
               number: 80
-  - host: www.edwardsengineering.org
+  - host: www.edwardstech.dev
     http:
       paths:
       - path: /api

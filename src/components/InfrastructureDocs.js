@@ -127,7 +127,7 @@ function InfrastructureDocs() {
             and high availability. Perfect foundation for scalable web applications.
           </p>
           <a 
-            href="https://edwardsengineering.org" 
+            href="https://edwardstech.dev"
             target="_blank" 
             rel="noopener noreferrer"
             style={{ 

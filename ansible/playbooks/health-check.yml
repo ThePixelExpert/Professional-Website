@@ -1,0 +1,16 @@
+---
+- name: Check K3s Cluster Health
+  hosts: master
+  become: true
+  tasks:
+    - name: Get node status
+      shell: sudo k3s kubectl get nodes -o wide
+      register: node_status
+    - debug:
+        var: node_status.stdout_lines
+
+    - name: Get pod status
+      shell: sudo k3s kubectl get pods -o wide
+      register: pod_status
+    - debug:
+        var: pod_status.stdout_lines

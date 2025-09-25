@@ -50,7 +50,7 @@ The following information is intentionally public as it demonstrates architectur
 
 - **Internal IP ranges** (192.168.0.x) - Standard private networks
 - **Port configurations** - Standard Kubernetes/web ports
-- **Domain name** (edwardsengineering.org) - Already publicly accessible
+- **Domain name** (edwardstech.dev) - Already publicly accessible
 - **Technology stack** - Common, well-documented technologies
 
 ## 📋 Setup for Contributors
@@ -79,4 +79,4 @@ This repository serves as:
 
 ---
 
-*This repository represents real production infrastructure powering [edwardsengineering.org](https://edwardsengineering.org)*
+*This repository represents real production infrastructure powering [edwardstech.dev](https://edwardstech.dev)*

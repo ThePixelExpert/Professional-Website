@@ -4,7 +4,7 @@
 
 **Infrastructure:** K3s cluster (4 Raspberry Pi nodes) with automated deployment pipeline
 
-**Website:** [https://edwardsengineering.org](https://edwardsengineering.org) - Fully automated CI/CD
+**Website:** [https://edwardstech.dev](https://edwardstech.dev) - Fully automated CI/CD
 
 **Last Updated:** September 21, 2025
 
@@ -27,7 +27,7 @@ ansible all -m ping -i inventory/hosts.yml
 ### Emergency Commands
 ```bash
 # Check website status
-curl -I https://edwardsengineering.org
+curl -I https://edwardstech.dev
 
 # Get pod status
 ssh pi@192.168.0.40 "sudo k3s kubectl get pods -o wide"
@@ -143,7 +143,7 @@ ssh pi@192.168.0.40 "sudo k3s kubectl get services"
 - Container registry storage
 
 ### Access URLs
-- **Website:** https://edwardsengineering.org
+- **Website:** https://edwardstech.dev
 - **Registry:** http://192.168.0.40:5000/v2/_catalog
 - **K3s Dashboard:** Available via kubectl proxy
 

@@ -5,6 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import AllProjects from './components/AllProjects';
 import InfrastructureDocs from './components/InfrastructureDocs';
+import AdminDashboard from './AdminDashboard';
+import PurchasePage from './PurchasePage';
+import CheckoutPage from './CheckoutPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -20,6 +23,26 @@ function render() {
     root.render(
       <React.StrictMode>
         <InfrastructureDocs />
+      </React.StrictMode>
+    );
+  } else if (hash.startsWith('#/admin')) {
+    root.render(
+      <React.StrictMode>
+        <AdminDashboard />
+      </React.StrictMode>
+    );
+  } else if (hash.startsWith('#/purchase/')) {
+    const projectId = hash.replace('#/purchase/', '');
+    root.render(
+      <React.StrictMode>
+        <PurchasePage projectId={projectId} />
+      </React.StrictMode>
+    );
+  } else if (hash.startsWith('#/checkout/')) {
+    const projectId = hash.replace('#/checkout/', '');
+    root.render(
+      <React.StrictMode>
+        <CheckoutPage projectId={projectId} />
       </React.StrictMode>
     );
   } else {

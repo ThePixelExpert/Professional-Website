@@ -44,6 +44,7 @@ const projects = [
     title: 'BlendBot Ink Mixer',
     group: 'Other',
     img: BlendySpectrumImg,
+    forSale: true,
     highlights: [
       'Automates mixing of high‑viscosity screen printing ink in 5‑gallon buckets, replacing unreliable drill methods.',
       'Compact planetary gear system with multiple whisk attachments and a safety lid; variable‑speed controller.'

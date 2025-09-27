@@ -24,6 +24,14 @@ export default function ProjectCard({ project, imageLeft = false }) {
             ))}
           </p>
         )}
+        {project.forSale && (
+          <button
+            style={{ marginTop: 12, padding: '8px 16px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+            onClick={() => window.location.hash = `#/purchase/${project.id}`}
+          >
+            Buy Product Here
+          </button>
+        )}
       </div>
       {project.img && (
         <div className="project-image-placeholder">

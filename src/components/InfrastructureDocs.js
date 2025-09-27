@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Banner from './Banner';
+import AdminLogin from './AdminLogin';
+import AdminOrders from './AdminOrders';
 
 function InfrastructureDocs() {
+  const [token, setToken] = useState(null);
+
   return (
     <div className="infrastructure-docs-page">
       <Banner sections={[]} showBack={true} backHref="#/" />
@@ -144,6 +148,13 @@ function InfrastructureDocs() {
             View Live Site →
           </a>
         </div>
+
+        {/* Example usage:
+        const [token, setToken] = useState(null);
+        {!token ? <AdminLogin onLogin={setToken} /> : <AdminOrders token={token} />}
+        */}
+        <AdminLogin onLogin={setToken} />
+        <AdminOrders token={token} />
       </div>
     </div>
   );

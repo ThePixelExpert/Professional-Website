@@ -20,7 +20,7 @@ const projects = [
   {
     id: 'nasa-ssrg',
     title: 'Space Suit RoboGlove (SSRG)',
-    group: 'NASA',
+    group: 'Produced NASA',
     img: SSRGImg,
     patent: 'US11690775, NASA MSC-TOPS-80',
     highlights: [
@@ -31,7 +31,7 @@ const projects = [
   {
     id: 'nasa-hydration',
     title: 'Freeze-Resistant Hydration System',
-    group: 'NASA',
+    group: 'Produced NASA',
     img: FinalAssemblyImg,
     patent: 'US9939996, NASA MSC-TOPS-21',
     highlights: [
@@ -39,12 +39,12 @@ const projects = [
       'Battery/wall power options with PID-tuned temperature control.'
     ]
   },
-  {
+ {
     id: 'blendbot',
     title: 'BlendBot Ink Mixer',
     group: 'Other',
     img: BlendySpectrumImg,
-    forSale: true,
+    forSale: false,
     highlights: [
       'Automates mixing of high‑viscosity screen printing ink in 5‑gallon buckets, replacing unreliable drill methods.',
       'Compact planetary gear system with multiple whisk attachments and a safety lid; variable‑speed controller.'

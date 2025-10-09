@@ -33,6 +33,26 @@ secrets/
 vault.yml
 inventory/hosts.yml
 
+# Environment variables and credentials
+.env
+.env.local
+.env.development
+.env.test  
+.env.production
+config/secrets.js
+config/credentials.js
+admin-credentials.js
+auth-config.js
+
+# Allow template files (these should be in git)
+!.env.template
+!.env.example
+
+# Backend credentials and order data
+backend-options/orders-backup.csv
+contact-backend/orders-backup.csv
+orders-backup.csv
+
 # Temporary & Runtime files
 *.tmp
 *.temp

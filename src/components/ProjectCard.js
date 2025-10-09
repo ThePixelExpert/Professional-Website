@@ -24,7 +24,7 @@ export default function ProjectCard({ project, imageLeft = false }) {
             ))}
           </p>
         )}
-        {project.forSale && (
+        {project.forSale === true && (
           <button
             style={{ marginTop: 12, padding: '8px 16px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}
             onClick={() => window.location.hash = `#/purchase/${project.id}`}

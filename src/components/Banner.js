@@ -10,6 +10,14 @@ const defaultSections = [
 ];
 
 function Banner({ sections = defaultSections, showBack = false, backHref = "#/", categoryButtons = [] }) {
+  const handleCategoryClick = (category, e) => {
+    e.preventDefault();
+    const element = document.getElementById(`group-${category}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <nav className="banner-nav">
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -25,7 +33,14 @@ function Banner({ sections = defaultSections, showBack = false, backHref = "#/",
         {categoryButtons && categoryButtons.length > 0 && (
           <ul className="banner-links banner-categories">
             {categoryButtons.map((c) => (
-              <li key={c}><a href={`#group-${c}`}>{c}</a></li>
+              <li key={c}>
+                <a 
+                  href={`#group-${c}`} 
+                  onClick={(e) => handleCategoryClick(c, e)}
+                >
+                  {c}
+                </a>
+              </li>
             ))}
           </ul>
         )}

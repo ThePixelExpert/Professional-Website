@@ -1,6 +1,9 @@
 # Set your Pi's IP address
 $piIp = "192.168.0.40"
 
+# Sync secrets from .env to Kubernetes
+Write-Host "🔧 Syncing secrets to Kubernetes..." -ForegroundColor Yellow
+& .\sync-secrets.ps1
 
 # Generate a unique tag using the current date and time
 $tag = Get-Date -Format "yyyyMMddHHmmss"
@@ -33,5 +36,29 @@ scp $ansibleTagPath pi@${piIp}:/home/pi/Professional-Website/ansible/tag.txt
 
 # 5. Run the Ansible playbook in WSL to update YAMLs and apply deployments
 wsl bash -c "cd /mnt/g/Home\ Lab/Professional-Website/ansible && ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml"
+
+# 6. Clean up old Docker images (keep last 5 tags)
+Write-Host "Cleaning up old Docker images..."
+try {
+    # Get list of frontend tags and delete old ones (keep latest 5)
+    $frontendTags = curl -s "http://192.168.0.40:5000/v2/edwards-frontend/tags/list" | ConvertFrom-Json | Select-Object -ExpandProperty tags | Sort-Object -Descending | Select-Object -Skip 5
+    foreach ($oldTag in $frontendTags) {
+        curl -X DELETE "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$oldTag" 2>$null
+    }
+    
+    # Get list of backend tags and delete old ones (keep latest 5)
+    $backendTags = curl -s "http://192.168.0.40:5000/v2/edwards-backend/tags/list" | ConvertFrom-Json | Select-Object -ExpandProperty tags | Sort-Object -Descending | Select-Object -Skip 5
+    foreach ($oldTag in $backendTags) {
+        curl -X DELETE "http://192.168.0.40:5000/v2/edwards-backend/manifests/$oldTag" 2>$null
+    }
+    
+    Write-Host "Registry cleanup completed"
+} catch {
+    Write-Host "Registry cleanup failed (this is normal if few images exist): $_"
+}
+
+# 7. Clean up local Docker images
+Write-Host "Cleaning up local Docker build cache..."
+docker builder prune -f
 
 Write-Host "Deployment complete!"

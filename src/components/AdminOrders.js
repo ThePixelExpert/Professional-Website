@@ -7,7 +7,7 @@ function AdminOrders({ token }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/orders', {
+    fetch('http://192.168.0.242:3001/api/orders', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -17,7 +17,7 @@ function AdminOrders({ token }) {
   }, [token]);
 
   const updateStatus = async (id, status) => {
-    await fetch(`http://localhost:3001/api/orders/${id}`, {
+    await fetch(`http://192.168.0.242:3001/api/orders/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ function AdminOrders({ token }) {
   };
 
   const updateTracking = async (id, trackingNumber) => {
-    await fetch(`http://localhost:3001/api/orders/${id}`, {
+    await fetch(`http://192.168.0.242:3001/api/orders/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

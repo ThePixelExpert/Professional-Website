@@ -1,0 +1,59 @@
+---
+- name: Safely Shutdown K3s Cluster
+  hosts: master
+  become: true
+  tasks:
+    - name: Scale down deployments
+      shell: |
+        sudo k3s kubectl scale deployment frontend-deployment --replicas=0
+        sudo k3s kubectl scale deployment backend-deployment --replicas=0
+      ignore_errors: true
+
+    - name: Wait for pods to terminate
+      shell: sudo k3s kubectl get pods --no-headers | wc -l
+      register: pod_count
+      until: pod_count.stdout|int == 0
+      retries: 30
+      delay: 10
+      ignore_errors: true
+
+    - name: Drain worker nodes
+      shell: |
+        sudo k3s kubectl drain node1 --ignore-daemonsets --delete-emptydir-data --force --timeout=60s
+        sudo k3s kubectl drain node2 --ignore-daemonsets --delete-emptydir-data --force --timeout=60s
+        sudo k3s kubectl drain node3 --ignore-daemonsets --delete-emptydir-data --force --timeout=60s
+      ignore_errors: true
+
+- name: Stop K3s on worker nodes
+  hosts: workers
+  become: true
+  tasks:
+    - name: Stop K3s agent service
+      systemd:
+        name: k3s-agent
+        state: stopped
+      ignore_errors: true
+
+- name: Stop K3s on master and shutdown all nodes
+  hosts: master
+  become: true
+  tasks:
+    - name: Stop K3s service
+      systemd:
+        name: k3s
+        state: stopped
+      ignore_errors: true
+
+    - name: Stop container registry
+      shell: docker stop registry
+      ignore_errors: true
+
+- name: Shutdown all nodes safely
+  hosts: all
+  become: true
+  tasks:
+    - name: Shutdown system
+      shell: shutdown -h +1
+      async: 0
+      poll: 0
+      ignore_errors: true

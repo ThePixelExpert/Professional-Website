@@ -30,4 +30,7 @@
 
     - name: Apply backend deployment
       shell: sudo k3s kubectl apply -f /home/pi/Professional-Website/k8s/backend/deployment.yaml
+
+    - name: Apply ingress configuration
+      shell: sudo k3s kubectl apply -f /home/pi/Professional-Website/k8s/ingress.yaml
      

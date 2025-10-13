@@ -1,10 +1,6 @@
 # Set your Pi's IP address
 $piIp = "192.168.0.40"
 
-# Sync secrets from .env to Kubernetes
-Write-Host "🔧 Syncing secrets to Kubernetes..." -ForegroundColor Yellow
-& .\sync-secrets.ps1
-
 # Generate a unique tag using the current date and time
 $tag = Get-Date -Format "yyyyMMddHHmmss"
 Write-Host "Using image tag: $tag"
@@ -20,22 +16,24 @@ Set-Content -Path $ansibleTagPath -Value $tag
 # Ensure all needed directories exist on the Pi
 ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professional-Website/k8s/frontend /home/pi/Professional-Website/k8s/backend /home/pi/Professional-Website/k3s/frontend /home/pi/Professional-Website/k3s/backend"
 
-# Copy k8s and k3s deployment.yaml files to the Pi
+# Copy k8s deployment files to the Pi
 scp k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
 scp k8s/backend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
+scp k8s/ingress.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/ingress.yaml
 
 
 
-# 1. Build and push multi-arch frontend Docker image (amd64 and arm64)
-docker buildx build --platform linux/arm64 -f Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$tag --push .
+# 1. Build and push multi-arch frontend Docker image (amd64 and arm64) - no cache to ensure fresh build
+docker buildx build --no-cache --platform linux/arm64 -f Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$tag --push .
 
-# 2. Build and push multi-arch backend Docker image (amd64 and arm64)
-docker buildx build --platform linux/arm64 -f Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$tag --push .
+# 2. Build and push multi-arch backend Docker image (amd64 and arm64) - no cache to ensure fresh build
+docker buildx build --no-cache --platform linux/arm64 -f Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$tag --push .
 
 scp $ansibleTagPath pi@${piIp}:/home/pi/Professional-Website/ansible/tag.txt
 
-# 5. Run the Ansible playbook in WSL to update YAMLs and apply deployments
-wsl bash -c "cd /mnt/g/Home\ Lab/Professional-Website/ansible && ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml"
+# 5. Run the Ansible playbook to update YAMLs and apply deployments
+$ansiblePath = "/mnt/g/Home Lab/Professional-Website/ansible"
+wsl bash -c "cd '$ansiblePath' && ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml"
 
 # 6. Clean up old Docker images (keep last 5 tags)
 Write-Host "Cleaning up old Docker images..."

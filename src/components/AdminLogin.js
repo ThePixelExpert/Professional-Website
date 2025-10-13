@@ -7,16 +7,24 @@ function AdminLogin({ onLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://192.168.0.242:3001/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    const data = await res.json();
-    if (data.success && data.token) {
-      onLogin(data.token);
-    } else {
-      setError(data.message || 'Login failed');
+    console.log('Login form submitted');
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      console.log('Response received:', res);
+      const data = await res.json();
+      console.log('Response data:', data);
+      if (data.success && data.token) {
+        onLogin(data.token);
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Network error: ' + err.message);
     }
   };
 

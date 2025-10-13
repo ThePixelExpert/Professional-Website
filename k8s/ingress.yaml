@@ -2,21 +2,16 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: edwards-engineering-ingress
+  namespace: website
   annotations:
     kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/redirect-entry-point: https
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.priority: "1000"
 spec:
-  tls:
-  - hosts:
-      - www.edwardstech.dev
-      - edwardstech.dev
-    secretName: edwards-engineering-tls
   rules:
   - host: www.edwardstech.dev
     http:
       paths:
-      - path: /api   
+      - path: /api
         pathType: Prefix 
         backend:
           service:

@@ -71,6 +71,28 @@ function Contact() {
               <li>System Integration</li>
               <li>Technical Consultation</li>
             </ul>
+            
+            <div className="order-tracking-link" style={{ marginTop: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
+              <h5 style={{ margin: '0 0 10px 0', color: '#333' }}>Have an existing order?</h5>
+              <button 
+                onClick={() => window.location.hash = '#/track'}
+                style={{
+                  background: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'background-color 0.3s ease'
+                }}
+                onMouseOver={(e) => e.target.style.background = '#0056b3'}
+                onMouseOut={(e) => e.target.style.background = '#007bff'}
+              >
+                Track Your Order
+              </button>
+            </div>
           </div>
         </div>
         

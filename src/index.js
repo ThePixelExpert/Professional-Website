@@ -8,6 +8,7 @@ import InfrastructureDocs from './components/InfrastructureDocs';
 import AdminDashboard from './AdminDashboard';
 import PurchasePage from './PurchasePage';
 import CheckoutPage from './CheckoutPage';
+import OrderTracking from './OrderTracking';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -43,6 +44,12 @@ function render() {
     root.render(
       <React.StrictMode>
         <CheckoutPage projectId={projectId} />
+      </React.StrictMode>
+    );
+  } else if (hash.startsWith('#/track')) {
+    root.render(
+      <React.StrictMode>
+        <OrderTracking />
       </React.StrictMode>
     );
   } else {

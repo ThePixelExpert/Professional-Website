@@ -27,30 +27,55 @@ spec:
         - name: EMAIL_USER
           valueFrom:
             secretKeyRef:
-              name: email-secret
+              name: backend-secrets
               key: email-user
         - name: EMAIL_APP_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: email-secret
+              name: backend-secrets
               key: email-password
         - name: ADMIN_USER
           valueFrom:
             secretKeyRef:
-              name: admin-secret
+              name: backend-secrets
               key: admin-user
         - name: ADMIN_PASS
           valueFrom:
             secretKeyRef:
-              name: admin-secret
+              name: backend-secrets
               key: admin-password
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:
-              name: admin-secret
+              name: backend-secrets
               key: jwt-secret
         - name: FRONTEND_URL
           value: "https://edwardstech.dev"
+        # Database Configuration
+        - name: DB_HOST
+          value: "postgres-service"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "ecommerce"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: db-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: db-password
+        # Stripe Configuration
+        - name: STRIPE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: stripe-secret-key
+        # Webhook secret will be added later
+        # - name: STRIPE_WEBHOOK_SECRET
         resources:
           requests:
             memory: "128Mi"

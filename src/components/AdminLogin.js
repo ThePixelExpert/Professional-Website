@@ -17,10 +17,10 @@ function AdminLogin({ onLogin }) {
       console.log('Response received:', res);
       const data = await res.json();
       console.log('Response data:', data);
-      if (data.success && data.token) {
+      if (res.ok && data.token) {
         onLogin(data.token);
       } else {
-        setError(data.message || 'Login failed');
+        setError(data.error || data.message || 'Login failed');
       }
     } catch (err) {
       console.error('Login error:', err);

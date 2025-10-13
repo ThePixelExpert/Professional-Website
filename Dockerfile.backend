@@ -1,18 +1,23 @@
 FROM node:18-alpine
 
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S backend -u 1001
+
 WORKDIR /app
 
-# Install dependencies first (cacheable)
+# Install dependencies first (cacheable layer)
 COPY contact-backend/package.json contact-backend/package-lock.json ./
-RUN npm install
+RUN npm ci --only=production && npm cache clean --force
 
-# Copy backend source files
+# Copy backend source files (DO NOT copy .env files!)
 COPY contact-backend/server.js ./
-COPY contact-backend/.env ./
-# If you have other backend files (e.g., routes, utils), add them here:
-# COPY contact-backend/routes/ ./routes/
-# COPY contact-backend/utils/ ./utils/
-# (repeat for any other folders/files your backend needs)
+COPY contact-backend/database.js ./
+COPY contact-backend/pdf-generator.js ./
+
+# Change ownership to non-root user
+RUN chown -R backend:nodejs /app
+USER backend
 
 EXPOSE 3001
 CMD ["npm", "start"]

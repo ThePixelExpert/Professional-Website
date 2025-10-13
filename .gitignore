@@ -22,16 +22,19 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Security & Secrets
+# Security & Secrets - CRITICAL: Never commit these!
 *.key
 *.pem
 *.p12
 *.crt
+*.pfx
 secrets/
 .secrets
 *.vault
 vault.yml
 inventory/hosts.yml
+kubeconfig*
+*.kubeconfig
 
 # Environment variables and credentials
 .env
@@ -39,14 +42,38 @@ inventory/hosts.yml
 .env.development
 .env.test  
 .env.production
+.env.staging
 config/secrets.js
 config/credentials.js
 admin-credentials.js
 auth-config.js
+stripe-config.js
+database-config.js
+
+# Kubernetes secrets (if accidentally downloaded)
+*-secret.yaml
+secret-*.yaml
+secrets.yaml
+
+# Backup files that might contain sensitive data
+*.bak
+*.backup
+*.old
+*.tmp
+backup/
+backups/
+
+# IDE and editor files that might contain sensitive info
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
 
 # Allow template files (these should be in git)
 !.env.template
 !.env.example
+!*.template
+!*.example
 
 # Backend credentials and order data
 backend-options/orders-backup.csv

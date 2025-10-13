@@ -14,11 +14,13 @@ Set-Content -Path $ansibleTagPath -Value $tag
 
 
 # Ensure all needed directories exist on the Pi
-ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professional-Website/k8s/frontend /home/pi/Professional-Website/k8s/backend /home/pi/Professional-Website/k3s/frontend /home/pi/Professional-Website/k3s/backend"
+ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professional-Website/k8s/frontend /home/pi/Professional-Website/k8s/backend /home/pi/Professional-Website/k8s/database /home/pi/Professional-Website/k3s/frontend /home/pi/Professional-Website/k3s/backend"
 
 # Copy k8s deployment files to the Pi
 scp k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
 scp k8s/backend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
+scp k8s/backend/secret.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/secret.yaml
+scp k8s/database/postgres-deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
 scp k8s/ingress.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/ingress.yaml
 
 

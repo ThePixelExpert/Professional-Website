@@ -28,6 +28,12 @@
     - name: Apply frontend deployment
       shell: sudo k3s kubectl apply -f /home/pi/Professional-Website/k8s/frontend/deployment.yaml
 
+    - name: Apply database deployment
+      shell: sudo k3s kubectl apply -f /home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
+
+    - name: Apply backend secrets
+      shell: sudo k3s kubectl apply -f /home/pi/Professional-Website/k8s/backend/secret.yaml
+
     - name: Apply backend deployment
       shell: sudo k3s kubectl apply -f /home/pi/Professional-Website/k8s/backend/deployment.yaml
 

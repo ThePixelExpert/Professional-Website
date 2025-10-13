@@ -19,9 +19,13 @@ Get-Content $envFile | ForEach-Object {
     }
 }
 
-# Set admin credentials (use your preferred values)
-$adminUser = "admin"
-$adminPass = "Lomo2715!"
+# Set admin credentials (CHANGE THESE IN PRODUCTION!)
+# WARNING: Change these values before production deployment
+$adminUser = Read-Host "Enter admin username (default: admin)"
+if ([string]::IsNullOrEmpty($adminUser)) { $adminUser = "admin" }
+
+$securePass = Read-Host "Enter admin password" -AsSecureString
+$adminPass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePass))
 $jwtSecret = "edwards-engineering-secure-jwt-key-2024-production-$(Get-Random -Maximum 9999)"
 
 # Get email credentials from .env

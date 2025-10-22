@@ -152,50 +152,15 @@ app.post('/api/contact', async (req, res) => {
       `
     };
 
-    // Auto-reply to user
-    const autoReply = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Thank you for contacting Edwards Engineering',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #1976d2;">Thank you for your inquiry!</h2>
-          <p>Hi ${name},</p>
-          <p>Thank you for reaching out to Edwards Engineering. I've received your message and will get back to you within 24 hours.</p>
-          
-          <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #1976d2; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #333;">Your Message Summary:</h3>
-            <p><strong>Subject:</strong> ${subject || 'Engineering Inquiry'}</p>
-            <p><strong>Message:</strong> ${message.substring(0, 200)}${message.length > 200 ? '...' : ''}</p>
-          </div>
-          
-          <p>In the meantime, feel free to:</p>
-          <ul>
-            <li>📧 Reply to this email with any additional details</li>
-            <li>💼 Check out my <a href="https://www.linkedin.com/in/logan-edwards-76bb91282/">LinkedIn profile</a></li>
-            <li>📱 Call me for urgent matters (available upon request)</li>
-          </ul>
-          
-          <p>Best regards,<br>
-          <strong>Logan Edwards</strong><br>
-          Edwards Engineering<br>
-          <a href="mailto:lmedwards.professional@gmail.com">lmedwards.professional@gmail.com</a></p>
-        </div>
-      `
-    };
-
-    // Send both emails
-    await Promise.all([
-      transporter.sendMail(notificationEmail),
-      transporter.sendMail(autoReply)
-    ]);
+    // Send notification email only
+    await transporter.sendMail(notificationEmail);
 
     // Log successful submission (optional - for your records)
     console.log(`✅ Contact form submission from ${name} (${email}) at ${timestamp}`);
 
     res.status(200).json({ 
       success: true, 
-      message: 'Your message has been sent successfully! You should receive a confirmation email shortly.' 
+      message: 'Your message has been sent successfully! I will get back to you within 24 hours.' 
     });
 
   } catch (error) {

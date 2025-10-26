@@ -4,11 +4,11 @@
 Write-Host "Syncing environment variables to Kubernetes secrets..." -ForegroundColor Yellow
 
 # Read the .env file
-$envFile = "contact-backend/.env"
+$envFile = "../contact-backend/.env"
 if (!(Test-Path $envFile)) {
     Write-Host ".env file not found at: $envFile" -ForegroundColor Red
     Write-Host "Creating .env file with template values..." -ForegroundColor Yellow
-    Copy-Item "contact-backend/.env.template" $envFile
+    Copy-Item "../contact-backend/.env.template" $envFile
 }
 
 # Parse .env file

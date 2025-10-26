@@ -18,9 +18,10 @@ echo -e "${GREEN}Using image tag: $tag${NC}"
 
 # Get script directory (equivalent to $PSScriptRoot)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Ensure ansible/tag.txt exists and write the tag value
-ansibleTagPath="$SCRIPT_DIR/ansible/tag.txt"
+ansibleTagPath="$PROJECT_ROOT/ansible/tag.txt"
 ansibleDir="$(dirname "$ansibleTagPath")"
 
 # Create directory if it doesn't exist
@@ -38,19 +39,19 @@ ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professi
 
 # Copy k8s deployment files to the Pi
 echo -e "${YELLOW}Copying k8s deployment files to Pi...${NC}"
-scp k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
-scp k8s/backend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
-scp k8s/backend/secret.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/secret.yaml
-scp k8s/database/postgres-deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
-scp k8s/ingress.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/ingress.yaml
+scp ../k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
+scp ../k8s/backend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
+scp ../k8s/backend/secret.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/secret.yaml
+scp ../k8s/database/postgres-deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
+scp ../k8s/ingress.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/ingress.yaml
 
 # 1. Build and push multi-arch frontend Docker image (amd64 and arm64) - no cache to ensure fresh build
 echo -e "${YELLOW}Building and pushing frontend Docker image...${NC}"
-docker buildx build --no-cache --platform linux/arm64 -f Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$tag --push .
+docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$tag --push ..
 
 # 2. Build and push multi-arch backend Docker image (amd64 and arm64) - no cache to ensure fresh build
 echo -e "${YELLOW}Building and pushing backend Docker image...${NC}"
-docker buildx build --no-cache --platform linux/arm64 -f Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$tag --push .
+docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$tag --push ..
 
 # Copy tag file to Pi
 echo -e "${YELLOW}Copying tag file to Pi...${NC}"
@@ -58,7 +59,7 @@ scp $ansibleTagPath pi@${piIp}:/home/pi/Professional-Website/ansible/tag.txt
 
 # 5. Run the Ansible playbook to update YAMLs and apply deployments
 echo -e "${YELLOW}Running Ansible playbook...${NC}"
-ansiblePath="$SCRIPT_DIR/ansible"
+ansiblePath="$PROJECT_ROOT/ansible"
 cd "$ansiblePath" && ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml
 
 # 6. Clean up old Docker images (keep last 5 tags)

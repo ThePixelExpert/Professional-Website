@@ -32,8 +32,9 @@ fi
 echo "$tag" > "$ansibleTagPath"
 
 # Ensure all needed directories exist on the Pi
+# Note: k8s directory contains Kubernetes YAML files; k3s is the Kubernetes distribution used on the Pi
 echo -e "${YELLOW}Creating directories on Pi...${NC}"
-ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professional-Website/k8s/frontend /home/pi/Professional-Website/k8s/backend /home/pi/Professional-Website/k8s/database /home/pi/Professional-Website/k3s/frontend /home/pi/Professional-Website/k3s/backend"
+ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professional-Website/k8s/frontend /home/pi/Professional-Website/k8s/backend /home/pi/Professional-Website/k8s/database"
 
 # Copy k8s deployment files to the Pi
 echo -e "${YELLOW}Copying k8s deployment files to Pi...${NC}"

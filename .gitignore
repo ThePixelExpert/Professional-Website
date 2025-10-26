@@ -112,3 +112,21 @@ log/
 # Ignore environment files
 .env
 backend-options/.env
+
+# Bitwarden session files and secrets
+.bw-session
+bw-session.txt
+bitwarden-session
+.bitwarden-session
+bitwarden-secrets.json
+bw-secrets.json
+
+# Additional secret patterns
+*-secrets.json
+*-credentials.json
+*.secret
+.secret.*
+secret.*
+credentials/
+creds/
+.creds/

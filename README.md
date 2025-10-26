@@ -31,7 +31,8 @@ npm start                    # Starts Node.js API server on http://localhost:300
 
 ### Production Deployment
 ```bash
-.\build-and-deploy.ps1       # Automated build, containerize, and deploy
+.\scripts\build-and-deploy.ps1       # Windows: Automated build, containerize, and deploy
+./scripts/build-and-deploy.sh        # Linux/Mac: Automated build, containerize, and deploy
 ```
 
 ## 🏗️ Architecture
@@ -71,7 +72,10 @@ Professional-Website/
 ├── 🔐 scripts/                # Development automation scripts
 │   ├── setup-dev-env.sh      # Bitwarden secret retrieval (Linux/Mac)
 │   ├── setup-dev-env.ps1     # Bitwarden secret retrieval (Windows)
-│   └── validate-env.sh       # Environment validation script
+│   ├── validate-env.sh       # Environment validation script
+│   ├── build-and-deploy.sh   # Production deployment (Linux/Mac)
+│   ├── build-and-deploy.ps1  # Production deployment (Windows)
+│   └── sync-secrets.ps1      # Kubernetes secrets management
 ├── 📚 docs/                   # Documentation
 │   └── SECRET_MANAGEMENT.md  # Secret management guide
 ├── ☸️ k8s/                   # Kubernetes manifests
@@ -83,9 +87,7 @@ Professional-Website/
 │   └── playbooks/            # Deployment scripts
 ├── 🐳 Dockerfile.frontend     # Frontend container build
 ├── 🐳 Dockerfile.backend      # Backend container build
-├── 🚀 build-and-deploy.ps1   # Main deployment script
 ├── ⚙️ nginx.conf             # Frontend nginx configuration
-└── 🛠️ sync-secrets.ps1       # Kubernetes secrets management
 ```
 
 ## 🔄 Development Workflow
@@ -96,7 +98,7 @@ Professional-Website/
 3. **Proxy**: Frontend automatically proxies `/api/*` requests to backend
 
 ### 2. Production Deployment
-1. **Build & Deploy**: `.\build-and-deploy.ps1`
+1. **Build & Deploy**: `.\scripts\build-and-deploy.ps1` (Windows) or `./scripts/build-and-deploy.sh` (Linux/Mac)
    - Builds Docker images for frontend and backend
    - Pushes to local registry (`192.168.0.40:5000`)
    - Updates Kubernetes deployments via Ansible
@@ -105,7 +107,7 @@ Professional-Website/
 ### 3. Infrastructure Management
 - **Cluster Status**: `kubectl get pods -n website`
 - **Logs**: `kubectl logs -n website <pod-name>`
-- **Secrets**: `.\sync-secrets.ps1` (sync environment variables to K8s)
+- **Secrets**: `.\scripts\sync-secrets.ps1` (sync environment variables to K8s)
 
 ## 🌟 Features
 
@@ -196,7 +198,7 @@ curl -X POST http://192.168.0.242:3001/api/admin/login \
 
 1. **Development**: Make changes and test locally
 2. **Testing**: Verify both frontend and backend functionality
-3. **Deployment**: Use `.\build-and-deploy.ps1` for production updates
+3. **Deployment**: Use `.\scripts\build-and-deploy.ps1` or `./scripts/build-and-deploy.sh` for production updates
 4. **Monitoring**: Check logs and cluster status post-deployment
 
 ---

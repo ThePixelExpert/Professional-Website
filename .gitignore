@@ -87,6 +87,11 @@ orders-backup.csv
 ansible.retry
 *.retry
 .kube/config
+ansible/tag.txt
+
+# Generated files
+contact-backend/.env*
+!contact-backend/.env.template
 
 # OS generated files
 Thumbs.db

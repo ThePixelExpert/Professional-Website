@@ -14,7 +14,8 @@ Set-Content -Path $ansibleTagPath -Value $tag
 
 
 # Ensure all needed directories exist on the Pi
-ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professional-Website/k8s/frontend /home/pi/Professional-Website/k8s/backend /home/pi/Professional-Website/k8s/database /home/pi/Professional-Website/k3s/frontend /home/pi/Professional-Website/k3s/backend"
+# Note: k8s directory contains Kubernetes YAML files; k3s is the Kubernetes distribution used on the Pi
+ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professional-Website/k8s/frontend /home/pi/Professional-Website/k8s/backend /home/pi/Professional-Website/k8s/database"
 
 # Copy k8s deployment files to the Pi
 scp k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml

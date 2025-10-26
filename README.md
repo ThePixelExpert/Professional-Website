@@ -7,6 +7,17 @@ Professional portfolio website featuring React frontend and Node.js backend, dep
 ## 🚀 Quick Start
 
 ### Local Development
+
+**First Time Setup:**
+```bash
+# 1. Setup development secrets with Bitwarden (one-time setup)
+./scripts/setup-dev-env.sh      # Linux/Mac
+.\scripts\setup-dev-env.ps1     # Windows
+
+# See docs/SECRET_MANAGEMENT.md for detailed setup instructions
+```
+
+**Start Development Servers:**
 ```bash
 # Frontend (Terminal 1)
 npm install
@@ -57,6 +68,12 @@ Professional-Website/
 │   ├── server.js             # Express API server
 │   ├── package.json          # Backend dependencies
 │   └── .env.template         # Environment variables template
+├── 🔐 scripts/                # Development automation scripts
+│   ├── setup-dev-env.sh      # Bitwarden secret retrieval (Linux/Mac)
+│   ├── setup-dev-env.ps1     # Bitwarden secret retrieval (Windows)
+│   └── validate-env.sh       # Environment validation script
+├── 📚 docs/                   # Documentation
+│   └── SECRET_MANAGEMENT.md  # Secret management guide
 ├── ☸️ k8s/                   # Kubernetes manifests
 │   ├── frontend/             # Frontend deployment config
 │   ├── backend/              # Backend deployment config
@@ -116,7 +133,22 @@ Professional-Website/
 
 ## 🔧 Configuration
 
+### Secret Management
+
+This project uses **Bitwarden CLI** for secure secret management. Secrets are stored in your encrypted Bitwarden vault and retrieved automatically during setup.
+
+**Quick Setup:**
+```bash
+./scripts/setup-dev-env.sh      # Linux/Mac
+.\scripts\setup-dev-env.ps1     # Windows
+```
+
+📖 **Full Documentation:** [docs/SECRET_MANAGEMENT.md](docs/SECRET_MANAGEMENT.md)
+
 ### Environment Variables (.env)
+
+The setup scripts automatically generate `contact-backend/.env` with:
+
 ```bash
 # Backend Configuration (contact-backend/.env)
 PORT=3001

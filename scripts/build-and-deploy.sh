@@ -26,11 +26,11 @@ ansibleDir="$(dirname "$ansibleTagPath")"
 
 # Create directory if it doesn't exist
 if [ ! -d "$ansibleDir" ]; then
-    mkdir -p "$ansibleDir"
+  mkdir -p "$ansibleDir"
 fi
 
 # Write tag to file
-echo "$tag" > "$ansibleTagPath"
+echo "$tag" >"$ansibleTagPath"
 
 # Ensure all needed directories exist on the Pi
 # Note: k8s directory contains Kubernetes YAML files; k3s is the Kubernetes distribution used on the Pi
@@ -66,39 +66,39 @@ cd "$ansiblePath" && ansible-playbook -i inventory/hosts.yml playbooks/deploy-we
 echo -e "${YELLOW}Cleaning up old Docker images...${NC}"
 
 # Check if jq is available for JSON parsing
-if ! command -v jq &> /dev/null; then
-    echo -e "${RED}Warning: jq is not installed. Skipping registry cleanup.${NC}"
-    echo -e "${YELLOW}Install jq with: sudo apt-get install jq${NC}"
+if ! command -v jq &>/dev/null; then
+  echo -e "${RED}Warning: jq is not installed. Skipping registry cleanup.${NC}"
+  echo -e "${YELLOW}Install jq with: sudo apt-get install jq${NC}"
 else
-    # Get list of frontend tags and delete old ones (keep latest 5)
-    frontendTags=$(curl -s "http://192.168.0.40:5000/v2/edwards-frontend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
-    if [ ! -z "$frontendTags" ]; then
-        echo "$frontendTags" | while read -r oldTag; do
-            if [ ! -z "$oldTag" ]; then
-                # Get manifest digest first
-                manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
-                if [ ! -z "$manifest" ]; then
-                    curl -s -X DELETE "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$manifest" 2>/dev/null || true
-                fi
-            fi
-        done
-    fi
-    
-    # Get list of backend tags and delete old ones (keep latest 5)
-    backendTags=$(curl -s "http://192.168.0.40:5000/v2/edwards-backend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
-    if [ ! -z "$backendTags" ]; then
-        echo "$backendTags" | while read -r oldTag; do
-            if [ ! -z "$oldTag" ]; then
-                # Get manifest digest first
-                manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://192.168.0.40:5000/v2/edwards-backend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
-                if [ ! -z "$manifest" ]; then
-                    curl -s -X DELETE "http://192.168.0.40:5000/v2/edwards-backend/manifests/$manifest" 2>/dev/null || true
-                fi
-            fi
-        done
-    fi
-    
-    echo -e "${GREEN}Registry cleanup completed${NC}"
+  # Get list of frontend tags and delete old ones (keep latest 5)
+  frontendTags=$(curl -s "http://192.168.0.40:5000/v2/edwards-frontend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
+  if [ ! -z "$frontendTags" ]; then
+    echo "$frontendTags" | while read -r oldTag; do
+      if [ ! -z "$oldTag" ]; then
+        # Get manifest digest first
+        manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
+        if [ ! -z "$manifest" ]; then
+          curl -s -X DELETE "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$manifest" 2>/dev/null || true
+        fi
+      fi
+    done
+  fi
+
+  # Get list of backend tags and delete old ones (keep latest 5)
+  backendTags=$(curl -s "http://192.168.0.40:5000/v2/edwards-backend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
+  if [ ! -z "$backendTags" ]; then
+    echo "$backendTags" | while read -r oldTag; do
+      if [ ! -z "$oldTag" ]; then
+        # Get manifest digest first
+        manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://192.168.0.40:5000/v2/edwards-backend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
+        if [ ! -z "$manifest" ]; then
+          curl -s -X DELETE "http://192.168.0.40:5000/v2/edwards-backend/manifests/$manifest" 2>/dev/null || true
+        fi
+      fi
+    done
+  fi
+
+  echo -e "${GREEN}Registry cleanup completed${NC}"
 fi
 
 # 7. Clean up local Docker images

@@ -16,7 +16,7 @@ function Experience() {
         <div className="experience-card">
           <h3>Lavli Inc.</h3>
           <ul>
-            <li><strong>Electrical Engineer Intern</strong></li>
+            <li><strong>Electrical Engineer Contractor</strong></li>
             <li>Feb 2025 - Present, Port Washington, New York</li>
             <li>Designed circuits and PCB designs for multiple integrated systems, including power distribution, sensors, microcontrollers, and a reverse-engineered ozone generator to create a more affordable option for the end product.</li>
           </ul>

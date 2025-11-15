@@ -4,6 +4,7 @@ import SSRGImg from '../assets/SSRG_Actuator_Mechanical_System_V2.jpg';
 import FinalAssemblyImg from '../assets/Final-Assembled-2 1388X1050.jpg';
 import Kube from '../assets/Kube.png';
 import BlendySpectrumImg from '../assets/blendy_spectrum_pic.png';
+import FootPedals from '../assets/Foot-pedals-stock.png';
 
 const projects = [
   {
@@ -14,7 +15,8 @@ const projects = [
     patent: 'US10085662, NASA MSC-TOPS-67',
     highlights: [
       'Converts 12-lead ECG data between different manufacturers\' machines using a custom circuit board and chip protocol.',
-      'Compact design integrates a Raspberry Pi and digital-to-analog converter.'
+      'Compact design integrates a Raspberry Pi and digital-to-analog converter.',
+      'Developed a Electrical Circuit and PCB Design that converts digital ECG data to analog signals for compatibility with legacy systems.',
     ]
   },
   {
@@ -25,7 +27,23 @@ const projects = [
     patent: 'US11690775, NASA MSC-TOPS-80',
     highlights: [
       'Assists astronauts with hand movement and reduces injury risk during extravehicular tasks.',
-      'Miniaturized circuit board controls actuators and sensors.'
+      'Miniaturized circuit board controls actuators and sensors.',
+      'Integrated String Potentiometers to accurately measure finger positions as well as three linear actuators to assist with finger movement.',
+      'Designed and developed the electrical circuits and PCB layouts, including the LED interface integrated into the glove and the main control board system.',
+      'Programmed comprehensive software to interface with all system components—computer, sensors, actuators, LEDs, LCD display, and control buttons—while implementing intelligent algorithms that dynamically control actuator responses based on real-time sensor feedback.',
+    ]
+  },
+  {
+    id: 'nasa-foot-pedal-controller',
+    title: 'Foot Pedal Controller',
+    group: 'Produced NASA',
+    img: FootPedals,
+    patent: 'US1018099, NASA MSC-TOPS-52',
+    highlights: [
+      'Developed a foot pedal interface system for controlling movement in three-dimensional space, eliminating the need for hand-operated controls.',
+      'Enables precise motion control across six degrees of freedom using intuitive foot pedal inputs, freeing operators\' hands for simultaneous task execution.',
+      'Designed and developed the electrical circuits and proprietary sensor interface architecture for seamless foot pedal system integration.',
+      'Implemented a modular sensor interface and electronics platform ensuring consistent accuracy and long-term reliability in demanding operational environments.'
     ]
   },
   {
@@ -35,8 +53,10 @@ const projects = [
     img: FinalAssemblyImg,
     patent: 'US9939996, NASA MSC-TOPS-21',
     highlights: [
-      'Keeps water at 40°C and functional down to -40°C using induction heating and advanced power management.',
-      'Battery/wall power options with PID-tuned temperature control.'
+      'Keeps water at 40°C and functional down to -40°C using convection heating and advanced power management.',
+      'Battery/wall power options with PID-tuned temperature control allowing for precise temperature regulation in extreme conditions.',
+      'Developed custom electrical circuitry and PCB design to manage power distribution, heating elements, and temperature sensors for reliable operation in harsh environments.'
+
     ]
   },
  {
@@ -46,8 +66,11 @@ const projects = [
     img: BlendySpectrumImg,
     forSale: false,
     highlights: [
-      'Automates mixing of high‑viscosity screen printing ink in 5‑gallon buckets, replacing unreliable drill methods.',
-      'Compact planetary gear system with multiple whisk attachments and a safety lid; variable‑speed controller.'
+      'Automates mixing of high-viscosity screen printing ink in 5-gallon buckets, replacing unreliable drill methods.',
+      'Features a compact planetary gear system with multiple whisk attachments, safety lid, and variable-speed controller.',
+      'Replaces industrial mixers costing $5,000+ with an affordable, efficient solution for small businesses and hobbyists.',
+      'Reduces mess and simplifies cleanup through enclosed design with transparent monitoring window.',
+      'Lowers barrier to entry for professional ink mixing, making high-quality results accessible to smaller operations.'
     ],
     links: [
       { label: 'Video', url: 'https://www.youtube.com/watch?v=vBS_07PjNZ4' }

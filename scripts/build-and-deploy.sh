@@ -55,7 +55,7 @@ docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.backend -
 
 # Copy tag file to Pi
 echo -e "${YELLOW}Copying tag file to Pi...${NC}"
-scp $ansibleTagPath pi@${piIp}:/home/pi/Professional-Website/ansible/tag.txt
+scp "$ansibleTagPath" pi@${piIp}:/home/pi/Professional-Website/ansible/tag.txt
 
 # 5. Run the Ansible playbook to update YAMLs and apply deployments
 echo -e "${YELLOW}Running Ansible playbook...${NC}"

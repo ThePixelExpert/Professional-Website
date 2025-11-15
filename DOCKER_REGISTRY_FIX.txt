@@ -1,0 +1,70 @@
+================================================================================
+DOCKER INSECURE REGISTRY CONFIGURATION - REQUIRED FOR BUILD & DEPLOY
+================================================================================
+
+ERROR YOU SAW:
+"http: server gave HTTP response to HTTPS client"
+
+CAUSE:
+Docker is trying to push images to your local registry (192.168.0.40:5000) 
+using HTTPS, but your registry only supports HTTP connections.
+
+SOLUTION:
+Configure Docker Desktop to allow insecure (HTTP) registry access.
+
+================================================================================
+STEP-BY-STEP INSTRUCTIONS:
+================================================================================
+
+1. Open Docker Desktop application
+
+2. Click the Settings icon (gear/cog) in the top right corner
+
+3. Navigate to "Docker Engine" in the left sidebar menu
+
+4. You'll see a JSON configuration editor. Add or modify the 
+   "insecure-registries" section:
+
+   Example configuration:
+   
+   {
+     "builder": {
+       "gc": {
+         "defaultKeepStorage": "20GB",
+         "enabled": true
+       }
+     },
+     "experimental": false,
+     "insecure-registries": [
+       "192.168.0.40:5000"
+     ]
+   }
+
+   NOTE: If "insecure-registries" already exists, just add "192.168.0.40:5000" 
+   to the array.
+
+5. Click "Apply & restart" button at the bottom right
+
+6. Wait for Docker Desktop to restart (1-2 minutes)
+
+7. Once Docker is running again, run your build script:
+   .\build-and-deploy.ps1
+
+================================================================================
+VERIFICATION:
+================================================================================
+
+After configuring, you can verify the registry is accessible:
+
+   Invoke-WebRequest -Uri "http://192.168.0.40:5000/v2/_catalog"
+
+You should see a 200 status code and a list of repositories.
+
+================================================================================
+WSL PATH FIX (ALSO APPLIED):
+================================================================================
+
+The script has been updated to use the correct drive letter (E: instead of G:)
+and the correct WSL command syntax: wsl -e bash -c
+
+================================================================================

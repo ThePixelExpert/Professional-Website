@@ -34,8 +34,8 @@ docker buildx build --no-cache --platform linux/arm64 -f Dockerfile.backend -t 1
 scp $ansibleTagPath pi@${piIp}:/home/pi/Professional-Website/ansible/tag.txt
 
 # 5. Run the Ansible playbook to update YAMLs and apply deployments
-$ansiblePath = "/mnt/g/Home Lab/Professional-Website/ansible"
-wsl bash -c "cd '$ansiblePath' && ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml"
+$ansiblePath = "/mnt/e/Home Lab/Professional-Website/ansible"
+wsl -e bash -c "cd '$ansiblePath' && ansible-playbook -i inventory/hosts.yml playbooks/deploy-website.yml"
 
 # 6. Clean up old Docker images (keep last 5 tags)
 Write-Host "Cleaning up old Docker images..."

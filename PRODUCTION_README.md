@@ -18,12 +18,70 @@
    - No hardcoded secrets remain in code
 
 3. **Environment Variables Setup**
+   
+   #### Generate Production Values
+   ```bash
+   # Generate secure passwords
+   openssl rand -base64 32  # Database password
+   openssl rand -base64 64  # JWT secret
+   openssl rand -base64 16  # Admin password
+   ```
+
+   #### Get Required Credentials
+   
+   **Stripe Live Keys:**
+   - Go to [Stripe Dashboard](https://dashboard.stripe.com/apikeys)
+   - Get your **Live** keys (ensure you're not using test keys!)
+   - `STRIPE_PUBLISHABLE_KEY=pk_live_...`
+   - `STRIPE_SECRET_KEY=sk_live_...`
+   
+   **Email App Password:**
+   - Enable 2-Factor Authentication on your Gmail account
+   - Go to Google Account Settings > Security > App passwords
+   - Generate an app password for "Mail"
+   - Use this app password (not your regular Gmail password)
+   
+   #### For Kubernetes Deployment
+   
+   **Step 1: Encode for Kubernetes**
+   ```bash
+   # Base64 encode your secrets
+   echo -n "your-secret-value" | base64
+   ```
+   
+   **Step 2: Update Kubernetes Secret**
+   Edit `k8s/backend/secret.yaml` and replace placeholders:
+   ```yaml
+   data:
+     jwt-secret: <base64-encoded-jwt-secret>
+     admin-password: <base64-encoded-admin-password>
+     stripe-secret-key: <base64-encoded-stripe-live-key>
+     email-password: <base64-encoded-email-app-password>
+   ```
+   
+   **Step 3: Apply to Cluster**
+   ```bash
+   kubectl apply -f k8s/backend/secret.yaml
+   ```
+   
+   #### For Docker Production
+   
+   **Step 1: Create production .env file**
+   ```bash
+   cp contact-backend/.env.template contact-backend/.env.production
+   # Edit with your production values
+   ```
+   
+   **Step 2: Set environment variables**
    ```bash
    # Set all required environment variables
    $env:STRIPE_SECRET_KEY="sk_live_your_live_key"
+   $env:STRIPE_PUBLISHABLE_KEY="pk_live_your_live_key"
    $env:JWT_SECRET="your-256-bit-jwt-secret"
+   $env:ADMIN_USER="your-admin-username"
    $env:ADMIN_PASS="your-secure-admin-password"
    $env:DB_PASSWORD="your-secure-database-password"
+   $env:EMAIL_USER="your-business-email@domain.com"
    $env:EMAIL_APP_PASSWORD="your-email-app-password"
    ```
 
@@ -145,6 +203,41 @@ kubectl rollout undo deployment/edwards-frontend-deployment -n website
 # Check rollback status
 kubectl rollout status deployment/edwards-backend-deployment -n website
 ```
+
+## 🔧 Troubleshooting
+
+### Common Issues & Solutions
+
+#### Issue: "Stripe key not found"
+**Solution**: 
+- Verify that `STRIPE_SECRET_KEY` is set and starts with `sk_live_` (not `sk_test_`)
+- Check Kubernetes secret is properly applied: `kubectl get secret edwards-backend-secret -n website -o yaml`
+
+#### Issue: "Email authentication failed"
+**Solution**: 
+1. Verify 2FA is enabled on Gmail
+2. Use app password, not regular password
+3. Check EMAIL_USER format (full email address)
+4. Verify email credentials in Kubernetes secret
+
+#### Issue: "JWT secret missing"
+**Solution**: 
+- Ensure JWT_SECRET is set and at least 64 characters long
+- Check Kubernetes secret contains jwt-secret key
+- Verify base64 encoding is correct
+
+#### Issue: "Admin login failed"
+**Solution**: 
+- Check ADMIN_USER and ADMIN_PASS are set correctly
+- Verify admin credentials in Kubernetes secret
+- Check backend logs for authentication errors
+
+#### Issue: "Database connection failed"
+**Solution**:
+- Verify PostgreSQL pod is running: `kubectl get pods -l app=postgres -n website`
+- Check database credentials are correct
+- Verify network connectivity between backend and database pods
+- Review database logs for connection errors
 
 ## 🚨 Emergency Procedures
 

@@ -9,6 +9,21 @@ body {
   overflow-x: hidden;
 }
 
+/* CSS fallback for browsers that don't support SVG */
+#circuit-bg {
+  background: linear-gradient(135deg, #e6ffe6 0%, #c8f7c5 100%);
+}
+
+/* Modern browsers with SVG support will override the fallback with the SVG */
+#circuit-bg svg {
+  display: block;
+}
+
+/* If SVG is not supported, hide the svg element */
+.no-svg #circuit-bg svg {
+  display: none;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -21,29 +36,4 @@ html {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
-
-/* Ensure strokes don't scale when the SVG is resized and provide rendering hints */
-#circuit-bg svg polyline,
-#circuit-bg svg path,
-#circuit-bg svg circle {
-  vector-effect: non-scaling-stroke; /* keep dash patterns consistent across scaling */
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  shape-rendering: geometricPrecision;
-  paint-order: stroke;
-}
-
-/* Target the animated traces (they use the traceGradient stroke). This hints the browser
-   to prepare optimizations for stroke-dashoffset animation. */
-#circuit-bg svg polyline[stroke="url(#traceGradient)"],
-#circuit-bg svg path[stroke="url(#traceGradient)"] {
-  will-change: stroke-dashoffset;
-  transition: none; /* avoid CSS transitions interfering with SMIL animation */
-}
-
-/* Small anti-aliasing hints for the SVG container */
-#circuit-bg svg {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }

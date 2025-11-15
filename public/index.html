@@ -44,130 +44,89 @@
     <div id="circuit-bg" style="position:fixed;z-index:-1;top:0;left:0;width:100vw;height:100vh;overflow:hidden;pointer-events:none">
       <svg width="100%" height="100%" viewBox="0 0 1920 1080" preserveAspectRatio="none" style="position:absolute;top:0;left:0;">
         <defs>
-          <linearGradient id="pcbGreen" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#e6ffe6"/>
-            <stop offset="100%" stop-color="#c8f7c5"/>
+          <!-- Modern Dark Gradient Background -->
+          <linearGradient id="pcbBackground" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0f172a"/>
+            <stop offset="50%" stop-color="#1e293b"/>
+            <stop offset="100%" stop-color="#0f172a"/>
           </linearGradient>
+          
+          <!-- Electric Blue Trace Gradient -->
           <linearGradient id="traceGradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#00ffcc"/>
-            <stop offset="100%" stop-color="#00bcd4"/>
+            <stop offset="0%" stop-color="#3b82f6"/>
+            <stop offset="50%" stop-color="#60a5fa"/>
+            <stop offset="100%" stop-color="#93c5fd"/>
           </linearGradient>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="10" result="coloredBlur"/>
+          
+          <!-- Smooth Glow Effect -->
+          <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
-          <!-- Paths for animateMotion -->
-          <path id="trace1" d="M320,-200 V1280" />
-          <path id="trace2" d="M960,-200 V1280" />
-          <path id="trace3" d="M1600,-200 V1280" />
         </defs>
-            <defs>
-              <linearGradient id="pcbGreen" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#e6ffe6"/>
-                <stop offset="100%" stop-color="#c8f7c5"/>
-              </linearGradient>
-              <linearGradient id="traceGradient" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#00ffcc"/>
-                <stop offset="100%" stop-color="#00bcd4"/>
-              </linearGradient>
-              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="10" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-        <rect x="0" y="0" width="1920" height="1080" fill="url(#pcbGreen)"/>
-        <!-- Animated vertical, right-angled PCB traces (ensure these are above background and below pads) -->
-        <!-- PCB channel background path (darker color, behind traces, same width as traces) -->
-        <g>
-          <!-- Schematic-style zig-zag resistor in-line with the bottom wire (no wire passes through) -->
-          <!-- Bottom wire: left segment (stops at resistor) -->
-          <polyline points="0,940 320,940 1150,940" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32" stroke-linejoin="round"/>
-          <!-- Zig-zag resistor segment (fully isolated, only connects at ends) -->
-          <polyline points="1150,940 1150,800 1200,800 1220,780 1240,820 1260,780 1280,820 1300,780 1320,820 1340,780 1360,800 1410,800 1410,940" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32"/>
-          <!-- Bottom wire: right segment (starts after resistor) -->
-          <polyline points="1410,940 1920,940" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32" stroke-linejoin="round"/>
-          <!-- Ensure VIAs at every right-side exit (all wires ending at x=1920) -->
-          <!-- VIAs at every right-side exit (no duplicates) -->
-          <circle cx="1920" cy="220" r="16" fill="#fff" filter="url(#glow)" opacity="1"/>
-          <circle cx="1920" cy="320" r="16" fill="#fff" filter="url(#glow)" opacity="1"/>
-          <circle cx="1920" cy="940" r="16" fill="#fff" filter="url(#glow)" opacity="1"/>
-          <circle cx="900" cy="1080" r="16" fill="#fff" filter="url(#glow)" opacity="1"/>
-          <circle cx="1650" cy="1080" r="16" fill="#fff" filter="url(#glow)" opacity="1"/>
-          <circle cx="0" cy="600" r="16" fill="#fff" filter="url(#glow)" opacity="1"/>
-          <!-- Additional wires with unique patterns and increased parallel padding -->
-          <!-- Vertical wire from top to bottom, with a right turn (moved right, increased spacing) -->
-          <polyline points="400,0 400,400 900,400 900,1080" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32" stroke-linejoin="round"/>
-          <!-- Diagonal-like wire: enters from right, goes down, left, down, right (rerouted to avoid resistor area, now above resistor) -->
-          <polyline points="1920,220 1700,220 1700,470 1300,470 1300,700 1650,700 1650,1080" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32" stroke-linejoin="round"/>
-          <!-- Shorter vertical wire from bottom up, with a left turn (moved left, increased spacing) -->
-          <polyline points="500,1080 500,970 200,970 200,600 0,600" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32" stroke-linejoin="round"/>
-          <!-- Removed duplicate/ghost bottom wire -->
-          <!-- Top wire with resistor (horizontal, y=320) -->
-          <polyline points="0,320 600,320 900,320" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32" stroke-linejoin="round"/>
-          <!-- Resistor on top wire -->
-          <polyline points="900,320 920,300 940,340 960,300 980,340 1000,300 1020,340 1040,300 1060,320" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32"/>
-          <polyline points="1060,320 1320,320 1920,320" fill="none" stroke="#23304a" stroke-width="12" opacity="0.32" stroke-linejoin="round"/>
-          <!-- Only background traces that have animated traces above -->
+        
+        <!-- Sleek Dark Background -->
+        <rect x="0" y="0" width="1920" height="1080" fill="url(#pcbBackground)"/>
+        
+        <!-- Static PCB Trace Backgrounds -->
+        <g stroke="#334155" stroke-width="12" opacity="0.3" fill="none" stroke-linejoin="round" stroke-linecap="round">
+          <!-- Bottom wire segments -->
+          <polyline points="0,940 320,940 1150,940"/>
+          <polyline points="1150,940 1150,800 1200,800 1220,780 1240,820 1260,780 1280,820 1300,780 1320,820 1340,780 1360,800 1410,800 1410,940"/>
+          <polyline points="1410,940 1920,940"/>
+          
+          <!-- Vertical wire with turn -->
+          <polyline points="400,0 400,400 900,400 900,1080"/>
+          
+          <!-- Diagonal wire path -->
+          <polyline points="1920,220 1700,220 1700,470 1300,470 1300,700 1650,700 1650,1080"/>
+          
+          <!-- Short vertical wire -->
+          <polyline points="500,1080 500,970 200,970 200,600 0,600"/>
+          
+          <!-- Top wire segments -->
+          <polyline points="0,320 600,320 900,320"/>
+          <polyline points="900,320 920,300 940,340 960,300 980,340 1000,300 1020,340 1040,300 1060,320"/>
+          <polyline points="1060,320 1320,320 1920,320"/>
         </g>
-        <!-- Animated traces layered above background traces -->
-        <g stroke="url(#traceGradient)" stroke-width="10" filter="url(#glow)">
-          <!-- Animated trace for top horizontal wire (straight) -->
-          <!-- Animated trace for top wire with resistor (continuous through resistor) -->
-          <polyline points="0,320 600,320 900,320 920,300 940,340 960,300 980,340 1000,300 1020,340 1040,300 1060,320 1320,320 1920,320" fill="none" stroke="url(#traceGradient)" stroke-width="10" filter="url(#glow)">
-            <animate attributeName="stroke-dasharray" values="180,680,180,680,180,680" dur="8.5s" repeatCount="indefinite"/>
-            <animate attributeName="stroke-dashoffset" values="2320;0" dur="8.5s" repeatCount="indefinite"/>
+        
+        <!-- Smoothly Animated Traces (NO GLITCH) -->
+        <g stroke="url(#traceGradient)" stroke-width="9" fill="none" filter="url(#glow)" stroke-linecap="round" stroke-linejoin="round">
+          
+          <!-- Top wire with resistor - continuous smooth animation -->
+          <polyline points="0,320 600,320 900,320 920,300 940,340 960,300 980,340 1000,300 1020,340 1040,300 1060,320 1320,320 1920,320" 
+                    stroke-dasharray="200 2000">
+            <animate attributeName="stroke-dashoffset" from="0" to="-2200" dur="10s" repeatCount="indefinite"/>
           </polyline>
-          <!-- Animated trace for vertical wire -->
-          <polyline points="400,0 400,400 900,400 900,1080" fill="none">
-            <animate attributeName="stroke-dasharray" values="180,600,180,600,180,600" dur="7s" repeatCount="indefinite"/>
-            <animate attributeName="stroke-dashoffset" values="1980;0" dur="7s" repeatCount="indefinite"/>
+          
+          <!-- Vertical wire - continuous smooth animation -->
+          <polyline points="400,0 400,400 900,400 900,1080" 
+                    stroke-dasharray="150 1800">
+            <animate attributeName="stroke-dashoffset" from="0" to="-1950" dur="9s" repeatCount="indefinite"/>
           </polyline>
-          <!-- Animated trace for diagonal-like wire (rerouted to avoid resistor area, now above resistor) -->
-          <polyline points="1920,220 1700,220 1700,470 1300,470 1300,700 1650,700 1650,1080" fill="none">
-            <animate attributeName="stroke-dasharray" values="180,800,180,800,180,800" dur="8s" repeatCount="indefinite"/>
-            <animate attributeName="stroke-dashoffset" values="2720;0" dur="8s" repeatCount="indefinite"/>
+          
+          <!-- Diagonal wire - continuous smooth animation -->
+          <polyline points="1920,220 1700,220 1700,470 1300,470 1300,700 1650,700 1650,1080" 
+                    stroke-dasharray="180 2500">
+            <animate attributeName="stroke-dashoffset" from="0" to="-2680" dur="11s" repeatCount="indefinite"/>
           </polyline>
-          <!-- Animated trace for bottom-up wire (increased spacing) -->
-          <polyline points="500,1080 500,970 200,970 200,600 0,600" fill="none">
-            <animate attributeName="stroke-dasharray" values="180,600,180,600,180,600" dur="6.5s" repeatCount="indefinite"/>
-            <animate attributeName="stroke-dashoffset" values="1700;0" dur="6.5s" repeatCount="indefinite"/>
+          
+          <!-- Short vertical wire - continuous smooth animation -->
+          <polyline points="500,1080 500,970 200,970 200,600 0,600" 
+                    stroke-dasharray="150 1600">
+            <animate attributeName="stroke-dashoffset" from="0" to="-1750" dur="8s" repeatCount="indefinite"/>
           </polyline>
-          <!-- VIAs for new wires with increased parallel padding -->
-          <!-- Single continuous animated trace for the bottom wire, passing through the resistor -->
-          <polyline points="0,940 320,940 1150,940 1150,800 1200,800 1220,780 1240,820 1260,780 1280,820 1300,780 1320,820 1340,780 1360,800 1410,800 1410,940 1920,940" fill="none">
-            <animate attributeName="stroke-dasharray" values="180,460,180,460,180,460" dur="6s" repeatCount="indefinite"/>
-            <animate attributeName="stroke-dashoffset" values="1920;0" dur="6s" repeatCount="indefinite"/>
+          
+          <!-- Bottom wire with resistor - continuous smooth animation -->
+          <polyline points="0,940 320,940 1150,940 1150,800 1200,800 1220,780 1240,820 1260,780 1280,820 1300,780 1320,820 1340,780 1360,800 1410,800 1410,940 1920,940" 
+                    stroke-dasharray="200 1700">
+            <animate attributeName="stroke-dashoffset" from="0" to="-1900" dur="7.5s" repeatCount="indefinite"/>
           </polyline>
-          <!-- Three evenly spaced pulses for the top wire using a single polyline -->
-          <polyline points="0,320 600,320 1320,320 1920,320" fill="none">
-            <animate attributeName="stroke-dasharray" values="180,680,180,680,180,680" dur="8.5s" repeatCount="indefinite"/>
-            <animate attributeName="stroke-dashoffset" values="2320;0" dur="8.5s" repeatCount="indefinite"/>
-          </polyline>
+          
         </g>
-        <!-- Animated glowing line segments (current pulses) moving along traces -->
-        <!-- Removed falling vertical traces -->
-        </g>
-        <!-- Animated glowing pulses moving along traces -->
-        <!-- Removed falling glowing pulses -->
-        <!-- PCB pads -->
-        <!-- Faint green background for pads (VIAs) -->
-        <g>
-          <!-- VIAs for top and bottom wires only -->
-         <!-- All VIAs removed as requested -->
-        </g>
-        <!-- Remove green border, keep only glowing pads -->
-        <!-- Vertical, right-angled, off-screen PCB traces with pulse animation -->
-        <g stroke="url(#traceGradient)" stroke-width="10" filter="url(#glow)">
-          <!-- All ghost VIAs and non-bottom traces removed -->
-        </g>
-  <!-- All pads and glowing effects removed -->
-        <!-- All white VIA circles removed -->
       </svg>
     </div>
     <div id="root"></div>

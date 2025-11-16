@@ -98,7 +98,8 @@ Professional-Website/
 3. **Proxy**: Frontend automatically proxies `/api/*` requests to backend
 
 ### 2. Production Deployment
-1. **Build & Deploy**: `.\scripts\build-and-deploy.ps1` (Windows) or `./scripts/build-and-deploy.sh` (Linux/Mac)
+1. Run nix-shell to go into legacy nix environment that contains all needed libs 
+2. **Build & Deploy**: `.\scripts\build-and-deploy.ps1` (Windows) or `./scripts/build-and-deploy.sh` (Linux/Mac)
    - Builds Docker images for frontend and backend
    - Pushes to local registry (`192.168.0.40:5000`)
    - Updates Kubernetes deployments via Ansible

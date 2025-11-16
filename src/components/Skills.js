@@ -29,7 +29,7 @@ function Skills() {
   return (
     <div className="skills-grid">
       <section className="section" id="skills">
-        <h1 className>Skills</h1>
+        <h1 className="main-section-title">Skills</h1>
         <div className="skills-row" style={{flexWrap: 'wrap'}}>
           {skills.map((skill) => (
             <div className="skill" key={skill.name}>

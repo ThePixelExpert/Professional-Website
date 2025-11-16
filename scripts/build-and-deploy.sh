@@ -1,5 +1,10 @@
 #!/bin/bash
+set -euo pipefail
 
+# Make paths robust: change working dir to repo root (script_dir/..)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "$REPO_ROOT"
 # Exit on error
 set -e
 
@@ -26,11 +31,11 @@ ansibleDir="$(dirname "$ansibleTagPath")"
 
 # Create directory if it doesn't exist
 if [ ! -d "$ansibleDir" ]; then
-    mkdir -p "$ansibleDir"
+  mkdir -p "$ansibleDir"
 fi
 
 # Write tag to file
-echo "$tag" > "$ansibleTagPath"
+echo "$tag" >"$ansibleTagPath"
 
 # Ensure all needed directories exist on the Pi
 # Note: k8s directory contains Kubernetes YAML files; k3s is the Kubernetes distribution used on the Pi
@@ -39,19 +44,19 @@ ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professi
 
 # Copy k8s deployment files to the Pi
 echo -e "${YELLOW}Copying k8s deployment files to Pi...${NC}"
-scp ../k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
-scp ../k8s/backend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
-scp ../k8s/backend/secret.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/secret.yaml
-scp ../k8s/database/postgres-deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
-scp ../k8s/ingress.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/ingress.yaml
+scp ${REPO_ROOT}/k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
+scp ${REPO_ROOT}/k8s/backend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
+scp ${REPO_ROOT}/k8s/backend/secret.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/secret.yaml
+scp ${REPO_ROOT}/k8s/database/postgres-deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
+scp ${REPO_ROOT}/k8s/ingress.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/ingress.yaml
 
 # 1. Build and push multi-arch frontend Docker image (amd64 and arm64) - no cache to ensure fresh build
 echo -e "${YELLOW}Building and pushing frontend Docker image...${NC}"
-docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$tag --push ..
+docker buildx build --no-cache --platform linux/arm64 -f ${REPO_ROOT}/Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$tag --push ${REPO_ROOT}
 
 # 2. Build and push multi-arch backend Docker image (amd64 and arm64) - no cache to ensure fresh build
 echo -e "${YELLOW}Building and pushing backend Docker image...${NC}"
-docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$tag --push ..
+docker buildx build --no-cache --platform linux/arm64 -f ${REPO_ROOT}/Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$tag --push ${REPO_ROOT}
 
 # Copy tag file to Pi
 echo -e "${YELLOW}Copying tag file to Pi...${NC}"
@@ -66,39 +71,39 @@ cd "$ansiblePath" && ansible-playbook -i inventory/hosts.yml playbooks/deploy-we
 echo -e "${YELLOW}Cleaning up old Docker images...${NC}"
 
 # Check if jq is available for JSON parsing
-if ! command -v jq &> /dev/null; then
-    echo -e "${RED}Warning: jq is not installed. Skipping registry cleanup.${NC}"
-    echo -e "${YELLOW}Install jq with: sudo apt-get install jq${NC}"
+if ! command -v jq &>/dev/null; then
+  echo -e "${RED}Warning: jq is not installed. Skipping registry cleanup.${NC}"
+  echo -e "${YELLOW}Install jq with: sudo apt-get install jq${NC}"
 else
-    # Get list of frontend tags and delete old ones (keep latest 5)
-    frontendTags=$(curl -s "http://192.168.0.40:5000/v2/edwards-frontend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
-    if [ ! -z "$frontendTags" ]; then
-        echo "$frontendTags" | while read -r oldTag; do
-            if [ ! -z "$oldTag" ]; then
-                # Get manifest digest first
-                manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
-                if [ ! -z "$manifest" ]; then
-                    curl -s -X DELETE "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$manifest" 2>/dev/null || true
-                fi
-            fi
-        done
-    fi
-    
-    # Get list of backend tags and delete old ones (keep latest 5)
-    backendTags=$(curl -s "http://192.168.0.40:5000/v2/edwards-backend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
-    if [ ! -z "$backendTags" ]; then
-        echo "$backendTags" | while read -r oldTag; do
-            if [ ! -z "$oldTag" ]; then
-                # Get manifest digest first
-                manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://192.168.0.40:5000/v2/edwards-backend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
-                if [ ! -z "$manifest" ]; then
-                    curl -s -X DELETE "http://192.168.0.40:5000/v2/edwards-backend/manifests/$manifest" 2>/dev/null || true
-                fi
-            fi
-        done
-    fi
-    
-    echo -e "${GREEN}Registry cleanup completed${NC}"
+  # Get list of frontend tags and delete old ones (keep latest 5)
+  frontendTags=$(curl -s "http://192.168.0.40:5000/v2/edwards-frontend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
+  if [ ! -z "$frontendTags" ]; then
+    echo "$frontendTags" | while read -r oldTag; do
+      if [ ! -z "$oldTag" ]; then
+        # Get manifest digest first
+        manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
+        if [ ! -z "$manifest" ]; then
+          curl -s -X DELETE "http://192.168.0.40:5000/v2/edwards-frontend/manifests/$manifest" 2>/dev/null || true
+        fi
+      fi
+    done
+  fi
+
+  # Get list of backend tags and delete old ones (keep latest 5)
+  backendTags=$(curl -s "http://192.168.0.40:5000/v2/edwards-backend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
+  if [ ! -z "$backendTags" ]; then
+    echo "$backendTags" | while read -r oldTag; do
+      if [ ! -z "$oldTag" ]; then
+        # Get manifest digest first
+        manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://192.168.0.40:5000/v2/edwards-backend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
+        if [ ! -z "$manifest" ]; then
+          curl -s -X DELETE "http://192.168.0.40:5000/v2/edwards-backend/manifests/$manifest" 2>/dev/null || true
+        fi
+      fi
+    done
+  fi
+
+  echo -e "${GREEN}Registry cleanup completed${NC}"
 fi
 
 # 7. Clean up local Docker images

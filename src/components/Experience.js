@@ -1,7 +1,7 @@
 function Experience() {
   return (
     <section className="section" id="experience">
-      <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Experience</h2>
+      <h2 style={{ textAlign: 'center', marginBottom: '2rem' }} className="main-section-title">Experience</h2>
       <div className="experience-grid">
         <div className="experience-card">
           <h3>Entrepreneurship and Technology Innovation Center</h3>

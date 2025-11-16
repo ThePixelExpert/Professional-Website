@@ -8,7 +8,7 @@ function Projects() {
       <Banner />
       <section className="section projects-section" id="projects">
         <div className="container">
-          <h2 className="main-section-title">Projects</h2>
+          <h2>Projects</h2>
           
           <ProjectGrid showAll={false} maxPerGroup={2} alternateImages={true} />
 

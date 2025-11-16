@@ -44,19 +44,19 @@ ssh pi@${piIp} "mkdir -p /home/pi/Professional-Website/ansible /home/pi/Professi
 
 # Copy k8s deployment files to the Pi
 echo -e "${YELLOW}Copying k8s deployment files to Pi...${NC}"
-scp ${REPO_ROOT}/k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
-scp ${REPO_ROOT}/k8s/backend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
-scp ${REPO_ROOT}/k8s/backend/secret.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/secret.yaml
-scp ${REPO_ROOT}/k8s/database/postgres-deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
-scp ${REPO_ROOT}/k8s/ingress.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/ingress.yaml
+scp ../k8s/frontend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
+scp ../k8s/backend/deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
+scp ../k8s/backend/secret.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/backend/secret.yaml
+scp ../k8s/database/postgres-deployment.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
+scp ../k8s/ingress.yaml pi@${piIp}:/home/pi/Professional-Website/k8s/ingress.yaml
 
 # 1. Build and push multi-arch frontend Docker image (amd64 and arm64) - no cache to ensure fresh build
 echo -e "${YELLOW}Building and pushing frontend Docker image...${NC}"
-docker buildx build --no-cache --platform linux/arm64 -f ${REPO_ROOT}/Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$tag --push ${REPO_ROOT}
+docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$tag --push ..
 
 # 2. Build and push multi-arch backend Docker image (amd64 and arm64) - no cache to ensure fresh build
 echo -e "${YELLOW}Building and pushing backend Docker image...${NC}"
-docker buildx build --no-cache --platform linux/arm64 -f ${REPO_ROOT}/Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$tag --push ${REPO_ROOT}
+docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$tag --push ..
 
 # Copy tag file to Pi
 echo -e "${YELLOW}Copying tag file to Pi...${NC}"

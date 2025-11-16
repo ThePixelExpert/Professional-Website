@@ -187,22 +187,22 @@ fi
 # Copy Kubernetes manifests
 echo -e "\n${BLUE}📋 Copying Kubernetes manifests...${NC}"
 if [[ "$DRY_RUN" != "true" ]]; then
-    scp ${REPO_ROOT}/k8s/frontend/deployment.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
-    scp ${REPO_ROOT}/k8s/backend/deployment.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
-    scp ${REPO_ROOT}/k8s/backend/secret.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/backend/secret.yaml
-    scp ${REPO_ROOT}/k8s/database/postgres-deployment.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
-    scp ${REPO_ROOT}/k8s/ingress.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/ingress.yaml
+    scp ../k8s/frontend/deployment.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/frontend/deployment.yaml
+    scp ../k8s/backend/deployment.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/backend/deployment.yaml
+    scp ../k8s/backend/secret.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/backend/secret.yaml
+    scp ../k8s/database/postgres-deployment.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/database/postgres-deployment.yaml
+    scp ../k8s/ingress.yaml pi@${PI_IP}:/home/pi/Professional-Website/k8s/ingress.yaml
 fi
 
 # Build and push Docker images
 echo -e "\n${BLUE}🔨 Building Docker images...${NC}"
 if [[ "$DRY_RUN" != "true" ]]; then
     if [[ "$ENVIRONMENT" == "development" ]]; then
-        docker buildx build --no-cache --platform linux/arm64 -f ${REPO_ROOT}/Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$DOCKER_TAG --push ${REPO_ROOT}
-        docker buildx build --no-cache --platform linux/arm64 -f ${REPO_ROOT}/Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$DOCKER_TAG --push ${REPO_ROOT}
+        docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$DOCKER_TAG --push ..
+        docker buildx build --no-cache --platform linux/arm64 -f ../Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$DOCKER_TAG --push ..
     else
-        docker buildx build --no-cache --platform linux/amd64,linux/arm64 -f ${REPO_ROOT}/Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$DOCKER_TAG --push ${REPO_ROOT}
-        docker buildx build --no-cache --platform linux/amd64,linux/arm64 -f ${REPO_ROOT}/Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$DOCKER_TAG --push ${REPO_ROOT}
+        docker buildx build --no-cache --platform linux/amd64,linux/arm64 -f ../Dockerfile.frontend -t 192.168.0.40:5000/edwards-frontend:$DOCKER_TAG --push ..
+        docker buildx build --no-cache --platform linux/amd64,linux/arm64 -f ../Dockerfile.backend -t 192.168.0.40:5000/edwards-backend:$DOCKER_TAG --push ..
     fi
 else
     echo -e "${GRAY}   Would build: edwards-frontend:$DOCKER_TAG${NC}"
@@ -223,9 +223,9 @@ if [[ "$SECRET_VALIDATION" == "true" && "$DRY_RUN" != "true" ]]; then
         --dry-run=client -o yaml | kubectl apply -f -
     
     DB_PASSWORD_BASE64=$(echo -n "$DB_PASSWORD" | base64)
-    sed "s/<REPLACE_WITH_SECURE_BASE64_PASSWORD>/$DB_PASSWORD_BASE64/g" ${REPO_ROOT}/k8s/database/postgres-deployment.yaml > ${REPO_ROOT}/k8s/database/postgres-deployment-temp.yaml
-    kubectl apply -f ${REPO_ROOT}/k8s/database/postgres-deployment-temp.yaml
-    rm ${REPO_ROOT}/k8s/database/postgres-deployment-temp.yaml
+    sed "s/<REPLACE_WITH_SECURE_BASE64_PASSWORD>/$DB_PASSWORD_BASE64/g" ../k8s/database/postgres-deployment.yaml > ../k8s/database/postgres-deployment-temp.yaml
+    kubectl apply -f ../k8s/database/postgres-deployment-temp.yaml
+    rm ../k8s/database/postgres-deployment-temp.yaml
 elif [[ "$SECRET_VALIDATION" == "true" ]]; then
     echo -e "\n${GRAY}🔐 Would update Kubernetes secrets...${NC}"
 fi

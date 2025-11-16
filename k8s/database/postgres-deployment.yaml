@@ -15,7 +15,6 @@ metadata:
 type: Opaque
 data:
   # Production PostgreSQL password (base64 encoded)
-  # Password: Christmas2715!
   postgres-password: Q2hyaXN0bWFzMjcxNSE=
 ---
 apiVersion: v1
@@ -86,4 +85,5 @@ spec:
   ports:
   - port: 5432
     targetPort: 5432
+
   type: ClusterIP

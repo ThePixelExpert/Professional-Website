@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="description" content="Writing Projects by Logan Edwards - Technical Writing Assignments for FCWR304" />
+    <meta name="author" content="Logan Edwards" />
+    <title>Writing Projects - Logan Edwards</title>
+    <style>
+        /* Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            line-height: 1.7;
+            color: #e2e8f0;
+            background: #0f172a;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* PCB Background Container */
+        #circuit-bg {
+            position: fixed;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(90deg, #1a237e 60%, #1976d2 100%);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+        }
+
+        .logo-edwards {
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #ffffff 0%, #e3f2fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.08em;
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: #90caf9;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ffe082;
+            border-bottom-color: #ffe082;
+        }
+
+        .back-link {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffe082;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .toc h2 {
+            color: #60a5fa;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #334155;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-list > li {
+            margin-bottom: 1rem;
+        }
+
+        .toc-list a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .toc-list a:hover {
+            color: #60a5fa;
+            transform: translateX(8px);
+        }
+
+        .toc-list .assignment-number {
+            color: #3b82f6;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        /* Assignment Cards */
+        .assignment {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+            scroll-margin-top: 5rem;
+        }
+
+        .assignment-header {
+            border-bottom: 2px solid #334155;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .assignment-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .assignment-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .assignment-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Content Sections */
+        .section-content {
+            margin-bottom: 2rem;
+        }
+
+        .section-content h2 {
+            color: #3b82f6;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+        }
+
+        .section-content h3 {
+            color: #60a5fa;
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .section-content h4 {
+            color: #93c5fd;
+            font-size: 1.1rem;
+            margin-top: 1.2rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .section-content p {
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .section-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .section-content strong {
+            color: #e2e8f0;
+        }
+
+        /* Warning/Note Boxes */
+        .warning-box {
+            background: rgba(234, 179, 8, 0.1);
+            border-left: 4px solid #eab308;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box p {
+            color: #fef08a;
+            margin: 0;
+        }
+
+        .note-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .note-box p {
+            color: #93c5fd;
+            margin: 0;
+        }
+
+        /* Tables */
+        .content-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .content-table th {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .content-table td {
+            padding: 1rem;
+            border-top: 1px solid #334155;
+            color: #cbd5e1;
+        }
+
+        .content-table tr:hover td {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* References Section */
+        .references {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .references h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .references p, .references li {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            word-break: break-word;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #334155;
+            margin-top: 4rem;
+            color: #64748b;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-bar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+
+            .main-content {
+                padding-top: 8rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .assignment {
+                padding: 1.5rem;
+            }
+
+            .assignment-title {
+                font-size: 1.5rem;
+            }
+
+            .assignment-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .section-content h2 {
+                font-size: 1.4rem;
+            }
+
+            .content-table {
+                font-size: 0.9rem;
+            }
+
+            .content-table th, .content-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-logo {
+                flex-direction: column;
+                gap: 0.3rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .logo-edwards, .logo-text {
+                font-size: 1.1rem;
+            }
+
+            .main-content {
+                padding-top: 10rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.6rem;
+            }
+
+            .assignment-title {
+                font-size: 1.3rem;
+            }
+
+            .toc {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .nav-bar, .back-to-top, #circuit-bg {
+                display: none;
+            }
+
+            body {
+                background: #fff;
+                color: #000;
+            }
+
+            .main-content {
+                padding-top: 0;
+            }
+
+            .assignment {
+                background: #fff;
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
+
+            .assignment-title, .section-content h2, .section-content h3 {
+                color: #1a237e;
+            }
+
+            .section-content p, .section-content li {
+                color: #333;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- PCB Circuit Background -->
+    <div id="circuit-bg">
+        <svg width="100%" height="100%" viewBox="0 0 1920 1080" preserveAspectRatio="none" style="position:absolute;top:0;left:0;">
+            <defs>
+                <linearGradient id="pcbBackground" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#0f172a"/>
+                    <stop offset="50%" stop-color="#1e293b"/>
+                    <stop offset="100%" stop-color="#0f172a"/>
+                </linearGradient>
+                <linearGradient id="traceGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#3b82f6"/>
+                    <stop offset="50%" stop-color="#60a5fa"/>
+                    <stop offset="100%" stop-color="#93c5fd"/>
+                </linearGradient>
+                <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+                    <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <rect x="0" y="0" width="1920" height="1080" fill="url(#pcbBackground)"/>
+            <g stroke="#334155" stroke-width="12" opacity="0.3" fill="none" stroke-linejoin="round" stroke-linecap="round">
+                <polyline points="0,940 320,940 1150,940"/>
+                <polyline points="1150,940 1150,800 1200,800 1220,780 1240,820 1260,780 1280,820 1300,780 1320,820 1340,780 1360,800 1410,800 1410,940"/>
+                <polyline points="1410,940 1920,940"/>
+                <polyline points="400,0 400,400 900,400 900,1080"/>
+                <polyline points="1920,220 1700,220 1700,470 1300,470 1300,700 1650,700 1650,1080"/>
+                <polyline points="500,1080 500,970 200,970 200,600 0,600"/>
+                <polyline points="0,320 600,320 900,320"/>
+                <polyline points="900,320 920,300 940,340 960,300 980,340 1000,300 1020,340 1040,300 1060,320"/>
+                <polyline points="1060,320 1320,320 1920,320"/>
+            </g>
+            <g stroke="url(#traceGradient)" stroke-width="9" fill="none" filter="url(#glow)" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="0,320 600,320 900,320 920,300 940,340 960,300 980,340 1000,300 1020,340 1040,300 1060,320 1320,320 1920,320" stroke-dasharray="200 2000">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-2200" dur="10s" repeatCount="indefinite"/>
+                </polyline>
+                <polyline points="400,0 400,400 900,400 900,1080" stroke-dasharray="150 1800">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-1950" dur="9s" repeatCount="indefinite"/>
+                </polyline>
+                <polyline points="1920,220 1700,220 1700,470 1300,470 1300,700 1650,700 1650,1080" stroke-dasharray="180 2500">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-2680" dur="11s" repeatCount="indefinite"/>
+                </polyline>
+                <polyline points="500,1080 500,970 200,970 200,600 0,600" stroke-dasharray="150 1600">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-1750" dur="8s" repeatCount="indefinite"/>
+                </polyline>
+                <polyline points="0,940 320,940 1150,940 1150,800 1200,800 1220,780 1240,820 1260,780 1280,820 1300,780 1320,820 1340,780 1360,800 1410,800 1410,940 1920,940" stroke-dasharray="200 1700">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-1900" dur="7.5s" repeatCount="indefinite"/>
+                </polyline>
+            </g>
+        </svg>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-logo">
+            <span class="logo-edwards">EDWARDS</span>
+            <span class="logo-text">TECH SOLUTIONS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#assignment1">Assignment 1</a></li>
+            <li><a href="#assignment2">Assignment 2</a></li>
+            <li><a href="#assignment3">Assignment 3</a></li>
+        </ul>
+        <a href="index.html" class="back-link">← Back to Main Site</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <header class="page-header">
+            <h1>Writing Projects</h1>
+            <p>Technical Writing Assignments - FCWR304</p>
+        </header>
+
+        <!-- Table of Contents -->
+        <nav class="toc" id="toc">
+            <h2>Table of Contents</h2>
+            <ul class="toc-list">
+                <li>
+                    <a href="#assignment1">
+                        <span class="assignment-number">1.</span> Instructions For Use - The Microwave
+                    </a>
+                </li>
+                <li>
+                    <a href="#assignment2">
+                        <span class="assignment-number">2.</span> Microwave Recommendation Report
+                    </a>
+                </li>
+                <li>
+                    <a href="#assignment3">
+                        <span class="assignment-number">3.</span> Microwave Technical Documentation
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Assignment 1: Instructions For Use -->
+        <article class="assignment" id="assignment1">
+            <header class="assignment-header">
+                <h1 class="assignment-title">Instructions For Use - The Microwave</h1>
+                <div class="assignment-meta">
+                    <span><strong>Author:</strong> Logan Edwards</span>
+                    <span><strong>Course:</strong> FCWR304</span>
+                    <span><strong>Professor:</strong> Prof. Hatley</span>
+                    <span><strong>Date:</strong> 10/27/2025</span>
+                </div>
+            </header>
+
+            <div class="section-content">
+                <h2>Introduction</h2>
+                <p>The microwave oven is one of the most essential kitchen appliances in modern households and workplaces. This document provides comprehensive instructions for the installation, operation, maintenance, and safe use of a standard countertop microwave oven. Whether you are a first-time user or seeking to maximize the efficiency of your appliance, these instructions will guide you through every aspect of microwave usage.</p>
+                <p>Microwaves work by generating electromagnetic radiation at a frequency of approximately 2.45 GHz, which causes water molecules in food to vibrate rapidly, producing heat. This method of heating is significantly faster than conventional cooking methods, making microwaves invaluable for quick meal preparation and reheating.</p>
+            </div>
+
+            <div class="section-content">
+                <h2>Installing and Setting Up the Microwave</h2>
+                
+                <h3>Choosing the Right Location</h3>
+                <p>Before installing your microwave, consider the following location requirements:</p>
+                <ul>
+                    <li>Place the microwave on a flat, stable surface that can support its weight (typically 25-50 pounds)</li>
+                    <li>Ensure at least 3 inches of clearance on all sides for proper ventilation</li>
+                    <li>Keep the microwave away from heat sources such as ovens, stovetops, and direct sunlight</li>
+                    <li>Position near a grounded electrical outlet rated for at least 15 amps</li>
+                    <li>Maintain accessibility for easy operation and cleaning</li>
+                </ul>
+
+                <h3>Initial Setup</h3>
+                <ol>
+                    <li>Remove all packaging materials, including any tape or protective films on the interior and exterior</li>
+                    <li>Remove the turntable and turntable support ring from the microwave cavity</li>
+                    <li>Inspect all components for any shipping damage</li>
+                    <li>Place the turntable support ring on the floor of the microwave cavity</li>
+                    <li>Position the glass turntable on the support ring, ensuring it sits flat and rotates freely</li>
+                    <li>Plug the power cord into a properly grounded outlet</li>
+                    <li>Set the clock according to the manufacturer's instructions</li>
+                </ol>
+
+                <div class="warning-box">
+                    <p><strong>⚠️ Warning:</strong> Never operate the microwave without the turntable in place. The turntable ensures even heating of food and prevents hot spots that could cause burns or uneven cooking.</p>
+                </div>
+            </div>
+
+            <div class="section-content">
+                <h2>Operating the Microwave</h2>
+
+                <h3>Basic Operation</h3>
+                <ol>
+                    <li>Open the door by pressing the door release button or pulling the handle</li>
+                    <li>Place food in a microwave-safe container on the turntable</li>
+                    <li>Close the door securely until you hear a click</li>
+                    <li>Select the appropriate power level (1-10 or percentage)</li>
+                    <li>Enter the cooking time using the number pad</li>
+                    <li>Press START to begin cooking</li>
+                    <li>When cooking is complete, carefully remove food using oven mitts if necessary</li>
+                </ol>
+
+                <h3>Power Levels</h3>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Power Level</th>
+                            <th>Percentage</th>
+                            <th>Best Used For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>High (10)</td>
+                            <td>100%</td>
+                            <td>Boiling water, cooking vegetables, reheating beverages</td>
+                        </tr>
+                        <tr>
+                            <td>Medium-High (7-8)</td>
+                            <td>70-80%</td>
+                            <td>Reheating leftovers, cooking ground meat</td>
+                        </tr>
+                        <tr>
+                            <td>Medium (5-6)</td>
+                            <td>50-60%</td>
+                            <td>Cooking casseroles, slow cooking meats</td>
+                        </tr>
+                        <tr>
+                            <td>Medium-Low (3-4)</td>
+                            <td>30-40%</td>
+                            <td>Defrosting, softening butter</td>
+                        </tr>
+                        <tr>
+                            <td>Low (1-2)</td>
+                            <td>10-20%</td>
+                            <td>Keeping food warm, softening ice cream</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Common Functions</h3>
+                <ul>
+                    <li><strong>Defrost:</strong> Use the defrost function to thaw frozen foods. Enter the weight of the food, and the microwave will calculate appropriate time and power levels.</li>
+                    <li><strong>Popcorn:</strong> Many microwaves have a preset popcorn button. Place the bag according to package directions and press the button.</li>
+                    <li><strong>Beverage:</strong> Heats a standard cup of coffee or tea to optimal drinking temperature.</li>
+                    <li><strong>Reheat:</strong> Automatically sets appropriate time and power for reheating various foods.</li>
+                </ul>
+            </div>
+
+            <div class="section-content">
+                <h2>Cleaning and Maintaining the Microwave</h2>
+
+                <h3>Regular Cleaning (Weekly)</h3>
+                <ol>
+                    <li>Unplug the microwave or ensure it is not running</li>
+                    <li>Remove the turntable and support ring</li>
+                    <li>Wash the turntable and support ring with warm, soapy water</li>
+                    <li>Wipe the interior walls with a damp cloth and mild detergent</li>
+                    <li>For stubborn stains, heat a bowl of water with lemon juice for 2-3 minutes to create steam</li>
+                    <li>Wipe the exterior surfaces including the control panel with a damp cloth</li>
+                    <li>Dry all surfaces thoroughly before replacing the turntable</li>
+                </ol>
+
+                <h3>Deep Cleaning (Monthly)</h3>
+                <ul>
+                    <li>Clean the door seal with a soft brush to remove food particles</li>
+                    <li>Inspect and clean the ventilation grills on the sides or back</li>
+                    <li>Check the power cord for any damage</li>
+                    <li>Verify that the door closes and latches properly</li>
+                </ul>
+
+                <div class="note-box">
+                    <p><strong>💡 Tip:</strong> To eliminate odors, place a bowl of water with 2 tablespoons of baking soda in the microwave and heat for 3 minutes. Let it sit for 5 minutes before wiping clean.</p>
+                </div>
+            </div>
+
+            <div class="section-content">
+                <h2>Uninstalling or Removing the Microwave</h2>
+                <ol>
+                    <li>Unplug the microwave from the electrical outlet</li>
+                    <li>Remove all items from inside the microwave</li>
+                    <li>Remove the turntable and support ring for separate packing</li>
+                    <li>Clean the microwave thoroughly before storage or disposal</li>
+                    <li>If disposing, check local regulations for proper electronic waste disposal</li>
+                    <li>Many retailers and municipalities offer recycling programs for appliances</li>
+                </ol>
+            </div>
+
+            <div class="section-content">
+                <h2>Safety Considerations</h2>
+
+                <div class="warning-box">
+                    <p><strong>⚠️ Critical Safety Information:</strong></p>
+                </div>
+
+                <h3>Materials to Never Microwave</h3>
+                <ul>
+                    <li><strong>Metal:</strong> Aluminum foil, metal utensils, dishes with metallic trim, or twist ties can cause sparking and fire</li>
+                    <li><strong>Certain plastics:</strong> Only use containers labeled "microwave-safe" to avoid chemical leaching</li>
+                    <li><strong>Styrofoam:</strong> Unless specifically marked as microwave-safe</li>
+                    <li><strong>Paper bags:</strong> Can catch fire and release toxic fumes</li>
+                    <li><strong>Sealed containers:</strong> Pressure buildup can cause explosions</li>
+                    <li><strong>Eggs in shell:</strong> Can explode due to steam pressure</li>
+                    <li><strong>Grapes:</strong> Can produce plasma and catch fire</li>
+                </ul>
+
+                <h3>General Safety Guidelines</h3>
+                <ul>
+                    <li>Never operate an empty microwave - it can damage the magnetron</li>
+                    <li>Always supervise children when they use the microwave</li>
+                    <li>Use caution when removing heated liquids - they can superheat and boil over</li>
+                    <li>Allow food to stand after cooking to equalize temperature</li>
+                    <li>Do not attempt to repair the microwave yourself - seek professional service</li>
+                    <li>If the door is damaged or doesn't close properly, do not use the microwave</li>
+                    <li>Keep the microwave clean to prevent smoke and fire hazards</li>
+                </ul>
+            </div>
+
+            <div class="section-content">
+                <h2>Final Words</h2>
+                <p>The microwave oven is a powerful and convenient tool that, when used properly, can significantly enhance your kitchen efficiency. By following these instructions for installation, operation, cleaning, and safety, you can ensure years of reliable service from your appliance. Always refer to your specific microwave's user manual for model-specific instructions and safety information.</p>
+                <p>Remember that proper maintenance not only extends the life of your microwave but also ensures safe operation for you and your family. If you experience any issues with your microwave that are not addressed in these instructions, consult a qualified technician or contact the manufacturer's customer service.</p>
+            </div>
+
+            <div class="references">
+                <h3>References</h3>
+                <ul>
+                    <li>U.S. Food and Drug Administration. (2023). Microwave Oven Radiation. FDA.gov</li>
+                    <li>National Fire Protection Association. (2023). Cooking Safety Tips. NFPA.org</li>
+                    <li>Consumer Product Safety Commission. (2023). Microwave Oven Safety. CPSC.gov</li>
+                    <li>ENERGY STAR. (2023). Microwave Ovens Product Specifications. EnergyStar.gov</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- Assignment 2: Recommendation Report -->
+        <article class="assignment" id="assignment2">
+            <header class="assignment-header">
+                <h1 class="assignment-title">Microwave Recommendation Report</h1>
+                <div class="assignment-meta">
+                    <span><strong>Author:</strong> Logan Edwards</span>
+                    <span><strong>Course:</strong> FCWR304</span>
+                    <span><strong>Professor:</strong> Prof. Hatley</span>
+                    <span><strong>Date:</strong> 11/10/2025</span>
+                </div>
+            </header>
+
+            <div class="section-content">
+                <h2>Table of Contents</h2>
+                <ol>
+                    <li>Introduction</li>
+                    <li>Methods of Comparing</li>
+                    <li>Results</li>
+                    <li>Conclusion</li>
+                    <li>Final Recommendation</li>
+                    <li>Image Sources</li>
+                    <li>Glossary and Symbols</li>
+                </ol>
+            </div>
+
+            <div class="section-content">
+                <h2>Introduction</h2>
+                <p>This recommendation report evaluates three leading countertop microwave ovens to determine the best option for a typical household. The analysis considers factors such as cooking performance, energy efficiency, build quality, user features, and overall value for money.</p>
+                <p>The three microwaves evaluated in this report are:</p>
+                <ol>
+                    <li><strong>Panasonic NN-SN686S:</strong> A mid-range inverter microwave with 1200W power</li>
+                    <li><strong>Toshiba EM131A5C-BS:</strong> A budget-friendly option with smart sensor technology</li>
+                    <li><strong>Samsung MS19M8000AS:</strong> A large-capacity model with ceramic enamel interior</li>
+                </ol>
+                <p>The goal of this report is to provide a clear, evidence-based recommendation for consumers seeking a reliable microwave that balances performance, features, and cost.</p>
+            </div>
+
+            <div class="section-content">
+                <h2>Methods of Comparing</h2>
+                <p>The following criteria were used to evaluate each microwave:</p>
+
+                <h3>1. Cooking Performance</h3>
+                <ul>
+                    <li>Wattage output and power consistency</li>
+                    <li>Inverter technology vs. traditional cycling</li>
+                    <li>Even heating distribution</li>
+                    <li>Defrosting capabilities</li>
+                </ul>
+
+                <h3>2. Capacity and Size</h3>
+                <ul>
+                    <li>Interior cubic feet capacity</li>
+                    <li>Turntable diameter</li>
+                    <li>External dimensions and countertop footprint</li>
+                </ul>
+
+                <h3>3. Features and Usability</h3>
+                <ul>
+                    <li>Sensor cooking options</li>
+                    <li>Preset programs</li>
+                    <li>Control panel intuitiveness</li>
+                    <li>Quick-access buttons</li>
+                </ul>
+
+                <h3>4. Build Quality and Durability</h3>
+                <ul>
+                    <li>Interior material (stainless steel, ceramic, painted)</li>
+                    <li>Door mechanism quality</li>
+                    <li>Overall construction</li>
+                </ul>
+
+                <h3>5. Energy Efficiency</h3>
+                <ul>
+                    <li>Standby power consumption</li>
+                    <li>Energy Star certification</li>
+                    <li>Eco mode availability</li>
+                </ul>
+
+                <h3>6. Price and Value</h3>
+                <ul>
+                    <li>Initial purchase cost</li>
+                    <li>Warranty coverage</li>
+                    <li>Long-term value proposition</li>
+                </ul>
+            </div>
+
+            <div class="section-content">
+                <h2>Results</h2>
+
+                <h3>Comparison Table</h3>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Criteria</th>
+                            <th>Panasonic NN-SN686S</th>
+                            <th>Toshiba EM131A5C-BS</th>
+                            <th>Samsung MS19M8000AS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Wattage</td>
+                            <td>1200W</td>
+                            <td>1100W</td>
+                            <td>950W</td>
+                        </tr>
+                        <tr>
+                            <td>Capacity</td>
+                            <td>1.2 cu. ft.</td>
+                            <td>1.2 cu. ft.</td>
+                            <td>1.9 cu. ft.</td>
+                        </tr>
+                        <tr>
+                            <td>Inverter Technology</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Sensor Cooking</td>
+                            <td>Yes (Genius Sensor)</td>
+                            <td>Yes (6 options)</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Interior Material</td>
+                            <td>Stainless Steel</td>
+                            <td>Painted</td>
+                            <td>Ceramic Enamel</td>
+                        </tr>
+                        <tr>
+                            <td>Turntable Size</td>
+                            <td>13.4"</td>
+                            <td>12.4"</td>
+                            <td>14.2"</td>
+                        </tr>
+                        <tr>
+                            <td>Price Range</td>
+                            <td>$180-220</td>
+                            <td>$100-130</td>
+                            <td>$200-250</td>
+                        </tr>
+                        <tr>
+                            <td>Warranty</td>
+                            <td>1 year</td>
+                            <td>1 year</td>
+                            <td>1 year</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Detailed Analysis</h3>
+
+                <h4>Panasonic NN-SN686S</h4>
+                <p><strong>Pros:</strong></p>
+                <ul>
+                    <li>Inverter technology provides consistent power for even cooking</li>
+                    <li>Excellent defrosting capabilities without partial cooking</li>
+                    <li>Genius Sensor automatically adjusts cooking time and power</li>
+                    <li>Stainless steel interior is durable and easy to clean</li>
+                    <li>High 1200W power for fast cooking</li>
+                </ul>
+                <p><strong>Cons:</strong></p>
+                <ul>
+                    <li>Higher price point than budget options</li>
+                    <li>Control panel can be confusing for first-time users</li>
+                    <li>Beep volume cannot be adjusted</li>
+                </ul>
+
+                <h4>Toshiba EM131A5C-BS</h4>
+                <p><strong>Pros:</strong></p>
+                <ul>
+                    <li>Excellent value for money</li>
+                    <li>Intuitive control panel with quick-access buttons</li>
+                    <li>Mute function available</li>
+                    <li>Energy-saving eco mode</li>
+                    <li>Sleek black stainless steel exterior</li>
+                </ul>
+                <p><strong>Cons:</strong></p>
+                <ul>
+                    <li>No inverter technology means power cycles on/off</li>
+                    <li>Painted interior may stain over time</li>
+                    <li>Slightly smaller turntable</li>
+                    <li>Lower wattage than competitors</li>
+                </ul>
+
+                <h4>Samsung MS19M8000AS</h4>
+                <p><strong>Pros:</strong></p>
+                <ul>
+                    <li>Largest capacity for families or large dishes</li>
+                    <li>Ceramic enamel interior resists scratches and stains</li>
+                    <li>Large turntable accommodates bigger plates</li>
+                    <li>Triple Distribution System for even cooking</li>
+                </ul>
+                <p><strong>Cons:</strong></p>
+                <ul>
+                    <li>Lower wattage (950W) despite larger size</li>
+                    <li>Takes up significant counter space</li>
+                    <li>No inverter technology</li>
+                    <li>Highest price point</li>
+                </ul>
+            </div>
+
+            <div class="section-content">
+                <h2>Conclusion</h2>
+                <p>Based on the comprehensive evaluation of all three microwaves, each model excels in different areas:</p>
+                <ul>
+                    <li>The <strong>Panasonic NN-SN686S</strong> offers the best overall cooking performance due to its inverter technology and high wattage</li>
+                    <li>The <strong>Toshiba EM131A5C-BS</strong> provides the best value for budget-conscious consumers who don't require advanced features</li>
+                    <li>The <strong>Samsung MS19M8000AS</strong> is ideal for those who need maximum capacity and prioritize easy cleaning</li>
+                </ul>
+                <p>For the average household that values cooking performance and versatility, the inverter technology in the Panasonic model provides a noticeable improvement in food quality, particularly for defrosting and cooking at lower power levels.</p>
+            </div>
+
+            <div class="section-content">
+                <h2>Final Recommendation</h2>
+                <div class="note-box">
+                    <p><strong>Recommended Model: Panasonic NN-SN686S</strong></p>
+                </div>
+                <p>The Panasonic NN-SN686S is recommended as the best overall choice for most consumers. While it is not the cheapest option, the inverter technology provides significant benefits that justify the additional cost:</p>
+                <ol>
+                    <li><strong>Superior Cooking Quality:</strong> Inverter technology delivers consistent power, eliminating the on-off cycling that can cause uneven heating</li>
+                    <li><strong>Better Defrosting:</strong> Foods defrost evenly without the edges starting to cook</li>
+                    <li><strong>Energy Efficiency:</strong> More precise power control means less wasted energy</li>
+                    <li><strong>Durability:</strong> Stainless steel interior and quality construction ensure long-term reliability</li>
+                </ol>
+                <p>For budget-conscious consumers, the Toshiba EM131A5C-BS remains an excellent alternative that provides good performance at a lower price point. For those with larger families or specific needs for a high-capacity microwave, the Samsung MS19M8000AS would be the appropriate choice despite its lower wattage.</p>
+            </div>
+
+            <div class="section-content">
+                <h2>Image Sources</h2>
+                <ul>
+                    <li>Panasonic product images: Panasonic.com official product page</li>
+                    <li>Toshiba product images: Toshiba-lifestyle.com official product page</li>
+                    <li>Samsung product images: Samsung.com official product page</li>
+                    <li>Comparison charts: Created by author using publicly available specifications</li>
+                </ul>
+            </div>
+
+            <div class="section-content">
+                <h2>Glossary and Symbols</h2>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Term/Symbol</th>
+                            <th>Definition</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Inverter Technology</td>
+                            <td>A power supply system that provides consistent, controllable power output rather than cycling on and off at full power</td>
+                        </tr>
+                        <tr>
+                            <td>Wattage (W)</td>
+                            <td>The unit of power measuring the rate of energy consumption; higher wattage generally means faster cooking</td>
+                        </tr>
+                        <tr>
+                            <td>Cu. ft. (Cubic Feet)</td>
+                            <td>A unit of volume measurement for microwave interior capacity</td>
+                        </tr>
+                        <tr>
+                            <td>Sensor Cooking</td>
+                            <td>Technology that detects steam from food to automatically adjust cooking time and power level</td>
+                        </tr>
+                        <tr>
+                            <td>Ceramic Enamel</td>
+                            <td>A smooth, non-porous interior coating that resists scratches and stains</td>
+                        </tr>
+                        <tr>
+                            <td>Turntable</td>
+                            <td>The rotating glass plate that ensures even exposure to microwave energy</td>
+                        </tr>
+                        <tr>
+                            <td>Magnetron</td>
+                            <td>The component that generates microwave radiation for cooking</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="references">
+                <h3>References</h3>
+                <ul>
+                    <li>Consumer Reports. (2025). Microwave Buying Guide. ConsumerReports.org</li>
+                    <li>Panasonic Corporation. (2025). NN-SN686S Product Specifications. Panasonic.com</li>
+                    <li>Toshiba Lifestyle. (2025). EM131A5C-BS Product Information. Toshiba-lifestyle.com</li>
+                    <li>Samsung Electronics. (2025). MS19M8000AS Product Details. Samsung.com</li>
+                    <li>ENERGY STAR. (2025). Microwave Oven Energy Efficiency Guidelines. EnergyStar.gov</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- Assignment 3: Technical Documentation -->
+        <article class="assignment" id="assignment3">
+            <header class="assignment-header">
+                <h1 class="assignment-title">Microwave Technical Documentation</h1>
+                <div class="assignment-meta">
+                    <span><strong>Author:</strong> Logan Edwards</span>
+                    <span><strong>Course:</strong> FCWR304</span>
+                    <span><strong>Professor:</strong> Prof. Hatley</span>
+                </div>
+            </header>
+
+            <div class="section-content">
+                <h2>Microwave Description</h2>
+                <p>A microwave oven is an electric kitchen appliance that heats and cooks food by exposing it to electromagnetic radiation in the microwave frequency range. This electromagnetic radiation causes polar molecules in the food to rotate and produce thermal energy through dielectric heating. Microwave ovens heat food quickly and efficiently because excitation is fairly uniform in the outer 25-38 mm (1-1.5 inches) of a homogeneous, high-water-content food item.</p>
+
+                <h3>Basic Components</h3>
+                <p>A standard microwave oven consists of the following major components:</p>
+                <ul>
+                    <li><strong>Magnetron:</strong> The component that generates microwave radiation</li>
+                    <li><strong>Waveguide:</strong> Channels microwave energy from magnetron to cooking chamber</li>
+                    <li><strong>Cooking Chamber (Cavity):</strong> The metal-walled compartment where food is placed</li>
+                    <li><strong>Turntable:</strong> Rotates food for even exposure to microwave energy</li>
+                    <li><strong>Control Panel:</strong> User interface for setting time, power, and functions</li>
+                    <li><strong>Door and Safety Interlocks:</strong> Prevents operation when door is open</li>
+                    <li><strong>Transformer:</strong> Steps up voltage to power the magnetron</li>
+                    <li><strong>Capacitor:</strong> Stores electrical energy for the magnetron</li>
+                    <li><strong>Diode:</strong> Converts AC to DC for magnetron operation</li>
+                    <li><strong>Cooling Fan:</strong> Prevents overheating of electronic components</li>
+                </ul>
+
+                <h3>Operating Principles</h3>
+                <p>The microwave oven operates at a frequency of 2.45 GHz (gigahertz), which is in the microwave portion of the electromagnetic spectrum. This frequency was chosen because:</p>
+                <ol>
+                    <li>It is efficiently absorbed by water, fats, and sugars</li>
+                    <li>It is not absorbed significantly by most plastics, glass, or ceramics</li>
+                    <li>It is reserved for industrial, scientific, and medical (ISM) use</li>
+                    <li>It provides adequate penetration depth for cooking</li>
+                </ol>
+            </div>
+
+            <div class="section-content">
+                <h2>Magnetron Description</h2>
+                <p>The magnetron is the heart of the microwave oven and is responsible for generating the electromagnetic waves that cook food. It is a type of vacuum tube that generates coherent microwave energy through the interaction of a stream of electrons with a magnetic field.</p>
+
+                <h3>Magnetron Structure</h3>
+                <p>The magnetron consists of the following key parts:</p>
+                <ul>
+                    <li><strong>Cathode (Filament):</strong> A heated filament at the center that emits electrons through thermionic emission</li>
+                    <li><strong>Anode Block:</strong> A circular copper block with resonant cavities surrounding the cathode</li>
+                    <li><strong>Resonant Cavities:</strong> Precisely machined holes that determine the output frequency</li>
+                    <li><strong>Permanent Magnets:</strong> Create a magnetic field perpendicular to the electric field</li>
+                    <li><strong>Antenna (Probe):</strong> Extracts microwave energy from one cavity</li>
+                    <li><strong>Cooling Fins:</strong> Dissipate heat generated during operation</li>
+                </ul>
+
+                <h3>Magnetron Operation</h3>
+                <ol>
+                    <li>The cathode is heated to emit electrons</li>
+                    <li>High voltage (approximately 4,000V) is applied between cathode and anode</li>
+                    <li>Electrons are attracted toward the anode but are deflected by the magnetic field</li>
+                    <li>This causes electrons to spiral outward in a rotating cloud</li>
+                    <li>As electrons pass the resonant cavities, they induce oscillating electromagnetic fields</li>
+                    <li>These oscillations generate microwave radiation at 2.45 GHz</li>
+                    <li>The antenna couples the energy out of the magnetron to the waveguide</li>
+                </ol>
+
+                <h3>Magnetron Specifications (Typical)</h3>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Typical Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Operating Frequency</td>
+                            <td>2.45 GHz ± 25 MHz</td>
+                        </tr>
+                        <tr>
+                            <td>Output Power</td>
+                            <td>600W - 1200W</td>
+                        </tr>
+                        <tr>
+                            <td>Anode Voltage</td>
+                            <td>4000V - 4500V</td>
+                        </tr>
+                        <tr>
+                            <td>Anode Current</td>
+                            <td>250mA - 350mA</td>
+                        </tr>
+                        <tr>
+                            <td>Filament Voltage</td>
+                            <td>3.0V - 3.6V</td>
+                        </tr>
+                        <tr>
+                            <td>Efficiency</td>
+                            <td>65% - 75%</td>
+                        </tr>
+                        <tr>
+                            <td>Expected Lifespan</td>
+                            <td>2000+ hours</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-content">
+                <h2>Sub-System Descriptions</h2>
+
+                <h3>Input Sub-System</h3>
+                <p>The input sub-system manages the electrical power entering the microwave and provides the user interface for control. It consists of the following components:</p>
+
+                <h4>Power Input Circuit</h4>
+                <ul>
+                    <li><strong>Power Cord:</strong> Typically rated for 15A at 120V (North America) or 10A at 230V (Europe)</li>
+                    <li><strong>Fuse:</strong> Protects against overcurrent conditions (typically 15-20A)</li>
+                    <li><strong>Noise Filter:</strong> Reduces electromagnetic interference (EMI) from entering or leaving the appliance</li>
+                    <li><strong>Thermal Cutoff:</strong> Disconnects power if temperature exceeds safe limits</li>
+                </ul>
+
+                <h4>Control Circuit</h4>
+                <ul>
+                    <li><strong>Microcontroller:</strong> Processes user inputs and controls cooking sequences</li>
+                    <li><strong>Membrane Keypad:</strong> Touch-sensitive control panel for user input</li>
+                    <li><strong>LED/LCD Display:</strong> Shows time, power level, and status information</li>
+                    <li><strong>Relay:</strong> Switches high-voltage circuit on and off based on controller signals</li>
+                </ul>
+
+                <h4>Safety Interlock System</h4>
+                <p>The door interlock system is a critical safety feature consisting of multiple switches:</p>
+                <ul>
+                    <li><strong>Primary Interlock Switch:</strong> Disconnects power to magnetron when door opens</li>
+                    <li><strong>Secondary Interlock Switch:</strong> Backup safety switch</li>
+                    <li><strong>Monitor Switch (Safety Switch):</strong> Creates a short circuit to blow the fuse if primary switches fail</li>
+                </ul>
+
+                <div class="warning-box">
+                    <p><strong>⚠️ Safety Note:</strong> The interlock system must never be bypassed. Exposure to microwave radiation can cause serious injury including burns and cataracts.</p>
+                </div>
+
+                <h3>High Voltage Sub-System</h3>
+                <p>The high voltage sub-system converts standard household power into the high voltage required to operate the magnetron. This sub-system is the most dangerous part of the microwave oven.</p>
+
+                <h4>High Voltage Transformer</h4>
+                <p>The high voltage transformer is a step-up transformer that converts 120V AC to approximately 2000V AC. Key specifications:</p>
+                <ul>
+                    <li><strong>Primary Winding:</strong> Connected to 120V AC line power</li>
+                    <li><strong>Secondary Winding:</strong> Produces approximately 2000-2300V AC</li>
+                    <li><strong>Filament Winding:</strong> Provides 3-4V AC for magnetron cathode heating</li>
+                    <li><strong>Power Rating:</strong> Typically 1000-1500W</li>
+                </ul>
+
+                <h4>Voltage Doubler Circuit</h4>
+                <p>The voltage doubler circuit converts the transformer output to the DC voltage required by the magnetron:</p>
+                <ul>
+                    <li><strong>High Voltage Capacitor:</strong> Stores electrical energy (typically 0.9-1.2 µF at 2100V AC rating)</li>
+                    <li><strong>High Voltage Diode:</strong> Rectifies AC to pulsating DC</li>
+                    <li><strong>Output:</strong> Approximately 4000-4500V DC to magnetron</li>
+                </ul>
+
+                <div class="warning-box">
+                    <p><strong>⚠️ Danger - High Voltage:</strong> The high voltage capacitor can retain a lethal charge even after the microwave is unplugged. Only qualified technicians should service the high voltage components. The capacitor must be properly discharged before any service work.</p>
+                </div>
+
+                <h4>High Voltage Circuit Operation</h4>
+                <ol>
+                    <li>AC power from the transformer secondary is applied to the capacitor and diode</li>
+                    <li>During the positive half-cycle, the diode conducts, charging the capacitor to the peak voltage (~2800V)</li>
+                    <li>During the negative half-cycle, the diode blocks, and the capacitor voltage adds to the transformer voltage</li>
+                    <li>This produces approximately twice the peak voltage (~4000-4500V) to power the magnetron</li>
+                    <li>The magnetron operates as a load, converting electrical energy to microwave radiation</li>
+                </ol>
+
+                <h4>Protection Devices</h4>
+                <ul>
+                    <li><strong>Thermal Protector:</strong> Located on magnetron, cuts power if temperature exceeds safe limits</li>
+                    <li><strong>Cavity Thermal Cutoff:</strong> Protects against fire in cooking chamber</li>
+                    <li><strong>High Voltage Fuse:</strong> Protects against short circuits in HV circuit</li>
+                </ul>
+            </div>
+
+            <div class="section-content">
+                <h2>Block Diagram</h2>
+                <p>The following represents the major functional blocks and signal flow in a microwave oven:</p>
+                <div class="note-box">
+                    <p><strong>Power Flow:</strong> AC Input → Fuse/Filter → Control Relay → HV Transformer → Voltage Doubler → Magnetron → Waveguide → Cooking Chamber</p>
+                </div>
+                <div class="note-box">
+                    <p><strong>Control Flow:</strong> User Input → Microcontroller → Display + Relay Control + Timer</p>
+                </div>
+                <div class="note-box">
+                    <p><strong>Safety Flow:</strong> Door Switches → Interlock Circuit → Power Disconnect</p>
+                </div>
+            </div>
+
+            <div class="references">
+                <h3>References</h3>
+                <ul>
+                    <li>Gallawa, J.C. (2023). The Complete Microwave Oven Service Handbook. Microtech Publications.</li>
+                    <li>IEEE. (2023). Standard for Safety for Household Microwave Ovens. IEEE C95.1</li>
+                    <li>Pozar, D.M. (2023). Microwave Engineering, 5th Edition. Wiley Publishing.</li>
+                    <li>UL. (2023). UL 923 - Standard for Safety for Microwave Cooking Appliances. Underwriters Laboratories.</li>
+                    <li>WHO. (2023). Electromagnetic Fields and Public Health: Microwave Ovens. World Health Organization.</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Logan Edwards | FCWR304 Technical Writing</p>
+        </footer>
+    </main>
+
+    <!-- Back to Top Button -->
+    <a href="#toc" class="back-to-top" title="Back to Top">↑</a>
+</body>
+</html>

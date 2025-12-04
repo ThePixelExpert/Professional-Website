@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const PDFReceiptGenerator = require('./pdf-generator');
 
-const { db, initializeDatabase } = require('./database');
+const { db, initializeDatabase } = require('./supabase-client');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,7 +19,7 @@ const ADMIN_PASS = process.env.ADMIN_PASS || 'password';
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
 // Admin Auth Middleware
-function agh repo clone ThePixelExpert/Professional-WebsiteuthMiddleware(req, res, next) {
+function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'No token provided' });
   const token = authHeader.split(' ')[1];

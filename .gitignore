@@ -135,3 +135,6 @@ secret.*
 credentials/
 creds/
 .creds/
+
+# Backend dependencies
+contact-backend/node_modules/

@@ -57,6 +57,8 @@
      admin-password: <base64-encoded-admin-password>
      stripe-secret-key: <base64-encoded-stripe-live-key>
      email-password: <base64-encoded-email-app-password>
+     supabase-anon-key: <base64-encoded-supabase-anon-key>
+     supabase-service-key: <base64-encoded-supabase-service-key>
    ```
    
    **Step 3: Apply to Cluster**
@@ -80,7 +82,9 @@
    $env:JWT_SECRET="your-256-bit-jwt-secret"
    $env:ADMIN_USER="your-admin-username"
    $env:ADMIN_PASS="your-secure-admin-password"
-   $env:DB_PASSWORD="your-secure-database-password"
+   $env:SUPABASE_URL="http://192.168.0.50:8000"
+   $env:SUPABASE_ANON_KEY="your-supabase-anon-key"
+   $env:SUPABASE_SERVICE_KEY="your-supabase-service-key"
    $env:EMAIL_USER="your-business-email@domain.com"
    $env:EMAIL_APP_PASSWORD="your-email-app-password"
    ```
@@ -89,14 +93,24 @@
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Load Balancer │────│   Kubernetes    │────│   PostgreSQL    │
-│   (Traefik)     │    │   Cluster       │    │   Database      │
+│   Load Balancer │────│   Kubernetes    │────│   Supabase      │
+│   (Traefik)     │    │   Cluster       │    │   (TrueNAS)     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          │                       │                       │
-    HTTPS/TLS             Container Security      Encrypted Data
+    HTTPS/TLS             Container Security      Row Level Security
     Termination           + Resource Limits       + Backup Strategy
 ```
+
+### Database: Supabase on TrueNAS
+
+The backend uses **Supabase** hosted on a TrueNAS Scale machine (192.168.0.50) for:
+- Better security isolation from the Kubernetes cluster
+- Built-in Row Level Security (RLS)
+- Supabase Studio for database administration
+- TrueNAS backup and snapshot capabilities
+
+See `contact-backend/SUPABASE_MIGRATION.md` for setup instructions.
 
 ## 🔧 Deployment Process
 
@@ -234,10 +248,11 @@ kubectl rollout status deployment/edwards-backend-deployment -n website
 
 #### Issue: "Database connection failed"
 **Solution**:
-- Verify PostgreSQL pod is running: `kubectl get pods -l app=postgres -n website`
-- Check database credentials are correct
-- Verify network connectivity between backend and database pods
-- Review database logs for connection errors
+- Verify Supabase is running on TrueNAS: `curl http://192.168.0.50:8000/rest/v1/`
+- Check SUPABASE_URL and SUPABASE_SERVICE_KEY are set correctly
+- Verify network connectivity: `kubectl exec -n website <pod-name> -- nc -zv 192.168.0.50 8000`
+- Review backend logs for Supabase connection errors
+- Ensure database migrations have been run in Supabase Studio
 
 ## 🚨 Emergency Procedures
 

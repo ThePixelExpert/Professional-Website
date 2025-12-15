@@ -1,0 +1,152 @@
+Logan Edwards
+FCWR304                                                                                         
+Prof. Hatley        
+Recommendation Report                                  
+11/10/2025                 
+
+
+
+
+
+
+
+
+Microwave Recommendation Report
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Table of Contents:
+
+
+I : Introduction
+II : Methods of Comparing
+III: Results
+IV: Conclusion
+V: Final Recommendation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I. Introduction
+
+
+If you are currently using the BLACK+DECKER Microwave and it breaks or becomes damaged, you might debate whether to replace the model you have with the same one, or get a different model and or brand such as the TOSHIBA EM131A5C-BS. Even though the BLACK+DECKER Microwave is inexpensive, offers a good amount of pre-sets and has a good 1000 Watt system, its internal components are most likely cheaply made, the structure is not rugged and high quality, and the volume is not the largest. All of these factors apply when making this decision and this report will help to answer the big question; what do I do?.
+
+     
+
+
+
+
+
+
+
+
+
+
+TOSHIBA Microwave [1]                        BLACK + DECKER Microwave [2]
+                                                
+II. Methods of Comparing
+        
+1. Picking the Substitution Microwave
+
+
+The model chosen was determined by looking at the overall pick on Amazon. The first thing to take into consideration to have the closest drop-in replacement would be to make sure the Wattage is the same. After ensuring this is the case, analyzing the reviews showed this would be a good alternative.
+
+
+2. Points of Comparison
+
+
+The most important thing when comparing two microwaves is the wattage. The wattage determines how powerful the microwave actually is and how fast it cooks food. If you are currently using a microwave that is 900 watts (W for short) the experience and time to cook will be noticeably longer than using a 1000W microwave. 
+The next important thing to compare is the volume of the microwave. It is as simple as the larger the microwave, the more things you can put in it. It is important to consider the wattage / volume ratio as typically if you have more wattage with a smaller volume things will cook faster because the microwaves are bouncing off of the walls faster. Although this is mostly negligible due to most modern microwaves being around 1.0 cubic feet, it is important to consider if looking at a much smaller model.
+A smaller yet non-negligible thing to consider is the price. It may be more worth it in some cases to go for a more expensive option given how it is more likely to be of a higher quality and last longer.
+Another thing to consider is the weight and physical size of the microwave. Some people have dedicated built-in spaces inside their homes to allocate an appliance such as a microwave. Weight  may be an important attribute if you are someone who can not physically lift too much, or are disabled in any physical capacity..
+All points are compared by reading product pages and determining which specifications were closest to the original machine.
+
+
+III. Results
+1. Both Models offer a 1000W power allocation
+2. The BLACK+DECKER microwave is 1.1cu ft compared to the larger TOSHIBA microwave which has a total volume of 1.2cu ft
+3. The BLACK+DECKER is $99.99 (on sale from manufacturer for $49.99), and the TOSHIBA is $149.99
+4. The BLACK+DECKER is 34.2 lbs and 15.7 x 20.2 x 12.1 (Depth x Width x Height, in inches). The TOSHIBA is 34.6 lbs and 16 x 20.6 x 11.8
+IV. Conclusion
+        
+        After comparing both models side-by-side we can weigh each comparison point and come to a conclusion. Given how the important features; wattage, volume and dimensions (including weight) are almost identical, it comes down to build quality and price. If price is a concern then the BLACK+DECKER might be the better option regardless of build quality. If you prefer build quality and are willing to spend a little more to get it, then the TOSHIBA would be the better option. Although aesthetics play a role, it is purely subjective and will not be taken into account when comparing the two.
+
+
+V. Final Recommendation
+        
+        Given how similar the two machines are, based on all of the previous points I would recommend getting another BLACK+DECKER microwave instead of the TOSHIBA. The price and quality is not enough to warrant the $50 price increase when the actual parts that are in the machine most likely come from the same factory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Image Sources:
+[1] "BLACK + DECKER 1.1cu ft 1000W Microwave Oven". Target. https://www.target.com/p/black-decker-1-1-cu-ft-1000w-microwave-oven-stainless-steel-black/-/A-80040117#lnk=sametab [10/18/2025]
+
+[2] "TOSHIBA EM131A5C-BS Countertop Microwave Ovens". Amazon. https://a.co/d/0V5kRzs [10/18/2025]
+
+
+Glossary and Symbols:
+
+
+Wattage or "W": the amount of power a machine consumes. 
+Cu ft : cubic feet

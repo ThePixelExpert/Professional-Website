@@ -1,0 +1,47 @@
+Microwave Technical Documentation
+
+
+Technical Description Assignment by Logan Edwards.
+
+
+A microwave is a common electrical appliance used in homes, offices, and food industries for heating, defrosting, and cooking food in a short period of time.  The device works by generating electromagnetic waves, which interact with food molecules to produce heat.  In this description I will explain what a microwave is, how it works, and its main components.
+Microwave Description:
+
+        A microwave oven is an appliance that heats and cooks food by producing microwaves—electromagnetic radiation of a specific frequency that causes water (a polar molecule) in the food to vibrate, which generates internal heat. Microwave ovens operate by using the laws of dielectric heating, which is a process that uses alternating electromagnetic fields to cause polar molecules in a dielectric material to oscillate.  This oscillation produces friction between molecules, and that friction is converted into heat. Unlike conventional ovens, which transfer heat directly with conduction or convection, microwaves heat the food more uniformly and internally.
+  
+
+Magnetron Description:
+
+
+The magnetron is a vacuum tube device that converts electrical power into microwave radiation; this is the core component that produces the microwaves. It is very dangerous when not used with a proper enclosure. To combat these microwaves escaping the system, the enclosure must either be made of a metal or have radiation-insulating properties (such as the enameled glass door on this model).
+
+
+
+
+  
+
+Sub-System Descriptions:
+
+        Input Sub-System:
+        
+The first system is the input system. The user has access to a keypad (which depends on your model) and a display, which allows for setting a timer and receiving feedback on the current time. This keypad is connected to a circuit board that can easily be replaced, as it is connected to a circuit board that is isolated from the main high-voltage circuit. This is the only thing that should be replaced inside a microwave, as everything else is too dangerous to repair without having the proper knowledge or skills.
+
+
+High Voltage Sub-System:
+
+        The next system is the power circuit. This consists of a high-voltage transformer, which converts the 120 VAC from your wall to between 2,000 and 2,200 volts.  This transformer is connected to a circuit board, which handles the logic of the system. This board also receives the input data from the keypad to tell the system when to start and stop. The next major component that connects to this circuit is the high-capacity, high-voltage capacitor. This capacitor stores the needed charge for the next component: the magnetron. The magnetron is what actually produces the microwaves and is the most dangerous when plugged in. Although it is possible to fix any one of these parts, due to the amount of charge the capacitor stores and its direct connection to the rest of the circuit, touching any part the wrong way can lead to a catastrophic event.
+
+
+
+
+
+
+
+
+
+
+References:
+
+
+"Microwave oven." Encyclopaedia Britannica. Accessed September 2025.
+"Microwave oven." Wikipedia. Accessed September 2025.

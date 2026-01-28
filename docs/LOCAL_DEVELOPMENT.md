@@ -62,11 +62,11 @@ npx supabase status
 ```
 
 Shows:
-- **API URL**: http://localhost:54323 (Supabase API)
-- **Studio URL**: http://localhost:54323 (Dashboard)
+- **Project URL**: http://localhost:54321 (Supabase API via Kong gateway)
+- **Studio**: http://localhost:54323 (Dashboard UI)
 - **DB URL**: postgresql://postgres:postgres@localhost:54322/postgres
-- **anon key**: JWT for anonymous access
-- **service_role key**: JWT for admin access
+- **Publishable** key: JWT for client-side access (anon role)
+- **Secret** key: JWT for server-side admin access (service_role)
 
 ### Stopping Supabase
 
@@ -103,11 +103,11 @@ For local Supabase CLI, these values are standard:
 
 | Variable | Local Value |
 |----------|-------------|
-| `SUPABASE_URL` | `http://localhost:54323` |
-| `SUPABASE_ANON_KEY` | `eyJhbGci...` (CLI default) |
-| `SUPABASE_SERVICE_ROLE_KEY` | `eyJhbGci...` (CLI default) |
+| `SUPABASE_URL` | `http://localhost:54321` |
+| `SUPABASE_ANON_KEY` | Get "Publishable" key from `npx supabase status` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Get "Secret" key from `npx supabase status` |
 
-The default JWT keys are consistent across all Supabase CLI installations.
+Note: JWT keys are generated per project. Run `npx supabase status` to get your keys.
 
 ### Production Values
 

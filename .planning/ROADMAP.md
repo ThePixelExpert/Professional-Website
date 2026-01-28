@@ -46,7 +46,13 @@ Plans:
 
 **Dependencies**: Phase 1
 
-**Status**: Not Started
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Create Supabase migrations for database schema and seed data
+- [ ] 02-02-PLAN.md — Refactor database module to use Supabase client
+
+**Status**: Ready
 
 ---
 

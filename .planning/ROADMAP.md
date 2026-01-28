@@ -14,18 +14,21 @@
 ---
 
 ### Phase 1: Local Development Environment
-**Goal**: Set up local Supabase with Docker Compose for development/testing
+**Goal**: Set up local Supabase using Supabase CLI for development/testing
 
 **Delivers**:
-- Docker Compose config for local Supabase
+- Supabase CLI initialized with configuration
+- Supabase client module for backend
 - Environment variable management (local vs production)
 - Documented local dev workflow
+
+**Note**: The Supabase CLI manages Docker Compose internally, providing better DX than raw Docker Compose configuration.
 
 **Plans:** 2 plans
 
 Plans:
 - [ ] 01-01-PLAN.md — Initialize Supabase CLI and create client configuration
-- [ ] 01-02-PLAN.md — Environment variable management and verification
+- [ ] 01-02-PLAN.md — Environment variable management, documentation, and verification
 
 **Status**: Ready to Execute
 

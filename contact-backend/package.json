@@ -11,7 +11,8 @@
     "start-production": "pm2 start server.js --name edwards-contact-api",
     "stop-production": "pm2 stop edwards-contact-api",
     "restart-production": "pm2 restart edwards-contact-api",
-    "logs": "pm2 logs edwards-contact-api"
+    "logs": "pm2 logs edwards-contact-api",
+    "test:supabase": "node scripts/test-supabase-connection.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.93.2",

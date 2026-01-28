@@ -9,19 +9,20 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 1 of 5 - Local Development Environment
-**Plan**: — (phase not yet planned)
-**Status**: Ready to plan
+**Plan**: 01 of 1 in phase
+**Status**: In progress
+**Last activity**: 2026-01-28 - Completed 01-01-PLAN.md
 
 ## Progress
 
 ```
-Phase 1: Local Dev Environment    [░░░░░░░░░░] Not Started
+Phase 1: Local Dev Environment    [█░░░░░░░░░] 1/1 plans (100%)
 Phase 2: Schema & Backend         [░░░░░░░░░░] Not Started
 Phase 3: Auth Migration           [░░░░░░░░░░] Not Started
 Phase 4: Production Infrastructure[░░░░░░░░░░] Not Started
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [░░░░░░░░░░] 0%
+Overall:                          [██░░░░░░░░] 20%
 ```
 
 ## Recent Decisions
@@ -29,6 +30,9 @@ Overall:                          [░░░░░░░░░░] 0%
 | Decision | Rationale | Date |
 |----------|-----------|------|
 | 5-phase migration approach | Logical progression: local dev → refactor → auth → infra → deploy | 2026-01-28 |
+| Use CommonJS instead of ES modules | Existing backend code uses require() syntax, maintaining consistency | 2026-01-28 |
+| Create separate public and admin clients | Public client respects RLS policies, admin client bypasses them | 2026-01-28 |
+| Set persistSession: false for both clients | Server-side environment has no localStorage | 2026-01-28 |
 
 ## Pending Todos
 
@@ -40,9 +44,10 @@ Overall:                          [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-**Last session**: 2026-01-28
-**Stopped at**: Roadmap created, ready to plan Phase 1
-**Resume file**: —
+**Last session**: 2026-01-28T23:18:12Z
+**Stopped at**: Completed 01-01-PLAN.md (Supabase CLI & Client Setup)
+**Resume file**: None
+**Next action**: User must start local Supabase and verify connection before Phase 2
 
 ---
 

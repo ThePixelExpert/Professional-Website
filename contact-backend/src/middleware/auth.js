@@ -1,6 +1,7 @@
 // Authentication middleware for Express
 // Verifies Supabase session and attaches user to request
 const { createClient } = require('../lib/supabase-ssr')
+const { supabase } = require('../config/supabase')
 
 /**
  * Middleware to require authentication on protected routes
@@ -16,8 +17,7 @@ async function requireAuth(req, res, next) {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7) // Remove 'Bearer ' prefix
 
-      // Create Supabase client and verify token
-      const supabase = createClient({ req, res })
+      // Verify the JWT token using the public Supabase client
       const { data: { user }, error } = await supabase.auth.getUser(token)
 
       if (user && !error) {
@@ -28,8 +28,8 @@ async function requireAuth(req, res, next) {
     }
 
     // Fall back to cookie-based auth (for SSR/admin routes)
-    const supabase = createClient({ req, res })
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const ssrClient = createClient({ req, res })
+    const { data: { user }, error } = await ssrClient.auth.getUser()
 
     if (error || !user) {
       return res.status(401).json({ error: 'Unauthorized' })

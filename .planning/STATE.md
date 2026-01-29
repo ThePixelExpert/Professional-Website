@@ -11,7 +11,7 @@
 **Phase**: 3 of 5 - Auth Migration
 **Plan**: 6 of 7
 **Status**: In progress
-**Last activity**: 2026-01-29 - Completed 03-06-PLAN.md (Customer Account System)
+**Last activity**: 2026-01-29 - Re-executed 03-05-PLAN.md (Frontend Auth Integration)
 
 ## Progress
 
@@ -22,7 +22,7 @@ Phase 3: Auth Migration           [████████░░] 6/7 plans (86
 Phase 4: Production Infrastructure[░░░░░░░░░░] Not Started
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [███████░░░] 73%
+Overall:                          [█████████░] 91%
 ```
 
 ## Recent Decisions
@@ -62,6 +62,9 @@ Overall:                          [███████░░░] 73%
 | Use optionalAuth middleware for checkout | Checkout must work for both guests and authenticated users without requiring login | 2026-01-29 |
 | RLS policy for customer order viewing | Customers can only see their own orders via auth.uid() = user_id check | 2026-01-29 |
 | Separate /api/customer/orders endpoint | Customer endpoint filters by user_id, admin endpoint returns all orders | 2026-01-29 |
+| OAuth flow with sessionStorage redirect | Store redirect destination in sessionStorage before OAuth to enable post-login navigation | 2026-01-29 |
+| Cookie-based admin API calls | Replace JWT Authorization headers with credentials: 'include' for cookie-based auth | 2026-01-29 |
+| AdminRoute wrapper for dashboard | Wrap AdminDashboard with AdminRoute component for centralized auth protection | 2026-01-29 |
 
 ## Pending Todos
 
@@ -73,11 +76,11 @@ Overall:                          [███████░░░] 73%
 
 ## Session Continuity
 
-**Last session**: 2026-01-29T17:37:00Z
-**Stopped at**: Completed 03-06-PLAN.md (Customer Account System)
+**Last session**: 2026-01-29T17:37:17Z
+**Stopped at**: Re-executed 03-05-PLAN.md (Frontend Auth Integration)
 **Resume file**: None
 **Next action**: Continue Phase 3 with final plan 03-07
 
 ---
 
-*Last updated: 2026-01-29T17:37:00Z*
+*Last updated: 2026-01-29T17:37:17Z*

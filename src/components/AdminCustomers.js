@@ -8,12 +8,12 @@ import {
 import { API_ENDPOINTS } from '../config/api';
 import './AdminCustomers.css';
 
-function AdminCustomers({ token }) {
+function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  
+
   // Filtering and search
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState('total_spent');
@@ -22,15 +22,15 @@ function AdminCustomers({ token }) {
 
   useEffect(() => {
     fetchCustomers();
-  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchCustomers = async () => {
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.ADMIN_CUSTOMERS, {
-        headers: { Authorization: `Bearer ${token}` }
+        credentials: 'include'
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setCustomers(data);

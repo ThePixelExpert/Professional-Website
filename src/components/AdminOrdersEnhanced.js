@@ -7,35 +7,35 @@ import {
 import { API_ENDPOINTS } from '../config/api';
 import './AdminOrdersEnhanced.css';
 
-function AdminOrdersEnhanced({ token }) {
+function AdminOrdersEnhanced() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Enhanced state for filtering and search
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [sortField, setSortField] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
-  
+
   // Bulk actions
   const [selectedOrders, setSelectedOrders] = useState(new Set());
   const [bulkAction, setBulkAction] = useState('');
-  
+
   // Edit mode
   const [editingOrder, setEditingOrder] = useState(null);
   const [editForm, setEditForm] = useState({});
 
   useEffect(() => {
     fetchOrders();
-  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.ORDERS, {
-        headers: { Authorization: `Bearer ${token}` }
+        credentials: 'include'
       });
       const data = await response.json();
       const ordersArray = Array.isArray(data) ? data : data.orders || [];
@@ -126,12 +126,12 @@ function AdminOrdersEnhanced({ token }) {
       const response = await fetch(`${API_ENDPOINTS.ORDERS}/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(updates)
       });
-      
+
       if (response.ok) {
         setOrders(orders => orders.map(o => o.id === id ? { ...o, ...updates } : o));
         return true;
@@ -202,9 +202,9 @@ function AdminOrdersEnhanced({ token }) {
   const downloadReceipt = async (id) => {
     try {
       const response = await fetch(`${API_ENDPOINTS.ORDERS}/${id}/receipt`, {
-        headers: { Authorization: `Bearer ${token}` }
+        credentials: 'include'
       });
-      
+
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -225,9 +225,9 @@ function AdminOrdersEnhanced({ token }) {
     try {
       const response = await fetch(`${API_ENDPOINTS.ORDERS}/${id}/send-receipt`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        credentials: 'include'
       });
-      
+
       if (response.ok) {
         alert('Receipt sent successfully!');
       }

@@ -6,7 +6,7 @@ import {
 } from 'react-icons/fa';
 import './AdminSettings.css';
 
-function AdminSettings({ token }) {
+function AdminSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState('business');
@@ -89,7 +89,7 @@ function AdminSettings({ token }) {
 
   useEffect(() => {
     fetchSettings();
-  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchSettings = async () => {
     try {

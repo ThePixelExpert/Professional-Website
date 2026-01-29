@@ -20,11 +20,8 @@ function AdminAnalytics() {
   const fetchAnalytics = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_ENDPOINTS.ADMIN_ANALYTICS}?days=${timeRange}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       if (response.ok) {

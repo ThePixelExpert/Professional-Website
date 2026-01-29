@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ProtectedRoute from './ProtectedRoute';
 
 function AccountPageContent() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, supabase } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,8 +14,18 @@ function AccountPageContent() {
 
   const fetchOrders = async () => {
     try {
+      // Get the access token from Supabase session
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error('No session found');
+      }
+
       const response = await fetch('/api/customer/orders', {
-        credentials: 'include' // Send cookies for auth
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
       });
 
       if (!response.ok) {

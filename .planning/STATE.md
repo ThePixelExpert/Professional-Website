@@ -9,20 +9,20 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 3 of 5 - Auth Migration
-**Plan**: 4 of 7
+**Plan**: 6 of 7
 **Status**: In progress
-**Last activity**: 2026-01-29 - Completed 03-03-PLAN.md (Backend Auth Middleware)
+**Last activity**: 2026-01-29 - Completed 03-06-PLAN.md (Customer Account System)
 
 ## Progress
 
 ```
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
-Phase 3: Auth Migration           [█████░░░░░] 4/7 plans (57%)
+Phase 3: Auth Migration           [████████░░] 6/7 plans (86%)
 Phase 4: Production Infrastructure[░░░░░░░░░░] Not Started
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [██████░░░░] 62%
+Overall:                          [███████░░░] 73%
 ```
 
 ## Recent Decisions
@@ -58,6 +58,10 @@ Overall:                          [██████░░░░] 62%
 | Remove JWT authMiddleware for Supabase requireAdmin | Migrated from JWT tokens to Supabase session-based auth with cookie support | 2026-01-29 |
 | Create session management endpoints | Frontend can check auth state via /api/auth/session and sign out via /api/auth/signout | 2026-01-29 |
 | Global signout scope for admin sessions | Sign out revokes all sessions across devices for security | 2026-01-29 |
+| Add user_id to orders (nullable) | Links orders to authenticated users while preserving guest checkout | 2026-01-29 |
+| Use optionalAuth middleware for checkout | Checkout must work for both guests and authenticated users without requiring login | 2026-01-29 |
+| RLS policy for customer order viewing | Customers can only see their own orders via auth.uid() = user_id check | 2026-01-29 |
+| Separate /api/customer/orders endpoint | Customer endpoint filters by user_id, admin endpoint returns all orders | 2026-01-29 |
 
 ## Pending Todos
 
@@ -69,11 +73,11 @@ Overall:                          [██████░░░░] 62%
 
 ## Session Continuity
 
-**Last session**: 2026-01-29T17:28:31Z
-**Stopped at**: Completed 03-03-PLAN.md (Backend Auth Middleware)
+**Last session**: 2026-01-29T17:37:00Z
+**Stopped at**: Completed 03-06-PLAN.md (Customer Account System)
 **Resume file**: None
-**Next action**: Continue Phase 3 with remaining plans (03-05, 03-06, 03-07)
+**Next action**: Continue Phase 3 with final plan 03-07
 
 ---
 
-*Last updated: 2026-01-29T17:28:31Z*
+*Last updated: 2026-01-29T17:37:00Z*

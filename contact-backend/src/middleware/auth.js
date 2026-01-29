@@ -10,12 +10,25 @@ const { createClient } = require('../lib/supabase-ssr')
  */
 async function requireAuth(req, res, next) {
   try {
-    // Create per-request Supabase client with cookie context
-    const supabase = createClient({ req, res })
+    // Check for Authorization header first (for frontend fetch requests)
+    const authHeader = req.headers.authorization
 
-    // Verify session with auth server (CRITICAL: use getUser, not getSession)
-    // getUser() validates the JWT with the auth server
-    // getSession() only reads the JWT locally without verification
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7) // Remove 'Bearer ' prefix
+
+      // Create Supabase client and verify token
+      const supabase = createClient({ req, res })
+      const { data: { user }, error } = await supabase.auth.getUser(token)
+
+      if (user && !error) {
+        req.user = user
+        return next()
+      }
+      // If token is invalid, fall through to cookie check below
+    }
+
+    // Fall back to cookie-based auth (for SSR/admin routes)
+    const supabase = createClient({ req, res })
     const { data: { user }, error } = await supabase.auth.getUser()
 
     if (error || !user) {

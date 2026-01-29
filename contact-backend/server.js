@@ -21,18 +21,8 @@ const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'password';
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
-// Admin Auth Middleware
-function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'No token provided' });
-  const token = authHeader.split(' ')[1];
-  try {
-    jwt.verify(token, JWT_SECRET);
-    next();
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-}
+// Admin Auth Middleware - REMOVED (migrated to Supabase Auth)
+// See: ./src/middleware/requireAdmin.js
 
 
 
@@ -183,48 +173,8 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Admin Login Endpoint
-app.post('/api/admin/login', async (req, res) => {
-  const { username, password } = req.body;
-  
-  try {
-    // Get admin user from database
-    const adminUser = await db.getAdminUser(username);
-    
-    if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
-    }
-    
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, adminUser.password_hash);
-    
-    if (isValidPassword) {
-      // Update last login
-      await db.updateAdminLastLogin(username);
-      
-      // Create JWT token
-      const token = jwt.sign({ 
-        username: adminUser.username, 
-        id: adminUser.id 
-      }, JWT_SECRET, { expiresIn: '2h' });
-      
-      res.json({ 
-        success: true, 
-        token,
-        user: {
-          username: adminUser.username,
-          email: adminUser.email,
-          lastLogin: adminUser.last_login
-        }
-      });
-    } else {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
-    }
-  } catch (error) {
-    console.error('Error during admin login:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
+// Admin Login Endpoint - REMOVED (migrated to Supabase OAuth)
+// Admin login now happens through Supabase Auth (Google OAuth)
 
 // Create Payment Intent for Stripe
 app.post('/api/create-payment-intent', async (req, res) => {
@@ -445,7 +395,7 @@ app.post('/api/orders', async (req, res) => {
 });
 
 // List all orders (admin, protected)
-app.get('/api/orders', authMiddleware, async (req, res) => {
+app.get('/api/orders', requireAdmin, async (req, res) => {
   try {
     const orders = await db.getOrders();
     res.json(orders.map(order => ({
@@ -470,7 +420,7 @@ app.get('/api/orders', authMiddleware, async (req, res) => {
 });
 
 // Update order status (admin, protected)
-app.put('/api/orders/:id', authMiddleware, async (req, res) => {
+app.put('/api/orders/:id', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status, trackingNumber } = req.body;
@@ -514,7 +464,7 @@ app.put('/api/orders/:id', authMiddleware, async (req, res) => {
 });
 
 // Generate PDF receipt for an order
-app.get('/api/orders/:id/receipt', authMiddleware, async (req, res) => {
+app.get('/api/orders/:id/receipt', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const order = await db.getOrder(id);
@@ -536,7 +486,7 @@ app.get('/api/orders/:id/receipt', authMiddleware, async (req, res) => {
 });
 
 // Send PDF receipt via email
-app.post('/api/orders/:id/send-receipt', authMiddleware, async (req, res) => {
+app.post('/api/orders/:id/send-receipt', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const order = await db.getOrder(id);

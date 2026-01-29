@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 4 of 5 - Production Infrastructure
-**Plan**: 1 of 8 (IN PROGRESS)
-**Status**: In progress
-**Last activity**: 2026-01-29 - Completed 04-01-PLAN.md (Production Configuration Foundation)
+**Plan**: 2 of 6 (PAUSED AT CHECKPOINT)
+**Status**: Awaiting manual VM creation
+**Last activity**: 2026-01-29 - Completed 04-02 automation tasks (Proxmox VM Setup), paused at checkpoint
 
 ## Progress
 
@@ -19,10 +19,10 @@
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
-Phase 4: Production Infrastructure[█░░░░░░░░░] 1/8 plans (12%)
-Phase 5: Deployment Reconfig      [░░░░░░░░░░] 0/? plans (0%)
+Phase 4: Production Infrastructure[██░░░░░░░░] 1.5/6 plans (25%)
+Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [█████████░] 95%
+Overall:                          [█████████░] 90%
 ```
 
 ## Recent Decisions
@@ -71,6 +71,10 @@ Overall:                          [█████████░] 95%
 | Environment template with inline docs | Production .env.template documents all Supabase Docker Compose variables with generation commands | 2026-01-29 |
 | Automated secrets generation | generate-secrets.sh generates cryptographically secure secrets using OpenSSL | 2026-01-29 |
 | Deployment README structure | Organized README with Prerequisites, Steps, Maintenance, Security, and Troubleshooting sections | 2026-01-29 |
+| Use /dev/sdb as dedicated data disk | Separates Supabase data from OS, enables independent scaling | 2026-01-29 |
+| Mount data disk to /opt | Standard location for optional application software, keeps Docker storage on data disk | 2026-01-29 |
+| VM over LXC for Supabase | Better Docker compatibility, live migration support, no Proxmox update breakage | 2026-01-29 |
+| Automated vm-setup.sh script | Reduces manual configuration errors, ensures repeatable deployments | 2026-01-29 |
 
 ## Pending Todos
 
@@ -78,15 +82,26 @@ Overall:                          [█████████░] 95%
 
 ## Blockers/Concerns
 
-(None)
+**Current Blocker**: Plan 04-02 paused at checkpoint - requires manual VM creation in Proxmox UI
+
+**Details**:
+- Automated tasks complete: vm-setup.sh script and PROXMOX_VM_SETUP.md documentation created
+- Manual task pending: Create VM in Proxmox, install Ubuntu 22.04, run vm-setup.sh
+- See: docs/PROXMOX_VM_SETUP.md for step-by-step instructions
 
 ## Session Continuity
 
-**Last session**: 2026-01-29T22:54:00Z
-**Stopped at**: Completed 04-01-PLAN.md (Production Configuration Foundation)
-**Resume file**: .planning/phases/04-production-infrastructure/04-01-SUMMARY.md
-**Next action**: Continue Phase 4 - Plan 04-02 (Proxmox VM Setup)
+**Last session**: 2026-01-29T23:00:00Z
+**Stopped at**: Plan 04-02 checkpoint - automated tasks complete (2/3), waiting for manual VM creation
+**Resume files**:
+  - .planning/phases/04-production-infrastructure/04-02-SUMMARY.md
+  - docs/PROXMOX_VM_SETUP.md
+**Next action**:
+  1. Create VM in Proxmox following PROXMOX_VM_SETUP.md
+  2. Run: `scp production/vm-setup.sh <user>@<VM_IP>:~/`
+  3. SSH to VM: `sudo ./vm-setup.sh`
+  4. Resume execution: `/gsd:execute-phase 4` (will continue from plan 04-03)
 
 ---
 
-*Last updated: 2026-01-29T22:54:00Z*
+*Last updated: 2026-01-29T23:00:00Z*

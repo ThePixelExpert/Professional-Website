@@ -13,7 +13,9 @@ const PDFReceiptGenerator = require('./pdf-generator');
 
 const { db, initializeDatabase } = require('./database');
 const { requireAdmin } = require('./src/middleware/requireAdmin');
+const { requireAuth, optionalAuth } = require('./src/middleware/auth');
 const { createClient } = require('./src/lib/supabase-ssr');
+const { supabaseAdmin } = require('./src/config/supabase');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -308,32 +310,41 @@ app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async
   res.json({ received: true });
 });
 
-// Create order (enhanced with Stripe integration)
-app.post('/api/orders', async (req, res) => {
+// Create order (enhanced with Stripe integration and user linking)
+app.post('/api/orders', optionalAuth, async (req, res) => {
   console.log('Order endpoint called. Body:', req.body);
   try {
-    const { 
-      buyerEmail, 
-      items, 
-      buyerName, 
+    const {
+      buyerEmail,
+      items,
+      buyerName,
       buyerPhone,
       shippingAddress,
       billingAddress,
       address, // Legacy support
-      paymentIntentId, 
-      requiresPayment = false 
+      paymentIntentId,
+      requiresPayment = false
     } = req.body;
-    
+
     // Use new address format or fall back to legacy
     const finalShippingAddress = shippingAddress || address || '';
     const finalBillingAddress = billingAddress || finalShippingAddress;
-    
+
     // Calculate totals
     const subtotal = items.reduce((sum, item) => sum + (item.price || 50), 0);
     const tax = subtotal * 0.08; // 8% tax rate
     const total = subtotal + tax;
 
-    // Create order in database
+    // Get user ID if authenticated (set by optionalAuth middleware)
+    const userId = req.user?.id || null;
+
+    if (userId) {
+      console.log('Creating order for authenticated user:', userId);
+    } else {
+      console.log('Creating order for guest checkout');
+    }
+
+    // Create order in database - NOW WITH USER_ID
     const order = await db.createOrder({
       customerName: buyerName || '',
       customerEmail: buyerEmail,
@@ -344,7 +355,8 @@ app.post('/api/orders', async (req, res) => {
       items: items,
       subtotal: subtotal,
       tax: tax,
-      total: total
+      total: total,
+      userId: userId  // CRITICAL: Link order to user
     });
 
     // Create or update customer
@@ -425,6 +437,49 @@ app.post('/api/orders', async (req, res) => {
   } catch (error) {
     console.error('Order creation error:', error);
     res.status(500).json({ error: 'Failed to create order', details: error.message });
+  }
+});
+
+// Get customer's own orders (authenticated customers only)
+app.get('/api/customer/orders', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Fetch orders for this user using Supabase admin client
+    const { data: orders, error } = await supabaseAdmin
+      .from('orders')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching customer orders:', error);
+      throw error;
+    }
+
+    res.json({
+      orders: orders.map(order => ({
+        id: order.id,
+        customerName: order.customer_name,
+        customerEmail: order.customer_email,
+        items: order.items,
+        subtotal: parseFloat(order.subtotal),
+        tax: parseFloat(order.tax),
+        total: parseFloat(order.total),
+        status: order.status,
+        paymentStatus: order.payment_status,
+        trackingNumber: order.tracking_number,
+        created_at: order.created_at,
+        updated_at: order.updated_at
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching customer orders:', error);
+    res.status(500).json({ error: 'Failed to fetch orders' });
   }
 });
 

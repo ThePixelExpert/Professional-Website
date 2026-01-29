@@ -37,7 +37,8 @@ const db = {
       items,
       subtotal,
       tax,
-      total
+      total,
+      userId  // NEW: optional user ID for authenticated customers
     } = orderData
 
     const { data, error } = await supabaseAdmin
@@ -52,7 +53,8 @@ const db = {
         items: items,
         subtotal: subtotal,
         tax: tax,
-        total: total
+        total: total,
+        user_id: userId || null  // NEW: link to user if authenticated, NULL for guests
       })
       .select()
       .single()

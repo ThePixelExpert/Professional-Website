@@ -32,6 +32,38 @@ async function requireAuth(req, res, next) {
   }
 }
 
+/**
+ * Optional authentication middleware
+ * Extracts user if authenticated, but continues if not
+ * Used for endpoints that work for both guests and authenticated users
+ * Sets req.user to user object if authenticated, null if not
+ */
+async function optionalAuth(req, res, next) {
+  try {
+    // Create per-request Supabase client with cookie context
+    const supabase = createClient({ req, res })
+
+    // Try to get user, but don't fail if not authenticated
+    const { data: { user }, error } = await supabase.auth.getUser()
+
+    if (error || !user) {
+      // No valid session - continue as guest
+      req.user = null
+      return next()
+    }
+
+    // Valid session - attach user
+    req.user = user
+    next()
+  } catch (error) {
+    // Error checking auth - continue as guest (don't block request)
+    console.error('Optional auth error:', error)
+    req.user = null
+    next()
+  }
+}
+
 module.exports = {
-  requireAuth
+  requireAuth,
+  optionalAuth
 }

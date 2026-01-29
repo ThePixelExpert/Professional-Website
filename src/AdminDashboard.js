@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 import { FaChartBar, FaShoppingCart, FaSignOutAlt, FaTachometerAlt, FaUsers, FaCog } from 'react-icons/fa';
-import AdminLogin from './components/AdminLogin';
+import { useAuth } from './contexts/AuthContext';
+import AdminRoute from './components/AdminRoute';
 import AdminOrdersEnhanced from './components/AdminOrdersEnhanced';
 import AdminAnalytics from './components/AdminAnalytics';
 import AdminCustomers from './components/AdminCustomers';
 import AdminSettings from './components/AdminSettings';
 import './AdminDashboard.css';
 
-function AdminDashboard() {
-  const [token, setToken] = useState(null);
+function AdminDashboardContent() {
+  const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('analytics');
 
-  const handleLogout = () => {
-    setToken(null);
-    setActiveTab('analytics');
-    localStorage.removeItem('adminToken');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      // signOut will trigger onAuthStateChange, which will update user to null
+      // AdminRoute will then redirect to login
+      window.location.hash = '#/admin/login';
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
   };
-
-  if (!token) {
-    return <AdminLogin onLogin={setToken} />;
-  }
 
   return (
     <div className="admin-dashboard">
@@ -28,35 +30,40 @@ function AdminDashboard() {
           <FaTachometerAlt />
           <h1>Edwards Tech Solutions - Admin Dashboard</h1>
         </div>
-        <button className="logout-btn" onClick={handleLogout}>
-          <FaSignOutAlt />
-          Logout
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <span style={{ color: '#6b7280', fontSize: 14 }}>
+            {user?.email}
+          </span>
+          <button className="logout-btn" onClick={handleLogout}>
+            <FaSignOutAlt />
+            Logout
+          </button>
+        </div>
       </div>
-      
+
       <div className="admin-navigation">
-        <button 
+        <button
           className={`nav-tab ${activeTab === 'analytics' ? 'active' : ''}`}
           onClick={() => setActiveTab('analytics')}
         >
           <FaChartBar />
           Analytics
         </button>
-        <button 
+        <button
           className={`nav-tab ${activeTab === 'orders' ? 'active' : ''}`}
           onClick={() => setActiveTab('orders')}
         >
           <FaShoppingCart />
           Orders
         </button>
-        <button 
+        <button
           className={`nav-tab ${activeTab === 'customers' ? 'active' : ''}`}
           onClick={() => setActiveTab('customers')}
         >
           <FaUsers />
           Customers
         </button>
-        <button 
+        <button
           className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => setActiveTab('settings')}
         >
@@ -64,14 +71,23 @@ function AdminDashboard() {
           Settings
         </button>
       </div>
-      
+
       <div className="admin-content">
         {activeTab === 'analytics' && <AdminAnalytics />}
-        {activeTab === 'orders' && <AdminOrdersEnhanced token={token} />}
-        {activeTab === 'customers' && <AdminCustomers token={token} />}
-        {activeTab === 'settings' && <AdminSettings token={token} />}
+        {activeTab === 'orders' && <AdminOrdersEnhanced />}
+        {activeTab === 'customers' && <AdminCustomers />}
+        {activeTab === 'settings' && <AdminSettings />}
       </div>
     </div>
+  );
+}
+
+// Wrap with AdminRoute for protection
+function AdminDashboard() {
+  return (
+    <AdminRoute>
+      <AdminDashboardContent />
+    </AdminRoute>
   );
 }
 

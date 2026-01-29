@@ -6,11 +6,14 @@ const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const PDFReceiptGenerator = require('./pdf-generator');
 
 const { db, initializeDatabase } = require('./database');
+const { requireAdmin } = require('./src/middleware/requireAdmin');
+const { createClient } = require('./src/lib/supabase-ssr');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -46,6 +49,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/contact', limiter);
 
 // Health check endpoint (required for Kubernetes probes)

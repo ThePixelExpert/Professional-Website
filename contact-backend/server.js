@@ -19,7 +19,7 @@ const ADMIN_PASS = process.env.ADMIN_PASS || 'password';
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
 // Admin Auth Middleware
-function agh repo clone ThePixelExpert/Professional-WebsiteuthMiddleware(req, res, next) {
+function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'No token provided' });
   const token = authHeader.split(' ')[1];
@@ -369,11 +369,12 @@ app.post('/api/orders', async (req, res) => {
       billingAddress: finalBillingAddress
     });
 
-    // Send confirmation email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: buyerEmail,
-      subject: 'Order Confirmation - Edwards Engineering',
+    // Send confirmation email (don't block order creation if email fails)
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: buyerEmail,
+        subject: 'Order Confirmation - Edwards Engineering',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1976d2;">Thank you for your order!</h2>
@@ -412,7 +413,12 @@ app.post('/api/orders', async (req, res) => {
           Edwards Engineering</p>
         </div>
       `
-    });
+      });
+      console.log('✅ Order confirmation email sent');
+    } catch (emailError) {
+      console.error('⚠️ Failed to send order confirmation email:', emailError.message);
+      // Continue - order was created successfully even if email failed
+    }
 
     res.json({
       success: true,

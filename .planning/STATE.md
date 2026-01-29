@@ -9,20 +9,20 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 3 of 5 - Auth Migration
-**Plan**: 1 of 7
+**Plan**: 2 of 7
 **Status**: In progress
-**Last activity**: 2026-01-29 - Completed 03-01-PLAN.md (Backend Auth Foundation)
+**Last activity**: 2026-01-29 - Completed 03-02-PLAN.md (Role-Based Authorization Schema)
 
 ## Progress
 
 ```
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
-Phase 3: Auth Migration           [█░░░░░░░░░] 1/7 plans (14%)
+Phase 3: Auth Migration           [██░░░░░░░░] 2/7 plans (29%)
 Phase 4: Production Infrastructure[░░░░░░░░░░] Not Started
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [█████░░░░░] 45%
+Overall:                          [█████░░░░░] 50%
 ```
 
 ## Recent Decisions
@@ -47,6 +47,9 @@ Overall:                          [█████░░░░░] 45%
 | Per-request Supabase client pattern | Each request needs its own client with proper cookie context, never reuse clients | 2026-01-29 |
 | Admin role in app_metadata.user_role | Custom claims in JWT allow backend authorization checks without additional database queries | 2026-01-29 |
 | 401 vs 403 status codes | 401 for missing/invalid session (unauthorized), 403 for valid session but insufficient permissions | 2026-01-29 |
+| Store roles in dedicated user_roles table | Cleaner separation, easier to audit, supports multiple roles per user | 2026-01-29 |
+| Use Auth Hooks for JWT claim injection | Supabase-native approach, claims available immediately without extra queries | 2026-01-29 |
+| Support only 'admin' and 'customer' roles initially | Matches current auth requirements, can extend CHECK constraint later | 2026-01-29 |
 
 ## Pending Todos
 
@@ -58,10 +61,10 @@ Overall:                          [█████░░░░░] 45%
 
 ## Session Continuity
 
-**Last session**: 2026-01-29T17:17:30Z
-**Stopped at**: Completed 03-01-PLAN.md (Backend Auth Foundation)
+**Last session**: 2026-01-29T17:19:00Z
+**Stopped at**: Completed 03-02-PLAN.md (Role-Based Authorization Schema)
 **Resume file**: None
-**Next action**: Continue Phase 3 with plan 03-02 (Auth Hook for custom JWT claims)
+**Next action**: Continue Phase 3 with plan 03-03 (Admin OAuth implementation)
 
 ---
 

@@ -71,15 +71,16 @@ Plans:
 **Plans:** 7 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Backend auth foundation (SSR client + middleware)
-- [ ] 03-02-PLAN.md — Database schema for user roles and Auth Hook
-- [ ] 03-03-PLAN.md — Backend route updates (replace JWT with Supabase)
-- [ ] 03-04-PLAN.md — Frontend auth foundation (AuthContext + route guards)
-- [ ] 03-05-PLAN.md — Admin OAuth UI (login component + dashboard updates)
-- [ ] 03-06-PLAN.md — Customer accounts (login/signup + order history)
-- [ ] 03-07-PLAN.md — Customer API endpoint and integration verification
+- [x] 03-01-PLAN.md — Backend auth foundation (SSR client + middleware)
+- [x] 03-02-PLAN.md — Database schema for user roles and Auth Hook
+- [x] 03-03-PLAN.md — Backend route updates (replace JWT with Supabase)
+- [x] 03-04-PLAN.md — Frontend auth foundation (AuthContext + route guards)
+- [x] 03-05-PLAN.md — Admin OAuth UI (login component + dashboard updates)
+- [x] 03-06-PLAN.md — Customer accounts (login/signup + order history)
+- [x] 03-07-PLAN.md — Customer API endpoint and integration verification
 
-**Status**: Not Started
+**Status**: Complete
+**Completed**: 2026-01-29
 
 ---
 

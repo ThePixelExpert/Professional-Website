@@ -9,20 +9,20 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 2 of 5 - Schema Design & Backend Refactor
-**Plan**: — (phase not yet planned)
-**Status**: Ready to plan
-**Last activity**: 2026-01-28 - Completed Phase 1
+**Plan**: 1 of 2
+**Status**: In progress
+**Last activity**: 2026-01-29 - Completed 02-01-PLAN.md (Database Migrations)
 
 ## Progress
 
 ```
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
-Phase 2: Schema & Backend         [░░░░░░░░░░] Not Started
+Phase 2: Schema & Backend         [█████░░░░░] 1/2 plans (50%)
 Phase 3: Auth Migration           [░░░░░░░░░░] Not Started
 Phase 4: Production Infrastructure[░░░░░░░░░░] Not Started
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [██░░░░░░░░] 20%
+Overall:                          [███░░░░░░░] 30%
 ```
 
 ## Recent Decisions
@@ -36,6 +36,10 @@ Overall:                          [██░░░░░░░░] 20%
 | Use .env.template pattern with inline documentation | Developers can reference values without switching to separate docs | 2026-01-28 |
 | Pre-populate .env with local defaults | Immediate developer experience - copy and start developing | 2026-01-28 |
 | Create comprehensive LOCAL_DEVELOPMENT.md | Single source of truth for setup process | 2026-01-28 |
+| Use moddatetime extension for timestamps | Supabase-standard approach, simpler than custom trigger function | 2026-01-29 |
+| Preserve VARCHAR(50) for products.id | Maintain compatibility with existing product ID format (e.g., 'custom-pcb-001') | 2026-01-29 |
+| Include legacy address columns | Keep customers.address and orders.customer_address for backward compatibility | 2026-01-29 |
+| Use TIMESTAMPTZ throughout schema | Follow Supabase conventions, avoid timezone ambiguity | 2026-01-29 |
 
 ## Pending Todos
 
@@ -47,11 +51,11 @@ Overall:                          [██░░░░░░░░] 20%
 
 ## Session Continuity
 
-**Last session**: 2026-01-28T23:29:38Z
-**Stopped at**: Completed 01-02-PLAN.md (Environment Configuration & Local Verification)
+**Last session**: 2026-01-29T00:07:48Z
+**Stopped at**: Completed 02-01-PLAN.md (Database Migrations)
 **Resume file**: None
-**Next action**: Phase 1 complete. Ready to begin Phase 2 (Schema & Backend Development)
+**Next action**: Continue Phase 2 with 02-02-PLAN.md (Backend Refactor)
 
 ---
 
-*Last updated: 2026-01-28*
+*Last updated: 2026-01-29*

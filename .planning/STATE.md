@@ -8,10 +8,10 @@
 ## Current Position
 
 **Milestone**: v1.0 - Core Migration
-**Phase**: 3 of 5 - Auth Migration
-**Plan**: 7 of 7 (COMPLETE)
-**Status**: Phase complete
-**Last activity**: 2026-01-29 - Completed 03-07-PLAN.md (Integration Verification)
+**Phase**: 4 of 5 - Production Infrastructure
+**Plan**: 1 of 8 (IN PROGRESS)
+**Status**: In progress
+**Last activity**: 2026-01-29 - Completed 04-01-PLAN.md (Production Configuration Foundation)
 
 ## Progress
 
@@ -19,10 +19,10 @@
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
-Phase 4: Production Infrastructure[░░░░░░░░░░] Not Started
-Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
+Phase 4: Production Infrastructure[█░░░░░░░░░] 1/8 plans (12%)
+Phase 5: Deployment Reconfig      [░░░░░░░░░░] 0/? plans (0%)
 ─────────────────────────────────────────────
-Overall:                          [█████████░] 94%
+Overall:                          [█████████░] 95%
 ```
 
 ## Recent Decisions
@@ -68,6 +68,9 @@ Overall:                          [█████████░] 94%
 | Dual auth support in requireAuth middleware | Support both Bearer token (frontend) and cookie (SSR) authentication for flexibility | 2026-01-29 |
 | Public client for token verification | Use public Supabase client to verify JWT tokens sent via Authorization header | 2026-01-29 |
 | Comprehensive OAuth setup documentation | Document all manual OAuth configuration steps that cannot be automated | 2026-01-29 |
+| Environment template with inline docs | Production .env.template documents all Supabase Docker Compose variables with generation commands | 2026-01-29 |
+| Automated secrets generation | generate-secrets.sh generates cryptographically secure secrets using OpenSSL | 2026-01-29 |
+| Deployment README structure | Organized README with Prerequisites, Steps, Maintenance, Security, and Troubleshooting sections | 2026-01-29 |
 
 ## Pending Todos
 
@@ -79,11 +82,11 @@ Overall:                          [█████████░] 94%
 
 ## Session Continuity
 
-**Last session**: 2026-01-29T19:36:57Z
-**Stopped at**: Completed 03-07-PLAN.md (Integration Verification)
-**Resume file**: None
-**Next action**: Begin Phase 4 (Production Infrastructure)
+**Last session**: 2026-01-29T22:54:00Z
+**Stopped at**: Completed 04-01-PLAN.md (Production Configuration Foundation)
+**Resume file**: .planning/phases/04-production-infrastructure/04-01-SUMMARY.md
+**Next action**: Continue Phase 4 - Plan 04-02 (Proxmox VM Setup)
 
 ---
 
-*Last updated: 2026-01-29T19:36:57Z*
+*Last updated: 2026-01-29T22:54:00Z*

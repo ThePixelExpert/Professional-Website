@@ -10,6 +10,8 @@ import AdminLogin from './components/AdminLogin';
 import PurchasePage from './PurchasePage';
 import CheckoutPage from './CheckoutPage';
 import OrderTracking from './OrderTracking';
+import CustomerAuth from './components/CustomerAuth';
+import AccountPage from './components/AccountPage';
 import { AuthProvider } from './contexts/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -46,6 +48,10 @@ function render() {
     renderWithAuth(CheckoutPage, { projectId });
   } else if (hash.startsWith('#/track')) {
     renderWithAuth(OrderTracking);
+  } else if (hash.startsWith('#/login') || hash.startsWith('#/signup')) {
+    renderWithAuth(CustomerAuth);
+  } else if (hash.startsWith('#/account')) {
+    renderWithAuth(AccountPage);
   } else {
     renderWithAuth(App);
   }

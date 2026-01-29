@@ -85,18 +85,28 @@ Plans:
 ---
 
 ### Phase 4: Production Infrastructure
-**Goal**: Deploy Supabase to Proxmox VM
+**Goal**: Deploy Supabase to Proxmox VM with SSL, backups, and environment parity
 
 **Delivers**:
 - Proxmox VM configured for Supabase
 - Docker Compose deployment with proper networking
-- SSL/TLS configuration
-- Backup strategy for database
+- SSL/TLS configuration via Caddy reverse proxy
+- Backup strategy for database (daily, 7-day retention)
 - Environment parity with local dev
 
 **Dependencies**: Phase 3 (schema and auth finalized)
 
-**Status**: Not Started
+**Plans:** 6 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Production configuration foundation (env template, secrets generator, README)
+- [ ] 04-02-PLAN.md — Proxmox VM setup (Docker installation, storage configuration)
+- [ ] 04-03-PLAN.md — Supabase Docker Compose deployment (override file, deploy script)
+- [ ] 04-04-PLAN.md — Caddy reverse proxy and SSL (automatic Let's Encrypt)
+- [ ] 04-05-PLAN.md — Backup automation (kartoza/pg-backup, manual scripts)
+- [ ] 04-06-PLAN.md — Production verification (migrations, OAuth, end-to-end test)
+
+**Status**: Planned
 
 ---
 

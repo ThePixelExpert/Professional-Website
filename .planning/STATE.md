@@ -9,20 +9,20 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 2 of 5 - Schema Design & Backend Refactor
-**Plan**: 1 of 2
-**Status**: In progress
-**Last activity**: 2026-01-29 - Completed 02-01-PLAN.md (Database Migrations)
+**Plan**: 2 of 2
+**Status**: Phase complete
+**Last activity**: 2026-01-29 - Completed 02-02-PLAN.md (Backend Refactor)
 
 ## Progress
 
 ```
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
-Phase 2: Schema & Backend         [█████░░░░░] 1/2 plans (50%)
+Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [░░░░░░░░░░] Not Started
 Phase 4: Production Infrastructure[░░░░░░░░░░] Not Started
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [███░░░░░░░] 30%
+Overall:                          [████░░░░░░] 40%
 ```
 
 ## Recent Decisions
@@ -40,6 +40,9 @@ Overall:                          [███░░░░░░░] 30%
 | Preserve VARCHAR(50) for products.id | Maintain compatibility with existing product ID format (e.g., 'custom-pcb-001') | 2026-01-29 |
 | Include legacy address columns | Keep customers.address and orders.customer_address for backward compatibility | 2026-01-29 |
 | Use TIMESTAMPTZ throughout schema | Follow Supabase conventions, avoid timezone ambiguity | 2026-01-29 |
+| Query builder over raw SQL | Use Supabase .from().select() pattern for better type safety and integration | 2026-01-29 |
+| Service module pattern | Implementations in src/services/, root-level wrappers for compatibility | 2026-01-29 |
+| Preserve address fallback logic | Maintain exact field fallback behavior from original database.js | 2026-01-29 |
 
 ## Pending Todos
 
@@ -51,10 +54,10 @@ Overall:                          [███░░░░░░░] 30%
 
 ## Session Continuity
 
-**Last session**: 2026-01-29T00:07:48Z
-**Stopped at**: Completed 02-01-PLAN.md (Database Migrations)
+**Last session**: 2026-01-29T00:14:04Z
+**Stopped at**: Completed 02-02-PLAN.md (Backend Refactor)
 **Resume file**: None
-**Next action**: Continue Phase 2 with 02-02-PLAN.md (Backend Refactor)
+**Next action**: Phase 2 complete. Ready to begin Phase 3 (Auth Migration)
 
 ---
 

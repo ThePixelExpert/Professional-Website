@@ -11,7 +11,7 @@
 **Phase**: 3 of 5 - Auth Migration
 **Plan**: 4 of 7
 **Status**: In progress
-**Last activity**: 2026-01-29 - Completed 03-04-PLAN.md (React Auth Foundation)
+**Last activity**: 2026-01-29 - Completed 03-03-PLAN.md (Backend Auth Middleware)
 
 ## Progress
 
@@ -55,6 +55,9 @@ Overall:                          [██████░░░░] 62%
 | Expose supabase client in AuthContext | Allows components to perform direct auth operations without prop drilling | 2026-01-29 |
 | Use hash-based navigation for route guards | Existing app uses HashRouter pattern, maintaining consistency | 2026-01-29 |
 | Store redirect destination in sessionStorage | Enables OAuth callback to redirect user to intended destination after login | 2026-01-29 |
+| Remove JWT authMiddleware for Supabase requireAdmin | Migrated from JWT tokens to Supabase session-based auth with cookie support | 2026-01-29 |
+| Create session management endpoints | Frontend can check auth state via /api/auth/session and sign out via /api/auth/signout | 2026-01-29 |
+| Global signout scope for admin sessions | Sign out revokes all sessions across devices for security | 2026-01-29 |
 
 ## Pending Todos
 
@@ -66,11 +69,11 @@ Overall:                          [██████░░░░] 62%
 
 ## Session Continuity
 
-**Last session**: 2026-01-29T17:26:23Z
-**Stopped at**: Completed 03-04-PLAN.md (React Auth Foundation)
+**Last session**: 2026-01-29T17:28:31Z
+**Stopped at**: Completed 03-03-PLAN.md (Backend Auth Middleware)
 **Resume file**: None
-**Next action**: Continue Phase 3 with remaining plans (Admin OAuth, Customer Auth, Migration)
+**Next action**: Continue Phase 3 with remaining plans (03-05, 03-06, 03-07)
 
 ---
 
-*Last updated: 2026-01-29*
+*Last updated: 2026-01-29T17:28:31Z*

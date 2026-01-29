@@ -6,58 +6,48 @@ import reportWebVitals from './reportWebVitals';
 import AllProjects from './components/AllProjects';
 import InfrastructureDocs from './components/InfrastructureDocs';
 import AdminDashboard from './AdminDashboard';
+import AdminLogin from './components/AdminLogin';
 import PurchasePage from './PurchasePage';
 import CheckoutPage from './CheckoutPage';
 import OrderTracking from './OrderTracking';
+import { AuthProvider } from './contexts/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 function render() {
   const hash = window.location.hash || '#/';
+
+  // Wrap content with AuthProvider
+  const renderWithAuth = (Component, props = {}) => {
+    root.render(
+      <React.StrictMode>
+        <AuthProvider>
+          <Component {...props} />
+        </AuthProvider>
+      </React.StrictMode>
+    );
+  };
+
   if (hash.startsWith('#/all-projects')) {
-    root.render(
-      <React.StrictMode>
-        <AllProjects />
-      </React.StrictMode>
-    );
+    renderWithAuth(AllProjects);
   } else if (hash.startsWith('#/infrastructure-docs')) {
-    root.render(
-      <React.StrictMode>
-        <InfrastructureDocs />
-      </React.StrictMode>
-    );
+    renderWithAuth(InfrastructureDocs);
+  } else if (hash.startsWith('#/admin/login')) {
+    // New: dedicated admin login route
+    renderWithAuth(AdminLogin);
   } else if (hash.startsWith('#/admin')) {
-    root.render(
-      <React.StrictMode>
-        <AdminDashboard />
-      </React.StrictMode>
-    );
+    // Admin dashboard (will be protected inside component)
+    renderWithAuth(AdminDashboard);
   } else if (hash.startsWith('#/purchase/')) {
     const projectId = hash.replace('#/purchase/', '');
-    root.render(
-      <React.StrictMode>
-        <PurchasePage projectId={projectId} />
-      </React.StrictMode>
-    );
+    renderWithAuth(PurchasePage, { projectId });
   } else if (hash.startsWith('#/checkout/')) {
     const projectId = hash.replace('#/checkout/', '');
-    root.render(
-      <React.StrictMode>
-        <CheckoutPage projectId={projectId} />
-      </React.StrictMode>
-    );
+    renderWithAuth(CheckoutPage, { projectId });
   } else if (hash.startsWith('#/track')) {
-    root.render(
-      <React.StrictMode>
-        <OrderTracking />
-      </React.StrictMode>
-    );
+    renderWithAuth(OrderTracking);
   } else {
-    root.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
+    renderWithAuth(App);
   }
 }
 

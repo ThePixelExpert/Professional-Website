@@ -176,6 +176,40 @@ app.get('/api/health', (req, res) => {
 // Admin Login Endpoint - REMOVED (migrated to Supabase OAuth)
 // Admin login now happens through Supabase Auth (Google OAuth)
 
+// Check current session status
+app.get('/api/auth/session', async (req, res) => {
+  const supabase = createClient({ req, res });
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return res.json({ authenticated: false, user: null });
+  }
+
+  // Return user info (without sensitive data)
+  res.json({
+    authenticated: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.app_metadata?.user_role || null
+    }
+  });
+});
+
+// Sign out (revokes all sessions)
+app.post('/api/auth/signout', async (req, res) => {
+  const supabase = createClient({ req, res });
+
+  const { error } = await supabase.auth.signOut({ scope: 'global' });
+
+  if (error) {
+    console.error('Signout error:', error);
+    return res.status(500).json({ error: 'Failed to sign out' });
+  }
+
+  res.json({ success: true });
+});
+
 // Create Payment Intent for Stripe
 app.post('/api/create-payment-intent', async (req, res) => {
   try {

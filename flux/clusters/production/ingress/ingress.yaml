@@ -1,0 +1,65 @@
+# Split architecture routing:
+# /api -> backend VM (via Service+Endpoints at 192.168.0.50)
+# /    -> frontend pods (running in k3s cluster)
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: edwards-api-ingress
+  namespace: website
+  annotations:
+    traefik.ingress.kubernetes.io/router.priority: "2000"  # Higher priority matches first
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: edwardstech.dev
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 3001
+  - host: www.edwardstech.dev
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 3001
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: edwards-frontend-ingress
+  namespace: website
+  annotations:
+    traefik.ingress.kubernetes.io/router.priority: "1000"  # Lower priority is catch-all
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: edwardstech.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+  - host: www.edwardstech.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80

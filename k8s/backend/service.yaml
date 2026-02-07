@@ -1,0 +1,13 @@
+# Backend Service for external Proxmox VM
+# No selector - traffic routed to manual Endpoints (Proxmox VM)
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: website
+spec:
+  # No selector field - this Service is manually connected to Endpoints
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001

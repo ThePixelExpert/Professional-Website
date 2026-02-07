@@ -1,3 +1,4 @@
+# ARCHIVED: Replaced by split architecture (Phase 5). Backend now runs on Proxmox VM.
 apiVersion: v1
 kind: ConfigMap
 metadata:

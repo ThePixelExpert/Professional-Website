@@ -125,14 +125,14 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Backend containerization (Dockerfile, Docker Compose, env template)
-- [ ] 05-02-PLAN.md — Frontend containerization (Dockerfile, nginx.conf cleanup)
-- [ ] 05-03-PLAN.md — Kubernetes manifests (frontend deployment, backend Service+Endpoints, ingress)
-- [ ] 05-04-PLAN.md — Build and deploy scripts (build-and-push, deploy-backend, deploy-k8s)
-- [ ] 05-05-PLAN.md — Legacy cleanup and configuration review
+- [x] 05-01-PLAN.md — Backend containerization (Dockerfile, Docker Compose, env template)
+- [x] 05-02-PLAN.md — Frontend containerization (Dockerfile, nginx.conf cleanup)
+- [x] 05-03-PLAN.md — Kubernetes manifests (frontend deployment, backend Service+Endpoints, ingress)
+- [x] 05-04-PLAN.md — Build and deploy scripts (build-and-push, deploy-backend, deploy-k8s)
+- [x] 05-05-PLAN.md — Legacy cleanup and configuration review
 
-**Status**: Planned
-**Planned**: 2026-02-07
+**Status**: Complete
+**Completed**: 2026-02-07
 
 ---
 
@@ -161,4 +161,4 @@ Plans:
 ---
 
 *Created: 2026-01-28*
-*Updated: 2026-02-07 - Phase 5 planned (5 plans in 3 waves)*
+*Updated: 2026-02-07 - Phase 5 complete (deployment reconfiguration)*

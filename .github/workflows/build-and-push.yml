@@ -1,0 +1,26 @@
+name: Build and Push Images
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - '**.md'
+      - '.planning/**'
+      - 'flux/**'
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load production environment
+        run: |
+          if [ ! -f .env.production ]; then
+            echo "Error: .env.production not found on runner"
+            exit 1
+          fi
+
+      - name: Build and push images
+        run: ./scripts/build-and-push.sh all

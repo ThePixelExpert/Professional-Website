@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-deploy
+  namespace: website
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: deployer
+        image: alpine:3.19
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          # Install SSH client
+          apk add --no-cache openssh-client
+
+          # Configure SSH key
+          mkdir -p /root/.ssh
+          cp /keys/id_ed25519 /root/.ssh/id_ed25519
+          chmod 600 /root/.ssh/id_ed25519
+
+          SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
+          VM_HOST="ubuntu@192.168.0.50"
+          DEPLOY_DIR="/opt/backend"
+
+          echo "=== Backend Deployment to VM ==="
+
+          # Ensure deploy directory exists
+          ssh $SSH_OPTS $VM_HOST "mkdir -p ${DEPLOY_DIR}"
+
+          # Copy the Flux-managed docker-compose file from git repo on VM
+          # The VM has the repo cloned; we pull latest which includes Flux's tag update
+          ssh $SSH_OPTS $VM_HOST "cd /opt/professional-website && git pull origin master"
+
+          # Copy the Flux-managed compose file to the deploy directory
+          ssh $SSH_OPTS $VM_HOST "cp /opt/professional-website/flux/clusters/production/backend/docker-compose.backend.yml ${DEPLOY_DIR}/docker-compose.yml"
+
+          # Pull the new image and restart
+          ssh $SSH_OPTS $VM_HOST "cd ${DEPLOY_DIR} && docker compose pull && docker compose up -d"
+
+          # Wait for health check
+          echo "Waiting for backend health check..."
+          sleep 10
+          ssh $SSH_OPTS $VM_HOST "curl -sf http://localhost:3001/api/health" || {
+            echo "ERROR: Backend health check failed!"
+            ssh $SSH_OPTS $VM_HOST "cd ${DEPLOY_DIR} && docker compose logs --tail=30"
+            exit 1
+          }
+
+          echo "Backend deployment successful!"
+        volumeMounts:
+        - name: ssh-key
+          mountPath: /keys
+          readOnly: true
+      volumes:
+      - name: ssh-key
+        secret:
+          secretName: vm-ssh-key
+          defaultMode: 0400

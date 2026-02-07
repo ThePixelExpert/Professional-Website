@@ -8,10 +8,10 @@
 ## Current Position
 
 **Milestone**: v1.0 - Core Migration
-**Phase**: 5 of 6 - Deployment Reconfiguration
-**Plan**: 5 of 5
-**Status**: Phase Complete
-**Last activity**: 2026-02-07 - Completed 05-05-PLAN.md (Legacy Cleanup and Configuration Review)
+**Phase**: 6 of 6 - GitOps with Flux
+**Plan**: 1 of 5
+**Status**: In Progress
+**Last activity**: 2026-02-07 - Completed 06-01-PLAN.md (CI Pipeline and Tag Format)
 
 ## Progress
 
@@ -21,7 +21,7 @@ Phase 2: Schema & Backend         [██████████] 2/2 plans (10
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
 Phase 5: Deployment Reconfig      [██████████] 5/5 plans (100%)
-Phase 6: GitOps with Flux         [░░░░░░░░░░] Not Started
+Phase 6: GitOps with Flux         [██░░░░░░░░] 1/5 plans (20%)
 ─────────────────────────────────────────────
 Overall:                          [█████████░] 96%
 ```
@@ -109,6 +109,9 @@ Overall:                          [█████████░] 96%
 | kubectl via SSH wrapper for k8s deployments | kubectl_pi function wraps all kubectl commands to run on Pi via SSH | 2026-02-07 |
 | Wait 10s then health check after backend deploy | Validate backend startup by curling /api/health endpoint after container start | 2026-02-07 |
 | Selective build support in build-and-push.sh | Accept argument (all|frontend|backend) for faster iteration on single component | 2026-02-07 |
+| Image tags use main-{sha}-{timestamp} format | Flux ImagePolicy requires chronologically sortable tags for determining latest image | 2026-02-07 |
+| GitHub Actions self-hosted runner for builds | Cloud runners cannot reach LAN-only Harbor registry at 192.168.0.40:5000 | 2026-02-07 |
+| Skip CI builds for docs/planning/Flux manifests | Prevents unnecessary builds for documentation and Flux automation commits | 2026-02-07 |
 
 ## Pending Todos
 
@@ -116,38 +119,32 @@ Overall:                          [█████████░] 96%
 
 ## Blockers/Concerns
 
-**Phase 5 Complete**: Deployment reconfiguration finished (5/5 plans)
-- ✓ Dockerfile.backend updated with src/ directory and health check (05-01)
-- ✓ docker-compose.backend.yml created for VM deployment (05-01)
-- ✓ .env.production.template created with Supabase variables (05-01)
-- ✓ nginx.conf cleaned - API proxying removed, Traefik handles routing (05-02)
-- ✓ Dockerfile.frontend hardened - non-root user, health checks, build ARGs (05-02)
-- ✓ Frontend k8s Deployment with Pi-appropriate resources and health probes (05-03)
-- ✓ Backend Service+Endpoints routing to Proxmox VM at 192.168.0.50 (05-03)
-- ✓ Traefik Ingress configured for split architecture routing (05-03)
-- ✓ build-and-push.sh with multi-platform builds and git SHA tagging (05-04)
-- ✓ deploy-backend.sh for VM deployment with health validation (05-04)
-- ✓ deploy-k8s.sh for k3s frontend deployment with rollout verification (05-04)
-- ✓ Legacy k8s manifests archived, clean directory structure (05-05)
-- ✓ Complete split architecture configuration verified by human (05-05)
+**Phase 6 In Progress**: GitOps with Flux (1/5 plans complete)
+- ✓ CI pipeline with sortable image tags (06-01)
+- ⏳ Flux bootstrap and installation (06-02)
+- ⏳ Image automation configuration (06-03)
+- ⏳ Sealed Secrets setup (06-04)
+- ⏳ Backend deployment automation (06-05)
 
-**Next**: Phase 6 (GitOps with Flux) - 1 plan remaining for v1.0 milestone
+**Setup Required for Next Plans**:
+- Self-hosted GitHub Actions runner must be registered on homelab LAN
+- Runner needs `.env.production` file with React build variables
+- kubectl access to k3s cluster required for Flux bootstrap
 
-**Note**: All configurations validated for syntax and reviewed. Runtime testing deferred until Proxmox VM is available at 192.168.0.50. Ready for GitOps implementation.
+**Note**: Image tags now sortable for Flux. CI automation ready once self-hosted runner is configured.
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T18:41:43Z
-**Stopped at**: Completed Phase 5 (Deployment Reconfiguration)
+**Last session**: 2026-02-07T21:18:53Z
+**Stopped at**: Completed 06-01-PLAN.md (CI Pipeline and Tag Format)
 **Strategy**:
-  - Phase 5 complete (5/5 plans) - split architecture fully configured
-  - Backend configured for Proxmox VM deployment via Docker Compose
-  - Frontend configured for k3s deployment with Traefik routing
-  - Build and deployment automation scripts ready
-  - Legacy manifests archived, clean k8s directory structure
-**Next action**: `/gsd:research-phase 06` or `/gsd:plan-phase 06` (GitOps with Flux)
+  - Phase 6 started (1/5 plans) - CI infrastructure ready for GitOps
+  - Sortable image tags enable Flux ImagePolicy automation
+  - GitHub Actions workflow ready for self-hosted runner
+  - Next: Flux bootstrap on k3s cluster (06-02)
+**Next action**: Execute plan 06-02 (Flux Bootstrap) or set up self-hosted runner
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T18:41:43Z*
+*Last updated: 2026-02-07T21:18:53Z*

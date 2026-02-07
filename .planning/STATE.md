@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 6 of 6 - GitOps with Flux
-**Plan**: 2 of 5
+**Plan**: 3 of 5
 **Status**: In Progress
-**Last activity**: 2026-02-07 - Completed 06-02-PLAN.md (Flux-Managed Frontend Manifests)
+**Last activity**: 2026-02-07 - Completed 06-03-PLAN.md (Backend Deployment Manifests)
 
 ## Progress
 
@@ -21,9 +21,9 @@ Phase 2: Schema & Backend         [██████████] 2/2 plans (10
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
 Phase 5: Deployment Reconfig      [██████████] 5/5 plans (100%)
-Phase 6: GitOps with Flux         [████░░░░░░] 2/5 plans (40%)
+Phase 6: GitOps with Flux         [██████░░░░] 3/5 plans (60%)
 ─────────────────────────────────────────────
-Overall:                          [█████████░] 97%
+Overall:                          [█████████░] 98%
 ```
 
 ## Recent Decisions
@@ -116,6 +116,10 @@ Overall:                          [█████████░] 97%
 | Separate ingress directory for split routing | Ingress routes to both frontend and backend services, belongs at higher level | 2026-02-07 |
 | Readiness probe initialDelaySeconds 10s for Pi | Increased from 5s to give React app time to cold-start on Pi hardware | 2026-02-07 |
 | Placeholder tag main-placeholder-0000000000 | Follows sortable format for Flux automation, replaced on first reconciliation | 2026-02-07 |
+| Backend deploy Job uses git pull on VM to get Flux-updated compose file | Job pulls git repo on VM to fetch Flux's image tag updates in docker-compose file | 2026-02-07 |
+| docker-compose file excluded from Kustomization resources | Compose file is not a k8s resource, only Job is in Kustomization | 2026-02-07 |
+| SSH key mounted from SealedSecret vm-ssh-key with mode 0400 | Job mounts SSH key from sealed secret with correct permissions for SSH client | 2026-02-07 |
+| Health check in Job validates deployment before marking success | Job curls /api/health on VM after deployment, fails if backend not healthy | 2026-02-07 |
 
 ## Pending Todos
 
@@ -123,38 +127,43 @@ Overall:                          [█████████░] 97%
 
 ## Blockers/Concerns
 
-**Phase 6 In Progress**: GitOps with Flux (2/5 plans complete)
+**Phase 6 In Progress**: GitOps with Flux (3/5 plans complete)
 - ✓ CI pipeline with sortable image tags (06-01)
 - ✓ Flux-managed frontend and ingress manifests (06-02)
-- ⏳ Flux bootstrap and CRD setup (06-03)
-- ⏳ Image automation configuration (06-04)
-- ⏳ Sealed Secrets setup (06-05)
+- ✓ Backend deployment Job and docker-compose with Flux setter (06-03)
+- ⏳ Sealed Secrets setup (06-04)
+- ⏳ Image automation configuration (06-05)
 
 **Accomplishments**:
 - Frontend manifests with Flux image setter comments created
+- Backend deployment Job that SSHs to VM for docker-compose deploy
+- Flux-managed docker-compose.backend.yml with setter comment
 - Ingress manifests for split-architecture routing configured
 - flux/clusters/production/ directory structure established
 
-**Setup Required for Next Plans**:
+**Setup Required Before Deployment**:
 - Self-hosted GitHub Actions runner must be registered on homelab LAN
 - Runner needs `.env.production` file with React build variables
 - kubectl access to k3s cluster required for Flux bootstrap
+- SSH keypair must be created and added to VM at 192.168.0.50
+- Git repo must be cloned on VM at /opt/professional-website
+- .env file must exist on VM at /opt/backend/.env
 
-**Note**: Flux-managed manifests ready for reconciliation once Flux is installed in cluster.
+**Note**: All deployment manifests created. Ready for Sealed Secrets (06-04) and Flux image automation (06-05).
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T21:19:23Z
-**Stopped at**: Completed 06-02-PLAN.md (Flux-Managed Frontend Manifests)
+**Last session**: 2026-02-07T21:19:28Z
+**Stopped at**: Completed 06-03-PLAN.md (Backend Deployment Manifests)
 **Strategy**:
-  - Phase 6 in progress (2/5 plans) - GitOps infrastructure being built
+  - Phase 6 in progress (3/5 plans) - Flux deployment manifests created
   - CI pipeline with sortable image tags configured (06-01)
   - Flux-managed frontend and ingress manifests created (06-02)
-  - Frontend manifests include image setter comments for automation
-  - Split-architecture routing configured in ingress
-**Next action**: Continue Phase 6 with plan 06-03 (Flux Bootstrap and CRDs)
+  - Backend deployment Job with SSH to VM and health check (06-03)
+  - Remaining: Sealed Secrets (06-04) and Image automation (06-05)
+**Next action**: `/gsd:execute-plan 06-04` (Sealed Secrets setup)
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T21:19:23Z*
+*Last updated: 2026-02-07T21:19:28Z*

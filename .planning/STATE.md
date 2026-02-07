@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 6 of 6 - GitOps with Flux
-**Plan**: 5 of 5
-**Status**: In Progress
-**Last activity**: 2026-02-07 - Completed 06-05-PLAN.md (Image Automation CRDs)
+**Plan**: 6 of 6
+**Status**: Phase Complete
+**Last activity**: 2026-02-07 - Completed Phase 6 (GitOps with Flux)
 
 ## Progress
 
@@ -21,7 +21,7 @@ Phase 2: Schema & Backend         [██████████] 2/2 plans (10
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
 Phase 5: Deployment Reconfig      [██████████] 5/5 plans (100%)
-Phase 6: GitOps with Flux         [██████████] 5/5 plans (100%)
+Phase 6: GitOps with Flux         [██████████] 6/6 plans (100%)
 ─────────────────────────────────────────────
 Overall:                          [██████████] 100%
 ```
@@ -124,6 +124,11 @@ Overall:                          [██████████] 100%
 | Scope automation to production cluster only | ImageUpdateAutomation path set to ./flux/clusters/production to prevent accidental updates | 2026-02-07 |
 | 1-minute polling interval for ImageRepository | Balanced responsiveness and registry load, Harbor can handle 1-minute polls | 2026-02-07 |
 | insecure:true for Harbor ImageRepository | Required because Harbor at 192.168.0.40:5000 uses HTTP (no TLS in homelab) | 2026-02-07 |
+| Reconciliation order: sealed-secrets first | All other resources need decrypted secrets before deployment | 2026-02-07 |
+| Backend-deploy force:true for Job recreation | Forces Kubernetes Job recreation on each reconciliation cycle | 2026-02-07 |
+| Frontend health checks with 5-minute timeout | Matches user's failure timeout requirement, gates backend deployment | 2026-02-07 |
+| Different reconciliation intervals (5m vs 10m) | 5m for active deployments, 10m for config that changes rarely | 2026-02-07 |
+| Bootstrap script with comprehensive checks | Single command for Flux + Sealed Secrets installation with prerequisite validation | 2026-02-07 |
 
 ## Pending Todos
 
@@ -131,50 +136,52 @@ Overall:                          [██████████] 100%
 
 ## Blockers/Concerns
 
-**Phase 6 Complete**: GitOps with Flux (5/5 plans complete)
+**Phase 6 Complete**: GitOps with Flux (6/6 plans complete)
 - ✓ CI pipeline with sortable image tags (06-01)
 - ✓ Flux-managed frontend and ingress manifests (06-02)
 - ✓ Backend deployment Job and docker-compose with Flux setter (06-03)
 - ✓ Sealed Secrets setup (06-04)
 - ✓ Image automation configuration (06-05)
+- ✓ Bootstrap, Kustomizations, and documentation (06-06)
 
 **Accomplishments**:
-- Complete Flux image automation pipeline with ImageRepository, ImagePolicy, ImageUpdateAutomation CRDs
-- ImageRepository polls Harbor at 192.168.0.40:5000 every 1 minute with insecure:true flag
-- ImagePolicy uses alphabetical sorting for timestamp-based tag selection
-- ImageUpdateAutomation scans flux/clusters/production/ for setter comments
-- Frontend manifests with Flux image setter comments created
-- Backend deployment Job that SSHs to VM for docker-compose deploy
-- Flux-managed docker-compose.backend.yml with setter comment
-- Ingress manifests for split-architecture routing configured
-- flux/clusters/production/ directory structure established
+- Complete Flux GitOps implementation with 17 manifest files
+- Flux Kustomization CRDs define reconciliation order: sealed-secrets → frontend + image-automation → ingress → backend
+- Backend-deploy uses force:true for Job recreation on each reconciliation
+- Frontend has health checks with 5-minute timeout to gate backend deployment
+- Bootstrap script automates Flux + Sealed Secrets installation in one command
+- Comprehensive FLUX_SETUP.md documentation (515 lines): setup, operations, rollback, troubleshooting
+- GitHub Actions workflow for automated builds on push to master
+- Image automation pipeline polls Harbor every 1 minute with alphabetical tag sorting
+- Complete flux/clusters/production/ directory structure ready for deployment
 
 **Setup Required Before Deployment**:
+- Install CLIs: flux, helm, kubeseal, kubectl
+- Export GITHUB_TOKEN (repo scope) and GITHUB_USER
 - Self-hosted GitHub Actions runner must be registered on homelab LAN
 - Runner needs `.env.production` file with React build variables
-- kubectl access to k3s cluster required for Flux bootstrap
-- Flux bootstrap with --components-extra=image-reflector-controller,image-automation-controller
-- Harbor credentials secret must be created (plan 06-04 provides SealedSecret template)
-- SSH keypair must be created and added to VM at 192.168.0.50
+- Run scripts/flux-bootstrap.sh to install Flux and Sealed Secrets
+- Run scripts/seal-secrets.sh to seal Harbor credentials and VM SSH key
 - Git repo must be cloned on VM at /opt/professional-website
-- .env file must exist on VM at /opt/backend/.env
+- Backend .env file must exist on VM at /opt/backend/.env
 
-**Note**: Phase 6 GitOps with Flux is complete. All manifests and automation CRDs created. Ready for deployment testing.
+**Note**: Phase 6 GitOps with Flux is complete. All 6 plans executed successfully. Ready for Flux bootstrap and production deployment testing.
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T21:24:40Z
-**Stopped at**: Completed 06-05-PLAN.md (Image Automation CRDs)
+**Last session**: 2026-02-07T22:08:15Z
+**Stopped at**: Completed Phase 6 - GitOps with Flux (all 6 plans complete)
 **Strategy**:
-  - Phase 6 complete (5/5 plans) - All Flux GitOps manifests and automation configured
+  - Phase 6 complete (6/6 plans) - Complete Flux GitOps implementation ready for deployment
   - CI pipeline with sortable image tags configured (06-01)
   - Flux-managed frontend and ingress manifests created (06-02)
   - Backend deployment Job with SSH to VM and health check (06-03)
   - Sealed Secrets setup complete (06-04)
   - Image automation CRDs complete (06-05)
-**Next action**: Phase 6 complete. Ready for Flux bootstrap and deployment testing.
+  - Bootstrap script and comprehensive documentation complete (06-06)
+**Next action**: Milestone v1.0 (Core Migration) complete. Ready for Flux bootstrap and production deployment.
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T21:24:40Z*
+*Last updated: 2026-02-07T22:08:15Z*

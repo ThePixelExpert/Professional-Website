@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 5 of 6 - Deployment Reconfiguration
-**Plan**: 2 of 3
-**Status**: In Progress - Frontend container hardening complete
-**Last activity**: 2026-02-07 - Completed 05-02-PLAN.md (Frontend Container Configuration)
+**Plan**: 3 of 3
+**Status**: Phase Complete - All deployment configurations finalized
+**Last activity**: 2026-02-07 - Completed 05-03-PLAN.md (Kubernetes Split Architecture)
 
 ## Progress
 
@@ -20,10 +20,10 @@ Phase 1: Local Dev Environment    [██████████] 2/2 plans (10
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
-Phase 5: Deployment Reconfig      [███████░░░] 2/3 plans (67%)
+Phase 5: Deployment Reconfig      [██████████] 3/3 plans (100%)
 Phase 6: GitOps with Flux         [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [█████████░] 90%
+Overall:                          [█████████░] 95%
 ```
 
 ## Recent Decisions
@@ -98,6 +98,11 @@ Overall:                          [█████████░] 90%
 | Remove API proxying from nginx.conf | Traefik ingress handles API routing in split architecture, nginx only serves static files | 2026-02-07 |
 | Use build-time ARGs for React environment variables | Simpler than runtime injection, acceptable for separate builds per environment | 2026-02-07 |
 | Run frontend container as non-root nginx user | Security best practice, limits container escape impact | 2026-02-07 |
+| Use Service+Endpoints instead of ExternalName for IP-based backend routing | ExternalName requires DNS hostname, Proxmox VM has static IP but no DNS entry | 2026-02-07 |
+| Set frontend replicas to 2 (not 3) for Pi cluster RAM constraints | Conservative replica count for 4GB Pi nodes, can scale up after monitoring | 2026-02-07 |
+| Tune frontend resources down to 128Mi limit (from 256Mi) for 4GB Pi nodes | Fits multiple pods per node while maintaining stability | 2026-02-07 |
+| Add emptyDir volumes for nginx cache and run directories | Required for non-root nginx with readOnlyRootFilesystem security hardening | 2026-02-07 |
+| Change frontend Service to ClusterIP | Traefik handles external access via Ingress, no need for LoadBalancer on Pi cluster | 2026-02-07 |
 
 ## Pending Todos
 
@@ -105,28 +110,31 @@ Overall:                          [█████████░] 90%
 
 ## Blockers/Concerns
 
-**Phase 5 In Progress**: Frontend container hardening complete
+**Phase 5 Complete**: All deployment configurations finalized
 - ✓ Dockerfile.backend updated with src/ directory and health check (05-01)
 - ✓ docker-compose.backend.yml created for VM deployment (05-01)
 - ✓ .env.production.template created with Supabase variables (05-01)
 - ✓ nginx.conf cleaned - API proxying removed, Traefik handles routing (05-02)
 - ✓ Dockerfile.frontend hardened - non-root user, health checks, build ARGs (05-02)
+- ✓ Frontend k8s Deployment with Pi-appropriate resources and health probes (05-03)
+- ✓ Backend Service+Endpoints routing to Proxmox VM at 192.168.0.50 (05-03)
+- ✓ Traefik Ingress configured for split architecture routing (05-03)
 
-**Next**: Plan 05-03 (Build and push scripts for Harbor registry)
+**Next**: Phase 6 (GitOps with Flux) - Automated Kubernetes deployments
 
-**Note**: Docker configurations ready for deployment. Runtime testing deferred until Proxmox VM is available. All configurations validated for syntax.
+**Note**: All configurations validated for syntax. Runtime testing deferred until Proxmox VM is available at 192.168.0.50. Ready for GitOps implementation.
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T17:04:30Z
-**Stopped at**: Completed 05-02-PLAN.md (Frontend Container Configuration)
+**Last session**: 2026-02-07T17:09:31Z
+**Stopped at**: Completed 05-03-PLAN.md (Kubernetes Split Architecture)
 **Strategy**:
-  - Phase 5 in progress - frontend container hardening complete
-  - Next: 05-03 (Build and Push Scripts) - automated image builds to Harbor registry
-  - VM testing deferred until Proxmox hardware available
-**Next action**: `/gsd:execute-plan 05-03` (Build and Push Scripts)
+  - Phase 5 complete - all deployment configurations finalized
+  - Ready for Phase 6 (GitOps with Flux) - automated k8s deployments
+  - VM testing deferred until Proxmox hardware available at 192.168.0.50
+**Next action**: `/gsd:plan-phase 06` or `/gsd:execute-plan 06-01` (Start GitOps phase)
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T17:04:30Z*
+*Last updated: 2026-02-07T17:09:31Z*

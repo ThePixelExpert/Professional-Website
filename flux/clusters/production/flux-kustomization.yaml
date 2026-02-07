@@ -1,0 +1,97 @@
+# Flux Kustomization CRDs - Define reconciliation targets and order
+#
+# Reconciliation order (enforced by dependsOn):
+#   1. sealed-secrets (decrypt secrets first)
+#   2. frontend + image-automation (parallel, no deps between them)
+#   3. ingress (after frontend is healthy)
+#   4. backend-deploy (depends on frontend health - deploy frontend first)
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sealed-secrets
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./flux/clusters/production/sealed-secrets
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  healthChecks:
+    - apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      name: harbor-credentials
+      namespace: flux-system
+    - apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      name: vm-ssh-key
+      namespace: website
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: frontend
+  namespace: flux-system
+spec:
+  interval: 5m0s
+  path: ./flux/clusters/production/frontend
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: sealed-secrets
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: frontend
+      namespace: website
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ingress
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./flux/clusters/production/ingress
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: frontend
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: image-automation
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./flux/clusters/production/image-automation
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: sealed-secrets
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: backend-deploy
+  namespace: flux-system
+spec:
+  interval: 5m0s
+  path: ./flux/clusters/production/backend
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  force: true
+  dependsOn:
+    - name: frontend
+  timeout: 5m0s

@@ -15,6 +15,8 @@ NC='\033[0m' # No Color
 # Configuration
 REGISTRY="192.168.0.40:5000"
 GIT_SHA=$(git rev-parse --short HEAD)
+TIMESTAMP=$(date +%s)
+IMAGE_TAG="main-${GIT_SHA}-${TIMESTAMP}"
 
 # Determine what to build
 BUILD_TARGET="${1:-all}"
@@ -29,6 +31,7 @@ fi
 echo -e "${GREEN}=== Build and Push Script ===${NC}"
 echo -e "${YELLOW}Registry: ${REGISTRY}${NC}"
 echo -e "${YELLOW}Git SHA: ${GIT_SHA}${NC}"
+echo -e "${YELLOW}Image Tag: ${IMAGE_TAG}${NC}"
 echo -e "${YELLOW}Build Target: ${BUILD_TARGET}${NC}"
 echo ""
 
@@ -64,13 +67,13 @@ if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then
     --build-arg REACT_APP_SUPABASE_ANON_KEY="${REACT_APP_SUPABASE_ANON_KEY}" \
     --build-arg REACT_APP_API_URL="${REACT_APP_API_URL}" \
     --build-arg REACT_APP_STRIPE_PUBLISHABLE_KEY="${REACT_APP_STRIPE_PUBLISHABLE_KEY:-}" \
-    -t "${REGISTRY}/frontend:${GIT_SHA}" \
+    -t "${REGISTRY}/frontend:${IMAGE_TAG}" \
     -t "${REGISTRY}/frontend:latest" \
     --push \
     "${REPO_ROOT}"
 
   echo -e "${GREEN}✓ Frontend image built and pushed${NC}"
-  echo "  - ${REGISTRY}/frontend:${GIT_SHA}"
+  echo "  - ${REGISTRY}/frontend:${IMAGE_TAG}"
   echo "  - ${REGISTRY}/frontend:latest"
   echo ""
 fi
@@ -82,13 +85,13 @@ if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "backend" ]]; then
   docker buildx build \
     --platform linux/amd64 \
     -f "${REPO_ROOT}/Dockerfile.backend" \
-    -t "${REGISTRY}/backend:${GIT_SHA}" \
+    -t "${REGISTRY}/backend:${IMAGE_TAG}" \
     -t "${REGISTRY}/backend:latest" \
     --push \
     "${REPO_ROOT}"
 
   echo -e "${GREEN}✓ Backend image built and pushed${NC}"
-  echo "  - ${REGISTRY}/backend:${GIT_SHA}"
+  echo "  - ${REGISTRY}/backend:${IMAGE_TAG}"
   echo "  - ${REGISTRY}/backend:latest"
   echo ""
 fi
@@ -149,10 +152,11 @@ fi
 echo ""
 echo -e "${GREEN}=== Build Summary ===${NC}"
 echo -e "Git SHA: ${YELLOW}${GIT_SHA}${NC}"
+echo -e "Image Tag: ${YELLOW}${IMAGE_TAG}${NC}"
 if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then
-  echo -e "Frontend: ${GREEN}${REGISTRY}/frontend:${GIT_SHA}${NC}"
+  echo -e "Frontend: ${GREEN}${REGISTRY}/frontend:${IMAGE_TAG}${NC}"
 fi
 if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "backend" ]]; then
-  echo -e "Backend: ${GREEN}${REGISTRY}/backend:${GIT_SHA}${NC}"
+  echo -e "Backend: ${GREEN}${REGISTRY}/backend:${IMAGE_TAG}${NC}"
 fi
 echo -e "${GREEN}Build and push complete!${NC}"

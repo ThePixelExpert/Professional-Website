@@ -1,0 +1,27 @@
+# Docker Compose Override for Edwards Engineering Production
+# This file extends the official Supabase docker-compose.yml
+# Place in /opt/supabase/ alongside the official docker-compose.yml
+
+services:
+  # Add Caddy proxy labels to Kong (API Gateway)
+  kong:
+    labels:
+      caddy: supabase.edwardstech.dev
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+    networks:
+      - default
+      - caddy_network
+
+  # Ensure Studio is accessible via subdomain (optional, can be disabled in production)
+  studio:
+    labels:
+      caddy: studio.edwardstech.dev
+      caddy.reverse_proxy: "{{upstreams 3000}}"
+    networks:
+      - default
+      - caddy_network
+
+networks:
+  caddy_network:
+    external: true
+    name: caddy_network

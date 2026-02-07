@@ -4,18 +4,19 @@
 
 **Building**: Supabase migration for homelab portfolio site
 **Core Value**: Reliable hosting without SD card failures
+**Current Focus**: Deploy and validate v1.0 in production homelab
 
 ## Current Position
 
-**Milestone**: v1.0 - Core Migration
-**Phase**: 6 of 6 - GitOps with Flux
-**Plan**: 6 of 6
-**Status**: Phase Complete
-**Last activity**: 2026-02-07 - Completed Phase 6 (GitOps with Flux)
+**Milestone**: v1.0 - Core Migration ✅ COMPLETE
+**Status**: Ready for production deployment
+**Last activity**: 2026-02-07 - Milestone v1.0 complete and archived
 
-## Progress
+## v1.0 Progress
 
 ```
+✅ Milestone v1.0: Core Migration — SHIPPED 2026-02-07
+
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
@@ -23,8 +24,16 @@ Phase 4: Production Infrastructure[██████████] 6/6 plans (10
 Phase 5: Deployment Reconfig      [██████████] 5/5 plans (100%)
 Phase 6: GitOps with Flux         [██████████] 6/6 plans (100%)
 ─────────────────────────────────────────────
-Overall:                          [██████████] 100%
+Overall:                          [██████████] 100% ✅
 ```
+
+**Milestone Stats:**
+- 6 phases, 28 plans, 44 commits
+- 34/34 requirements satisfied (100%)
+- 12,688 LOC (JavaScript/JSX/YAML/Shell)
+- 11 days from start to ship
+
+**Archive:** .planning/milestones/v1.0-ROADMAP.md
 
 ## Recent Decisions
 
@@ -134,54 +143,29 @@ Overall:                          [██████████] 100%
 
 (None)
 
-## Blockers/Concerns
+## Next Up
 
-**Phase 6 Complete**: GitOps with Flux (6/6 plans complete)
-- ✓ CI pipeline with sortable image tags (06-01)
-- ✓ Flux-managed frontend and ingress manifests (06-02)
-- ✓ Backend deployment Job and docker-compose with Flux setter (06-03)
-- ✓ Sealed Secrets setup (06-04)
-- ✓ Image automation configuration (06-05)
-- ✓ Bootstrap, Kustomizations, and documentation (06-06)
+**Production Deployment:**
+- Bootstrap Flux on k3s cluster (scripts/flux-bootstrap.sh)
+- Seal Harbor credentials and VM SSH key (scripts/seal-secrets.sh)
+- Configure GitHub Actions runner on homelab LAN
+- Deploy Supabase to Proxmox VM
+- Deploy backend to Proxmox VM
+- Trigger first GitOps reconciliation
+- Validate end-to-end flows in production
 
-**Accomplishments**:
-- Complete Flux GitOps implementation with 17 manifest files
-- Flux Kustomization CRDs define reconciliation order: sealed-secrets → frontend + image-automation → ingress → backend
-- Backend-deploy uses force:true for Job recreation on each reconciliation
-- Frontend has health checks with 5-minute timeout to gate backend deployment
-- Bootstrap script automates Flux + Sealed Secrets installation in one command
-- Comprehensive FLUX_SETUP.md documentation (515 lines): setup, operations, rollback, troubleshooting
-- GitHub Actions workflow for automated builds on push to master
-- Image automation pipeline polls Harbor every 1 minute with alphabetical tag sorting
-- Complete flux/clusters/production/ directory structure ready for deployment
-
-**Setup Required Before Deployment**:
-- Install CLIs: flux, helm, kubeseal, kubectl
-- Export GITHUB_TOKEN (repo scope) and GITHUB_USER
-- Self-hosted GitHub Actions runner must be registered on homelab LAN
-- Runner needs `.env.production` file with React build variables
-- Run scripts/flux-bootstrap.sh to install Flux and Sealed Secrets
-- Run scripts/seal-secrets.sh to seal Harbor credentials and VM SSH key
-- Git repo must be cloned on VM at /opt/professional-website
-- Backend .env file must exist on VM at /opt/backend/.env
-
-**Note**: Phase 6 GitOps with Flux is complete. All 6 plans executed successfully. Ready for Flux bootstrap and production deployment testing.
+**Post-Deployment:**
+- Monitor for issues
+- Document production lessons learned
+- Plan v1.1 features (Realtime, Storage, monitoring)
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T22:08:15Z
-**Stopped at**: Completed Phase 6 - GitOps with Flux (all 6 plans complete)
-**Strategy**:
-  - Phase 6 complete (6/6 plans) - Complete Flux GitOps implementation ready for deployment
-  - CI pipeline with sortable image tags configured (06-01)
-  - Flux-managed frontend and ingress manifests created (06-02)
-  - Backend deployment Job with SSH to VM and health check (06-03)
-  - Sealed Secrets setup complete (06-04)
-  - Image automation CRDs complete (06-05)
-  - Bootstrap script and comprehensive documentation complete (06-06)
-**Next action**: Milestone v1.0 (Core Migration) complete. Ready for Flux bootstrap and production deployment.
+**Last session**: 2026-02-07T22:30:00Z
+**Stopped at**: Milestone v1.0 complete and archived
+**Next action**: Deploy to production homelab or plan v1.1 features
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T22:08:15Z*
+*Last updated: 2026-02-07T22:30:00Z*

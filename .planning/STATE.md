@@ -8,10 +8,10 @@
 ## Current Position
 
 **Milestone**: v1.0 - Core Migration
-**Phase**: 4 of 6 - Production Infrastructure
-**Plan**: 6 of 6
-**Status**: Phase Complete - All production infrastructure documented
-**Last activity**: 2026-02-07 - Completed 04-06-PLAN.md (Production verification and setup)
+**Phase**: 5 of 6 - Deployment Reconfiguration
+**Plan**: 1 of 3
+**Status**: In Progress - Backend Docker configuration complete
+**Last activity**: 2026-02-07 - Completed 05-01-PLAN.md (Backend Docker Configuration)
 
 ## Progress
 
@@ -20,10 +20,10 @@ Phase 1: Local Dev Environment    [██████████] 2/2 plans (10
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
-Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
+Phase 5: Deployment Reconfig      [███░░░░░░░] 1/3 plans (33%)
 Phase 6: GitOps with Flux         [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [████████░░] 86%
+Overall:                          [████████░░] 88%
 ```
 
 ## Recent Decisions
@@ -91,6 +91,10 @@ Overall:                          [████████░░] 86%
 | Provide migration status command | Allows verification of which migrations have been applied without database expertise | 2026-02-07 |
 | Single comprehensive production setup guide | Quick start at top for experienced users, detailed step-by-step for first-time setup | 2026-02-07 |
 | Include exact Google Cloud Console navigation for OAuth | OAuth setup is error-prone, detailed steps reduce configuration mistakes | 2026-02-07 |
+| Backend on Proxmox VM instead of k3s | Prevents SD card wear from database connections and stateful operations | 2026-02-07 |
+| Bind backend to 0.0.0.0:3001 | k3s cluster needs LAN access to backend over network | 2026-02-07 |
+| Node.js inline health check | No curl in alpine image, avoids extra dependency while maintaining health monitoring | 2026-02-07 |
+| Local Harbor registry at 192.168.0.40:5000 | Images stored locally on Proxmox, no external registry dependencies | 2026-02-07 |
 
 ## Pending Todos
 
@@ -98,27 +102,26 @@ Overall:                          [████████░░] 86%
 
 ## Blockers/Concerns
 
-**Phase 4 Complete (Theoretical)**: All production infrastructure documented
-- ✓ VM setup documented (04-02): docs/PROXMOX_VM_SETUP.md
-- ✓ Supabase Docker deployment configured (04-03)
-- ✓ Caddy reverse proxy configured (04-04)
-- ✓ Backup automation configured (04-05)
-- ✓ Production setup guide complete (04-06): docs/PRODUCTION_SETUP.md
+**Phase 5 In Progress**: Backend Docker configuration complete
+- ✓ Dockerfile.backend updated with src/ directory and health check (05-01)
+- ✓ docker-compose.backend.yml created for VM deployment (05-01)
+- ✓ .env.production.template created with Supabase variables (05-01)
 
-**Note**: Phase 4 executed theoretically - configs/docs ready but runtime testing deferred until Proxmox VM is available. All scripts validated for syntax and permissions.
+**Note**: Docker configurations ready for deployment. Runtime testing deferred until Proxmox VM is available. All configurations validated for syntax.
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T16:20:53Z
-**Stopped at**: Completed 04-06-PLAN.md (Production verification and setup) - Phase 4 Complete
+**Last session**: 2026-02-07T17:04:18Z
+**Stopped at**: Completed 05-01-PLAN.md (Backend Docker Configuration)
 **Strategy**:
-  - Phase 4 complete - all production infrastructure documented
-  - Next: Phase 5 (Deployment Reconfig) - frontend configuration for production Supabase
-  - Then: Phase 6 (GitOps with Flux) - automation and continuous deployment
+  - Phase 5 in progress - backend Docker configuration complete
+  - Next: 05-02 (Frontend Configuration) - configure frontend for production Supabase URL
+  - Then: 05-03 (GitOps Integration) - Flux CD manifests for automated deployment
+  - Finally: Phase 6 (GitOps with Flux) - cluster-wide automation and monitoring
   - VM testing deferred until Proxmox hardware available
-**Next action**: `/gsd:execute-phase 5` (begin Phase 5)
+**Next action**: `/gsd:execute-plan 05-02` (Frontend Configuration)
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T16:20:53Z*
+*Last updated: 2026-02-07T17:04:18Z*

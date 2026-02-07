@@ -1,0 +1,13 @@
+# Manual Endpoints for backend Service
+# Points to Express backend on Proxmox VM (192.168.0.50)
+# Update IP if VM address changes
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: backend-service  # MUST match Service name exactly
+  namespace: website
+subsets:
+  - addresses:
+      - ip: 192.168.0.50  # Proxmox VM static IP
+    ports:
+      - port: 3001

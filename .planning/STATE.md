@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 4 of 6 - Production Infrastructure
-**Plan**: 3 of 6
+**Plan**: 4 of 6
 **Status**: Active - continuing Phase 4 without VM testing
-**Last activity**: 2026-02-07 - Completed 04-03-PLAN.md
+**Last activity**: 2026-02-07 - Completed 04-04-PLAN.md (Caddy reverse proxy)
 
 ## Progress
 
@@ -19,11 +19,11 @@
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
-Phase 4: Production Infrastructure[███░░░░░░░] 3/6 plans (50%)
+Phase 4: Production Infrastructure[████░░░░░░] 4/6 plans (67%)
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 Phase 6: GitOps with Flux         [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [███████░░░] 76%
+Overall:                          [███████░░░] 78%
 ```
 
 ## Recent Decisions
@@ -79,6 +79,11 @@ Overall:                          [███████░░░] 76%
 | Use Docker Compose override file instead of modifying docker-compose.yml | Official file can be updated without losing customizations, clear separation | 2026-02-07 |
 | Provide deploy.sh with subcommands for all common operations | Single script interface reduces cognitive load, eliminates docker compose flag memorization | 2026-02-07 |
 | Auto-copy override file and create caddy_network on first start | Reduces manual setup steps, script ensures environment is ready | 2026-02-07 |
+| Use caddy-docker-proxy for automatic label discovery | Eliminates manual Caddyfile updates, Caddy reads Docker labels and configures routing automatically | 2026-02-07 |
+| Mount Docker socket read-only | Required for label discovery but limited to read-only for security, prevents Caddy from executing Docker commands | 2026-02-07 |
+| Create backup Caddyfile as documentation | Serves as documentation of routing configuration and provides fallback if label-based config has issues | 2026-02-07 |
+| Connect Caddy to external supabase_default network | Allows Caddy to reach Kong on Supabase's internal network while keeping reverse proxy networking separate | 2026-02-07 |
+| Document both Cloudflare proxy and DNS-only modes | Cloudflare proxy handles external SSL with Caddy validation, DNS-only mode Caddy handles SSL directly | 2026-02-07 |
 
 ## Pending Todos
 
@@ -94,15 +99,15 @@ Overall:                          [███████░░░] 76%
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T16:07:15Z
-**Stopped at**: Completed 04-03-PLAN.md
+**Last session**: 2026-02-07T16:08:47Z
+**Stopped at**: Completed 04-04-PLAN.md (Caddy reverse proxy)
 **Strategy**:
-  - Continue Phase 4 plans (04-04 through 04-06) - create configs/docs
+  - Continue Phase 4 plans (04-05 through 04-06) - create configs/docs
   - After Phase 4: Add Phase 6 for GitOps/Flux integration
   - VM testing deferred until Proxmox hardware available
-**Next action**: `/gsd:execute-phase 4` (continue from plan 04-04)
+**Next action**: `/gsd:execute-phase 4` (continue from plan 04-05)
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T16:07:15Z*
+*Last updated: 2026-02-07T16:08:47Z*

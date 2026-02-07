@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 5 of 6 - Deployment Reconfiguration
-**Plan**: 1 of 3
-**Status**: In Progress - Backend Docker configuration complete
-**Last activity**: 2026-02-07 - Completed 05-01-PLAN.md (Backend Docker Configuration)
+**Plan**: 2 of 3
+**Status**: In Progress - Frontend container hardening complete
+**Last activity**: 2026-02-07 - Completed 05-02-PLAN.md (Frontend Container Configuration)
 
 ## Progress
 
@@ -20,10 +20,10 @@ Phase 1: Local Dev Environment    [██████████] 2/2 plans (10
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
-Phase 5: Deployment Reconfig      [███░░░░░░░] 1/3 plans (33%)
+Phase 5: Deployment Reconfig      [███████░░░] 2/3 plans (67%)
 Phase 6: GitOps with Flux         [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [████████░░] 88%
+Overall:                          [█████████░] 90%
 ```
 
 ## Recent Decisions
@@ -95,6 +95,9 @@ Overall:                          [████████░░] 88%
 | Bind backend to 0.0.0.0:3001 | k3s cluster needs LAN access to backend over network | 2026-02-07 |
 | Node.js inline health check | No curl in alpine image, avoids extra dependency while maintaining health monitoring | 2026-02-07 |
 | Local Harbor registry at 192.168.0.40:5000 | Images stored locally on Proxmox, no external registry dependencies | 2026-02-07 |
+| Remove API proxying from nginx.conf | Traefik ingress handles API routing in split architecture, nginx only serves static files | 2026-02-07 |
+| Use build-time ARGs for React environment variables | Simpler than runtime injection, acceptable for separate builds per environment | 2026-02-07 |
+| Run frontend container as non-root nginx user | Security best practice, limits container escape impact | 2026-02-07 |
 
 ## Pending Todos
 
@@ -102,26 +105,28 @@ Overall:                          [████████░░] 88%
 
 ## Blockers/Concerns
 
-**Phase 5 In Progress**: Backend Docker configuration complete
+**Phase 5 In Progress**: Frontend container hardening complete
 - ✓ Dockerfile.backend updated with src/ directory and health check (05-01)
 - ✓ docker-compose.backend.yml created for VM deployment (05-01)
 - ✓ .env.production.template created with Supabase variables (05-01)
+- ✓ nginx.conf cleaned - API proxying removed, Traefik handles routing (05-02)
+- ✓ Dockerfile.frontend hardened - non-root user, health checks, build ARGs (05-02)
+
+**Next**: Plan 05-03 (Build and push scripts for Harbor registry)
 
 **Note**: Docker configurations ready for deployment. Runtime testing deferred until Proxmox VM is available. All configurations validated for syntax.
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T17:04:18Z
-**Stopped at**: Completed 05-01-PLAN.md (Backend Docker Configuration)
+**Last session**: 2026-02-07T17:04:30Z
+**Stopped at**: Completed 05-02-PLAN.md (Frontend Container Configuration)
 **Strategy**:
-  - Phase 5 in progress - backend Docker configuration complete
-  - Next: 05-02 (Frontend Configuration) - configure frontend for production Supabase URL
-  - Then: 05-03 (GitOps Integration) - Flux CD manifests for automated deployment
-  - Finally: Phase 6 (GitOps with Flux) - cluster-wide automation and monitoring
+  - Phase 5 in progress - frontend container hardening complete
+  - Next: 05-03 (Build and Push Scripts) - automated image builds to Harbor registry
   - VM testing deferred until Proxmox hardware available
-**Next action**: `/gsd:execute-plan 05-02` (Frontend Configuration)
+**Next action**: `/gsd:execute-plan 05-03` (Build and Push Scripts)
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T17:04:18Z*
+*Last updated: 2026-02-07T17:04:30Z*

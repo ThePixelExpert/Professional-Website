@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 6 of 6 - GitOps with Flux
-**Plan**: 3 of 5
+**Plan**: 5 of 5
 **Status**: In Progress
-**Last activity**: 2026-02-07 - Completed 06-03-PLAN.md (Backend Deployment Manifests)
+**Last activity**: 2026-02-07 - Completed 06-05-PLAN.md (Image Automation CRDs)
 
 ## Progress
 
@@ -21,9 +21,9 @@ Phase 2: Schema & Backend         [██████████] 2/2 plans (10
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
 Phase 5: Deployment Reconfig      [██████████] 5/5 plans (100%)
-Phase 6: GitOps with Flux         [██████░░░░] 3/5 plans (60%)
+Phase 6: GitOps with Flux         [██████████] 5/5 plans (100%)
 ─────────────────────────────────────────────
-Overall:                          [█████████░] 98%
+Overall:                          [██████████] 100%
 ```
 
 ## Recent Decisions
@@ -120,6 +120,10 @@ Overall:                          [█████████░] 98%
 | docker-compose file excluded from Kustomization resources | Compose file is not a k8s resource, only Job is in Kustomization | 2026-02-07 |
 | SSH key mounted from SealedSecret vm-ssh-key with mode 0400 | Job mounts SSH key from sealed secret with correct permissions for SSH client | 2026-02-07 |
 | Health check in Job validates deployment before marking success | Job curls /api/health on VM after deployment, fails if backend not healthy | 2026-02-07 |
+| Alphabetical sorting for timestamp-based tags | ImagePolicy uses alphabetical.order:asc, full tag is sortable due to timestamp component | 2026-02-07 |
+| Scope automation to production cluster only | ImageUpdateAutomation path set to ./flux/clusters/production to prevent accidental updates | 2026-02-07 |
+| 1-minute polling interval for ImageRepository | Balanced responsiveness and registry load, Harbor can handle 1-minute polls | 2026-02-07 |
+| insecure:true for Harbor ImageRepository | Required because Harbor at 192.168.0.40:5000 uses HTTP (no TLS in homelab) | 2026-02-07 |
 
 ## Pending Todos
 
@@ -127,14 +131,18 @@ Overall:                          [█████████░] 98%
 
 ## Blockers/Concerns
 
-**Phase 6 In Progress**: GitOps with Flux (3/5 plans complete)
+**Phase 6 Complete**: GitOps with Flux (5/5 plans complete)
 - ✓ CI pipeline with sortable image tags (06-01)
 - ✓ Flux-managed frontend and ingress manifests (06-02)
 - ✓ Backend deployment Job and docker-compose with Flux setter (06-03)
-- ⏳ Sealed Secrets setup (06-04)
-- ⏳ Image automation configuration (06-05)
+- ✓ Sealed Secrets setup (06-04)
+- ✓ Image automation configuration (06-05)
 
 **Accomplishments**:
+- Complete Flux image automation pipeline with ImageRepository, ImagePolicy, ImageUpdateAutomation CRDs
+- ImageRepository polls Harbor at 192.168.0.40:5000 every 1 minute with insecure:true flag
+- ImagePolicy uses alphabetical sorting for timestamp-based tag selection
+- ImageUpdateAutomation scans flux/clusters/production/ for setter comments
 - Frontend manifests with Flux image setter comments created
 - Backend deployment Job that SSHs to VM for docker-compose deploy
 - Flux-managed docker-compose.backend.yml with setter comment
@@ -145,25 +153,28 @@ Overall:                          [█████████░] 98%
 - Self-hosted GitHub Actions runner must be registered on homelab LAN
 - Runner needs `.env.production` file with React build variables
 - kubectl access to k3s cluster required for Flux bootstrap
+- Flux bootstrap with --components-extra=image-reflector-controller,image-automation-controller
+- Harbor credentials secret must be created (plan 06-04 provides SealedSecret template)
 - SSH keypair must be created and added to VM at 192.168.0.50
 - Git repo must be cloned on VM at /opt/professional-website
 - .env file must exist on VM at /opt/backend/.env
 
-**Note**: All deployment manifests created. Ready for Sealed Secrets (06-04) and Flux image automation (06-05).
+**Note**: Phase 6 GitOps with Flux is complete. All manifests and automation CRDs created. Ready for deployment testing.
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T21:19:28Z
-**Stopped at**: Completed 06-03-PLAN.md (Backend Deployment Manifests)
+**Last session**: 2026-02-07T21:24:40Z
+**Stopped at**: Completed 06-05-PLAN.md (Image Automation CRDs)
 **Strategy**:
-  - Phase 6 in progress (3/5 plans) - Flux deployment manifests created
+  - Phase 6 complete (5/5 plans) - All Flux GitOps manifests and automation configured
   - CI pipeline with sortable image tags configured (06-01)
   - Flux-managed frontend and ingress manifests created (06-02)
   - Backend deployment Job with SSH to VM and health check (06-03)
-  - Remaining: Sealed Secrets (06-04) and Image automation (06-05)
-**Next action**: `/gsd:execute-plan 06-04` (Sealed Secrets setup)
+  - Sealed Secrets setup complete (06-04)
+  - Image automation CRDs complete (06-05)
+**Next action**: Phase 6 complete. Ready for Flux bootstrap and deployment testing.
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T21:19:28Z*
+*Last updated: 2026-02-07T21:24:40Z*

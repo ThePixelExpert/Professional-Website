@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 5 of 6 - Deployment Reconfiguration
-**Plan**: 3 of 3
-**Status**: Phase Complete - All deployment configurations finalized
-**Last activity**: 2026-02-07 - Completed 05-03-PLAN.md (Kubernetes Split Architecture)
+**Plan**: 4 of 5
+**Status**: In Progress - Deployment scripts complete
+**Last activity**: 2026-02-07 - Completed 05-04-PLAN.md (Build and Deployment Scripts)
 
 ## Progress
 
@@ -20,10 +20,10 @@ Phase 1: Local Dev Environment    [██████████] 2/2 plans (10
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
-Phase 5: Deployment Reconfig      [██████████] 3/3 plans (100%)
+Phase 5: Deployment Reconfig      [████████░░] 4/5 plans (80%)
 Phase 6: GitOps with Flux         [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [█████████░] 95%
+Overall:                          [█████████░] 92%
 ```
 
 ## Recent Decisions
@@ -103,6 +103,12 @@ Overall:                          [█████████░] 95%
 | Tune frontend resources down to 128Mi limit (from 256Mi) for 4GB Pi nodes | Fits multiple pods per node while maintaining stability | 2026-02-07 |
 | Add emptyDir volumes for nginx cache and run directories | Required for non-root nginx with readOnlyRootFilesystem security hardening | 2026-02-07 |
 | Change frontend Service to ClusterIP | Traefik handles external access via Ingress, no need for LoadBalancer on Pi cluster | 2026-02-07 |
+| Use git SHA for image tags instead of timestamps | More traceable than timestamps, enables git bisect correlation with deployments | 2026-02-07 |
+| Build frontend for ARM64, backend for AMD64 | Platform-specific builds: ARM64 for Pi cluster (frontend), AMD64 for Proxmox VM (backend) | 2026-02-07 |
+| SSH-based deployment pattern for homelab | Simple and direct for homelab environment without CI/CD infrastructure | 2026-02-07 |
+| kubectl via SSH wrapper for k8s deployments | kubectl_pi function wraps all kubectl commands to run on Pi via SSH | 2026-02-07 |
+| Wait 10s then health check after backend deploy | Validate backend startup by curling /api/health endpoint after container start | 2026-02-07 |
+| Selective build support in build-and-push.sh | Accept argument (all|frontend|backend) for faster iteration on single component | 2026-02-07 |
 
 ## Pending Todos
 
@@ -110,7 +116,7 @@ Overall:                          [█████████░] 95%
 
 ## Blockers/Concerns
 
-**Phase 5 Complete**: All deployment configurations finalized
+**Phase 5 In Progress**: Deployment automation complete (4/5 plans)
 - ✓ Dockerfile.backend updated with src/ directory and health check (05-01)
 - ✓ docker-compose.backend.yml created for VM deployment (05-01)
 - ✓ .env.production.template created with Supabase variables (05-01)
@@ -119,22 +125,25 @@ Overall:                          [█████████░] 95%
 - ✓ Frontend k8s Deployment with Pi-appropriate resources and health probes (05-03)
 - ✓ Backend Service+Endpoints routing to Proxmox VM at 192.168.0.50 (05-03)
 - ✓ Traefik Ingress configured for split architecture routing (05-03)
+- ✓ build-and-push.sh with multi-platform builds and git SHA tagging (05-04)
+- ✓ deploy-backend.sh for VM deployment with health validation (05-04)
+- ✓ deploy-k8s.sh for k3s frontend deployment with rollout verification (05-04)
 
-**Next**: Phase 6 (GitOps with Flux) - Automated Kubernetes deployments
+**Next**: Plan 05-05 (Archive legacy k8s manifests and verification checkpoint)
 
 **Note**: All configurations validated for syntax. Runtime testing deferred until Proxmox VM is available at 192.168.0.50. Ready for GitOps implementation.
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T17:09:31Z
-**Stopped at**: Completed 05-03-PLAN.md (Kubernetes Split Architecture)
+**Last session**: 2026-02-07T17:10:45Z
+**Stopped at**: Completed 05-04-PLAN.md (Build and Deployment Scripts)
 **Strategy**:
-  - Phase 5 complete - all deployment configurations finalized
-  - Ready for Phase 6 (GitOps with Flux) - automated k8s deployments
-  - VM testing deferred until Proxmox hardware available at 192.168.0.50
-**Next action**: `/gsd:plan-phase 06` or `/gsd:execute-plan 06-01` (Start GitOps phase)
+  - Phase 5 at 4/5 plans - deployment automation complete
+  - Next: 05-05 archives legacy k8s manifests and includes verification checkpoint
+  - All scripts syntax-validated, ready for runtime testing when infrastructure available
+**Next action**: `/gsd:execute-plan 05-05` (Archive legacy manifests)
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T17:09:31Z*
+*Last updated: 2026-02-07T17:10:45Z*

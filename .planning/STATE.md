@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 4 of 6 - Production Infrastructure
-**Plan**: 4 of 6
+**Plan**: 5 of 6
 **Status**: Active - continuing Phase 4 without VM testing
-**Last activity**: 2026-02-07 - Completed 04-04-PLAN.md (Caddy reverse proxy)
+**Last activity**: 2026-02-07 - Completed 04-05-PLAN.md (Backup automation)
 
 ## Progress
 
@@ -19,11 +19,11 @@
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
-Phase 4: Production Infrastructure[████░░░░░░] 4/6 plans (67%)
+Phase 4: Production Infrastructure[████████░░] 5/6 plans (83%)
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 Phase 6: GitOps with Flux         [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [███████░░░] 78%
+Overall:                          [████████░░] 81%
 ```
 
 ## Recent Decisions
@@ -84,6 +84,9 @@ Overall:                          [███████░░░] 78%
 | Create backup Caddyfile as documentation | Serves as documentation of routing configuration and provides fallback if label-based config has issues | 2026-02-07 |
 | Connect Caddy to external supabase_default network | Allows Caddy to reach Kong on Supabase's internal network while keeping reverse proxy networking separate | 2026-02-07 |
 | Document both Cloudflare proxy and DNS-only modes | Cloudflare proxy handles external SSL with Caddy validation, DNS-only mode Caddy handles SSL directly | 2026-02-07 |
+| Use kartoza/pg-backup container for automated backups | Pre-built solution with cron scheduling, retention, compression instead of custom scripts | 2026-02-07 |
+| Daily 2 AM backups with 7-day retention | Balances storage usage with recovery options for homelab environment | 2026-02-07 |
+| Store backups at /opt/backups/postgres on host | Persists across container recreation, on dedicated storage disk separate from OS | 2026-02-07 |
 
 ## Pending Todos
 
@@ -99,15 +102,15 @@ Overall:                          [███████░░░] 78%
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T16:08:47Z
-**Stopped at**: Completed 04-04-PLAN.md (Caddy reverse proxy)
+**Last session**: 2026-02-07T16:14:24Z
+**Stopped at**: Completed 04-05-PLAN.md (Backup automation)
 **Strategy**:
-  - Continue Phase 4 plans (04-05 through 04-06) - create configs/docs
+  - Continue Phase 4 plans (04-06) - create configs/docs
   - After Phase 4: Add Phase 6 for GitOps/Flux integration
   - VM testing deferred until Proxmox hardware available
-**Next action**: `/gsd:execute-phase 4` (continue from plan 04-05)
+**Next action**: `/gsd:execute-phase 4` (continue from plan 04-06)
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T16:08:47Z*
+*Last updated: 2026-02-07T16:14:24Z*

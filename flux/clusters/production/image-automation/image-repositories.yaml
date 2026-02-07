@@ -1,0 +1,25 @@
+# ImageRepository CRDs - Poll Harbor registry for new image tags
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: frontend
+  namespace: flux-system
+spec:
+  image: 192.168.0.40:5000/frontend
+  interval: 1m0s
+  secretRef:
+    name: harbor-credentials
+  insecure: true  # Harbor runs HTTP in homelab (no TLS)
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: backend
+  namespace: flux-system
+spec:
+  image: 192.168.0.40:5000/backend
+  interval: 1m0s
+  secretRef:
+    name: harbor-credentials
+  insecure: true  # Harbor runs HTTP in homelab (no TLS)

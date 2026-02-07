@@ -148,7 +148,17 @@ Plans:
 
 **Dependencies**: Phase 5
 
-**Status**: Not Started
+**Plans:** 6 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Build infrastructure (sortable image tags + GitHub Actions CI)
+- [ ] 06-02-PLAN.md — Frontend Flux manifests (Kustomize + deployment with image setter)
+- [ ] 06-03-PLAN.md — Backend Flux manifests (deploy Job + docker-compose with image setter)
+- [ ] 06-04-PLAN.md — Sealed Secrets (templates + seal-secrets helper script)
+- [ ] 06-05-PLAN.md — Image automation CRDs (ImageRepository, ImagePolicy, ImageUpdateAutomation)
+- [ ] 06-06-PLAN.md — Bootstrap, Flux Kustomizations, documentation, and verification
+
+**Status**: Planned
 
 ---
 
@@ -161,4 +171,4 @@ Plans:
 ---
 
 *Created: 2026-01-28*
-*Updated: 2026-02-07 - Phase 5 complete (deployment reconfiguration)*
+*Updated: 2026-02-07 - Phase 6 planned (6 plans in 4 waves)*

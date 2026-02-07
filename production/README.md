@@ -115,17 +115,78 @@ This is a high-level overview. Detailed instructions are provided in subsequent 
    - [ ] Verify email functionality (if SMTP configured)
    - [ ] Load test with expected traffic
 
+## Deployment Commands
+
+After VM setup and .env configuration, deploy Supabase:
+
+```bash
+# SSH into VM
+ssh <user>@<VM_IP>
+
+# Copy production files to VM (from local machine)
+scp -r production/* <user>@<VM_IP>:/opt/supabase/
+
+# On the VM:
+cd /opt/supabase
+
+# Verify environment configuration
+./deploy.sh env-check
+
+# Start all services
+./deploy.sh start
+
+# Check status
+./deploy.sh status
+
+# View logs
+./deploy.sh logs
+```
+
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `./deploy.sh start` | Start all Supabase services |
+| `./deploy.sh stop` | Stop all services |
+| `./deploy.sh restart` | Stop and start services |
+| `./deploy.sh pull` | Pull latest Docker images |
+| `./deploy.sh update` | Pull images and restart (causes downtime) |
+| `./deploy.sh logs` | Follow service logs |
+| `./deploy.sh status` | Show service status |
+| `./deploy.sh env-check` | Verify .env configuration |
+
+### First-Time Setup
+
+1. Copy .env.template to .env
+2. Run `./generate-secrets.sh` and copy secrets to .env
+3. Generate ANON_KEY and SERVICE_ROLE_KEY (see below)
+4. Configure Google OAuth credentials
+5. Run `./deploy.sh start`
+
+### Generating API Keys
+
+ANON_KEY and SERVICE_ROLE_KEY are JWTs signed with your JWT_SECRET.
+
+Option 1: Use Supabase JWT Generator
+- Visit: https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys
+- Enter your JWT_SECRET
+- Copy generated keys
+
+Option 2: Use the Supabase CLI (requires Node.js)
+```bash
+npx supabase gen keys --jwt-secret <your-jwt-secret>
+```
+
 ## File Structure
 
 ```
 production/
-├── .env.template          # Environment configuration template
-├── .env                   # Actual configuration (GITIGNORED)
-├── generate-secrets.sh    # Secret generation script
-├── docker-compose.yml     # Supabase stack (created in Plan 04-04)
-├── docker-compose.caddy.yml  # Reverse proxy (created in Plan 04-05)
-├── docker-compose.backup.yml # Backup service (created in Plan 04-06)
-└── README.md             # This file
+├── .env.template              # Configuration template
+├── .env                       # Actual config (gitignored, on VM only)
+├── generate-secrets.sh        # Secret generation script
+├── docker-compose.override.yml # Caddy labels and networking
+├── deploy.sh                  # Deployment management script
+└── README.md                  # This file
 ```
 
 **After deployment:**

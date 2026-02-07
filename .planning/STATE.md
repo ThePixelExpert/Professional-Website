@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 4 of 6 - Production Infrastructure
-**Plan**: 2 of 6 (Continuing theoretically)
+**Plan**: 3 of 6
 **Status**: Active - continuing Phase 4 without VM testing
-**Last activity**: 2026-02-07 - Resuming Phase 4, added Phase 6 for GitOps
+**Last activity**: 2026-02-07 - Completed 04-03-PLAN.md
 
 ## Progress
 
@@ -19,11 +19,11 @@
 Phase 1: Local Dev Environment    [██████████] 2/2 plans (100%)
 Phase 2: Schema & Backend         [██████████] 2/2 plans (100%)
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
-Phase 4: Production Infrastructure[██░░░░░░░░] 2/6 plans (33%)
+Phase 4: Production Infrastructure[███░░░░░░░] 3/6 plans (50%)
 Phase 5: Deployment Reconfig      [░░░░░░░░░░] Not Started
 Phase 6: GitOps with Flux         [░░░░░░░░░░] Not Started
 ─────────────────────────────────────────────
-Overall:                          [███████░░░] 73%
+Overall:                          [███████░░░] 76%
 ```
 
 ## Recent Decisions
@@ -76,6 +76,9 @@ Overall:                          [███████░░░] 73%
 | Mount data disk to /opt | Standard location for optional application software, keeps Docker storage on data disk | 2026-01-29 |
 | VM over LXC for Supabase | Better Docker compatibility, live migration support, no Proxmox update breakage | 2026-01-29 |
 | Automated vm-setup.sh script | Reduces manual configuration errors, ensures repeatable deployments | 2026-01-29 |
+| Use Docker Compose override file instead of modifying docker-compose.yml | Official file can be updated without losing customizations, clear separation | 2026-02-07 |
+| Provide deploy.sh with subcommands for all common operations | Single script interface reduces cognitive load, eliminates docker compose flag memorization | 2026-02-07 |
+| Auto-copy override file and create caddy_network on first start | Reduces manual setup steps, script ensures environment is ready | 2026-02-07 |
 
 ## Pending Todos
 
@@ -91,14 +94,15 @@ Overall:                          [███████░░░] 73%
 
 ## Session Continuity
 
-**Last session**: 2026-02-07
-**Stopped at**: Plan 04-02 checkpoint - continuing theoretically without VM testing
+**Last session**: 2026-02-07T16:07:15Z
+**Stopped at**: Completed 04-03-PLAN.md
 **Strategy**:
-  - Continue Phase 4 plans (04-03 through 04-06) - create configs/docs
+  - Continue Phase 4 plans (04-04 through 04-06) - create configs/docs
   - After Phase 4: Add Phase 6 for GitOps/Flux integration
   - VM testing deferred until Proxmox hardware available
-**Next action**: `/gsd:execute-phase 4` (continue from plan 04-03)
+**Next action**: `/gsd:execute-phase 4` (continue from plan 04-04)
+**Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T23:00:00Z*
+*Last updated: 2026-02-07T16:07:15Z*

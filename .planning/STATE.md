@@ -9,9 +9,9 @@
 
 **Milestone**: v1.0 - Core Migration
 **Phase**: 6 of 6 - GitOps with Flux
-**Plan**: 1 of 5
+**Plan**: 2 of 5
 **Status**: In Progress
-**Last activity**: 2026-02-07 - Completed 06-01-PLAN.md (CI Pipeline and Tag Format)
+**Last activity**: 2026-02-07 - Completed 06-02-PLAN.md (Flux-Managed Frontend Manifests)
 
 ## Progress
 
@@ -21,9 +21,9 @@ Phase 2: Schema & Backend         [██████████] 2/2 plans (10
 Phase 3: Auth Migration           [██████████] 7/7 plans (100%)
 Phase 4: Production Infrastructure[██████████] 6/6 plans (100%)
 Phase 5: Deployment Reconfig      [██████████] 5/5 plans (100%)
-Phase 6: GitOps with Flux         [██░░░░░░░░] 1/5 plans (20%)
+Phase 6: GitOps with Flux         [████░░░░░░] 2/5 plans (40%)
 ─────────────────────────────────────────────
-Overall:                          [█████████░] 96%
+Overall:                          [█████████░] 97%
 ```
 
 ## Recent Decisions
@@ -112,6 +112,10 @@ Overall:                          [█████████░] 96%
 | Image tags use main-{sha}-{timestamp} format | Flux ImagePolicy requires chronologically sortable tags for determining latest image | 2026-02-07 |
 | GitHub Actions self-hosted runner for builds | Cloud runners cannot reach LAN-only Harbor registry at 192.168.0.40:5000 | 2026-02-07 |
 | Skip CI builds for docs/planning/Flux manifests | Prevents unnecessary builds for documentation and Flux automation commits | 2026-02-07 |
+| Frontend manifests under flux/clusters/production/frontend/ | Flux reconciles resources from git, manifests must live under Flux-managed path | 2026-02-07 |
+| Separate ingress directory for split routing | Ingress routes to both frontend and backend services, belongs at higher level | 2026-02-07 |
+| Readiness probe initialDelaySeconds 10s for Pi | Increased from 5s to give React app time to cold-start on Pi hardware | 2026-02-07 |
+| Placeholder tag main-placeholder-0000000000 | Follows sortable format for Flux automation, replaced on first reconciliation | 2026-02-07 |
 
 ## Pending Todos
 
@@ -119,32 +123,38 @@ Overall:                          [█████████░] 96%
 
 ## Blockers/Concerns
 
-**Phase 6 In Progress**: GitOps with Flux (1/5 plans complete)
+**Phase 6 In Progress**: GitOps with Flux (2/5 plans complete)
 - ✓ CI pipeline with sortable image tags (06-01)
-- ⏳ Flux bootstrap and installation (06-02)
-- ⏳ Image automation configuration (06-03)
-- ⏳ Sealed Secrets setup (06-04)
-- ⏳ Backend deployment automation (06-05)
+- ✓ Flux-managed frontend and ingress manifests (06-02)
+- ⏳ Flux bootstrap and CRD setup (06-03)
+- ⏳ Image automation configuration (06-04)
+- ⏳ Sealed Secrets setup (06-05)
+
+**Accomplishments**:
+- Frontend manifests with Flux image setter comments created
+- Ingress manifests for split-architecture routing configured
+- flux/clusters/production/ directory structure established
 
 **Setup Required for Next Plans**:
 - Self-hosted GitHub Actions runner must be registered on homelab LAN
 - Runner needs `.env.production` file with React build variables
 - kubectl access to k3s cluster required for Flux bootstrap
 
-**Note**: Image tags now sortable for Flux. CI automation ready once self-hosted runner is configured.
+**Note**: Flux-managed manifests ready for reconciliation once Flux is installed in cluster.
 
 ## Session Continuity
 
-**Last session**: 2026-02-07T21:18:53Z
-**Stopped at**: Completed 06-01-PLAN.md (CI Pipeline and Tag Format)
+**Last session**: 2026-02-07T21:19:23Z
+**Stopped at**: Completed 06-02-PLAN.md (Flux-Managed Frontend Manifests)
 **Strategy**:
-  - Phase 6 started (1/5 plans) - CI infrastructure ready for GitOps
-  - Sortable image tags enable Flux ImagePolicy automation
-  - GitHub Actions workflow ready for self-hosted runner
-  - Next: Flux bootstrap on k3s cluster (06-02)
-**Next action**: Execute plan 06-02 (Flux Bootstrap) or set up self-hosted runner
+  - Phase 6 in progress (2/5 plans) - GitOps infrastructure being built
+  - CI pipeline with sortable image tags configured (06-01)
+  - Flux-managed frontend and ingress manifests created (06-02)
+  - Frontend manifests include image setter comments for automation
+  - Split-architecture routing configured in ingress
+**Next action**: Continue Phase 6 with plan 06-03 (Flux Bootstrap and CRDs)
 **Resume file**: None
 
 ---
 
-*Last updated: 2026-02-07T21:18:53Z*
+*Last updated: 2026-02-07T21:19:23Z*

@@ -86,28 +86,28 @@ This is a high-level overview. Detailed instructions are provided in subsequent 
    - [ ] Verify all services healthy: `docker compose ps`
    - [ ] Wait 30-60 seconds for all health checks to pass
 
-4. **Deploy Caddy Reverse Proxy** (Plan 04-05)
-   - [ ] Create Caddy configuration for Supabase
-   - [ ] Deploy Caddy container with automatic SSL
-   - [ ] Verify Let's Encrypt certificate issuance
+4. **Configure DNS and Deploy Caddy Reverse Proxy** (Plan 04-04)
+   - [ ] Configure DNS for supabase.edwardstech.dev
+   - [ ] Deploy Caddy reverse proxy
+   - [ ] Verify SSL certificate is issued
    - [ ] Test HTTPS access: `https://supabase.edwardstech.dev`
    - [ ] Access Supabase Studio and verify OAuth login
 
-5. **Configure Backup Automation** (Plan 04-06)
+5. **Configure Backup Automation** (Plan 04-05)
    - [ ] Deploy PostgreSQL backup container
    - [ ] Configure backup schedule (daily at 2 AM)
    - [ ] Set backup retention policy (7 days)
    - [ ] Configure backup destination (local or NFS mount)
    - [ ] Test backup and restore procedures
 
-6. **Apply Migrations and Configure Auth** (Plan 04-07)
+6. **Apply Migrations and Configure Auth** (Plan 04-06)
    - [ ] Mount migrations directory to Supabase
    - [ ] Apply database migrations
    - [ ] Configure Auth Hooks (custom_access_token_hook)
    - [ ] Assign admin role to your Google account
    - [ ] Test admin dashboard access
 
-7. **Verify Production System** (Plan 04-08)
+7. **Verify Production System** (Plan 04-07)
    - [ ] Verify OAuth login flow (Google)
    - [ ] Test API access with ANON_KEY
    - [ ] Verify RLS policies work correctly
@@ -177,6 +177,89 @@ Option 2: Use the Supabase CLI (requires Node.js)
 npx supabase gen keys --jwt-secret <your-jwt-secret>
 ```
 
+## Reverse Proxy (Caddy)
+
+Caddy handles SSL termination and proxies traffic to Supabase services.
+
+### How It Works
+
+```
+Internet (HTTPS :443)
+        ↓
+    Caddy (SSL termination)
+        ↓ HTTP
+    Kong (:8000, internal network)
+        ↓
+    Supabase Services
+```
+
+Caddy uses Docker labels to discover routing configuration:
+- Labels on Kong container → supabase.edwardstech.dev
+- Labels on Studio container → studio.edwardstech.dev (optional)
+
+### Deploy Caddy
+
+```bash
+# On the VM, after Supabase is running:
+cd /opt/supabase
+
+# Start Caddy (will auto-request SSL certificates)
+docker compose -f docker-compose.caddy.yml up -d
+
+# Check logs for certificate status
+docker compose -f docker-compose.caddy.yml logs -f
+```
+
+### SSL Certificate
+
+Caddy automatically:
+1. Requests Let's Encrypt certificate on first start
+2. Renews certificate before expiration
+3. Handles OCSP stapling
+
+**Requirements for certificate issuance:**
+- DNS must point supabase.edwardstech.dev to VM's public IP
+- Port 80 must be accessible (ACME HTTP challenge)
+- Port 443 for HTTPS traffic
+
+### DNS Configuration
+
+Before starting Caddy, configure DNS:
+
+1. In Cloudflare (or your DNS provider):
+   - Add A record: `supabase.edwardstech.dev` → `<VM_IP>`
+   - Add A record: `studio.edwardstech.dev` → `<VM_IP>` (optional)
+
+2. If using Cloudflare proxy (orange cloud):
+   - Caddy will still get certificates (Cloudflare handles external SSL)
+   - Set SSL mode to "Full (strict)" in Cloudflare
+
+3. If NOT using Cloudflare proxy (grey cloud / DNS only):
+   - Caddy handles SSL directly with Let's Encrypt
+   - Ensure ports 80/443 are forwarded to VM
+
+### Troubleshooting
+
+**Certificate not issued:**
+```bash
+# Check Caddy logs
+docker logs caddy
+
+# Common issues:
+# - DNS not propagated (wait or check with dig)
+# - Port 80 blocked (firewall/router)
+# - Rate limited (Let's Encrypt limits)
+```
+
+**Services not discovered:**
+```bash
+# Verify Supabase network exists
+docker network ls | grep supabase
+
+# Check Kong labels
+docker inspect kong | grep -A 10 Labels
+```
+
 ## File Structure
 
 ```
@@ -185,6 +268,8 @@ production/
 ├── .env                       # Actual config (gitignored, on VM only)
 ├── generate-secrets.sh        # Secret generation script
 ├── docker-compose.override.yml # Caddy labels and networking
+├── docker-compose.caddy.yml   # Caddy reverse proxy deployment
+├── Caddyfile                  # Backup static Caddy configuration
 ├── deploy.sh                  # Deployment management script
 └── README.md                  # This file
 ```

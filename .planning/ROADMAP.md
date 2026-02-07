@@ -125,9 +125,24 @@ Plans:
 
 ---
 
+### Phase 6: GitOps with Flux
+**Goal**: Automate deployments with Flux for both frontend and backend
+
+**Delivers**:
+- Flux installed on k3s cluster
+- Frontend GitOps automation (git push → automatic deployment)
+- Backend GitOps automation (git push → container rebuild → deployment)
+- Automated image building and registry management
+- Deployment manifests and Kustomize configurations
+
+**Dependencies**: Phase 5
+
+**Status**: Not Started
+
+---
+
 ## Future: Milestone v1.1
 
-- GitOps with Flux for automated deployments
 - Supabase Realtime for live order status
 - Supabase Storage for file uploads
 - Monitoring and alerting
@@ -135,3 +150,4 @@ Plans:
 ---
 
 *Created: 2026-01-28*
+*Updated: 2026-02-07 - Added Phase 6 for GitOps*

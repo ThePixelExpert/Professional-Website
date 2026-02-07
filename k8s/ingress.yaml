@@ -1,3 +1,6 @@
+# Split architecture routing:
+# /api -> backend VM (via Service+Endpoints at 192.168.0.50)
+# /    -> frontend pods (running in k3s cluster)
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -5,7 +8,7 @@ metadata:
   name: edwards-api-ingress
   namespace: website
   annotations:
-    traefik.ingress.kubernetes.io/router.priority: "2000"
+    traefik.ingress.kubernetes.io/router.priority: "2000"  # Higher priority matches first
 spec:
   ingressClassName: traefik
   rules:
@@ -36,7 +39,7 @@ metadata:
   name: edwards-frontend-ingress
   namespace: website
   annotations:
-    traefik.ingress.kubernetes.io/router.priority: "1000"
+    traefik.ingress.kubernetes.io/router.priority: "1000"  # Lower priority is catch-all
 spec:
   ingressClassName: traefik
   rules:

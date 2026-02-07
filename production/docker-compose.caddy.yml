@@ -1,0 +1,41 @@
+# Caddy Reverse Proxy for Supabase
+# Automatically obtains Let's Encrypt SSL certificates
+# Discovers routing via Docker labels on containers
+#
+# Deploy: docker compose -f docker-compose.caddy.yml up -d
+# Logs: docker compose -f docker-compose.caddy.yml logs -f
+
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"    # HTTP (for Let's Encrypt ACME challenge)
+      - "443:443"  # HTTPS
+    environment:
+      # Network where labeled containers are running
+      - CADDY_INGRESS_NETWORKS=supabase_default
+    volumes:
+      # Docker socket for label discovery (read-only for security)
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Persistent storage for certificates and config
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - supabase_default
+      - caddy_network
+
+volumes:
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
+
+networks:
+  # Connect to Supabase's default network to reach Kong
+  supabase_default:
+    external: true
+  # Network for other services that need HTTPS
+  caddy_network:
+    driver: bridge

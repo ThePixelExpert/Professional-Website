@@ -1,0 +1,58 @@
+# Automated PostgreSQL Backup Service
+# Uses kartoza/pg-backup for scheduled backups with retention
+#
+# Deploy: docker compose -f docker-compose.backup.yml up -d
+# Backups stored in: /opt/backups/postgres/
+
+services:
+  db-backup:
+    image: kartoza/pg-backup:latest
+    container_name: supabase-db-backup
+    restart: unless-stopped
+    environment:
+      # Database connection (uses Supabase's internal db container)
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+
+      # Backup schedule (cron format)
+      # Default: Daily at 2 AM
+      - CRON_SCHEDULE=0 2 * * *
+
+      # Backup location inside container
+      - BACKUP_DIR=/backups
+
+      # Retention: Remove backups older than N days
+      - REMOVE_BEFORE=7
+
+      # Backup format: gzip compressed
+      - ARCHIVE_FORMAT=Fc
+
+      # Dump all databases (we only have postgres, but this is safer)
+      - DUMP_ARGS=--no-owner --no-acl
+
+    volumes:
+      # Mount backup directory from host
+      - /opt/backups/postgres:/backups
+
+    networks:
+      - supabase_default
+
+    depends_on:
+      - db
+
+    # Health check - verify last backup exists
+    healthcheck:
+      test: ["CMD", "test", "-d", "/backups"]
+      interval: 1h
+      timeout: 10s
+      retries: 3
+
+networks:
+  supabase_default:
+    external: true
+
+# Note: This service connects to the 'db' container in Supabase's network
+# POSTGRES_PASSWORD must be set in the .env file used by Supabase

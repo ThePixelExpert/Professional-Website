@@ -1,12 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
+  name: frontend
   namespace: website
   labels:
     app: frontend
 spec:
-  replicas: 3
+  replicas: 2  # Conservative for Pi cluster (4GB nodes)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0  # Zero-downtime deployments
   selector:
     matchLabels:
       app: frontend
@@ -17,17 +22,39 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: 192.168.0.40:5000/edwards-frontend:<tag>
-        imagePullPolicy: IfNotPresent
+        image: 192.168.0.40:5000/frontend:latest  # Overridden by deploy script with specific tags
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "100m"
+            memory: "64Mi"
+            cpu: "50m"
           limits:
-            memory: "256Mi"
-            cpu: "200m"
+            memory: "128Mi"  # Tuned down from 256Mi for Pi constraints
+            cpu: "100m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        volumeMounts:
+        - name: cache
+          mountPath: /var/cache/nginx
+        - name: run
+          mountPath: /var/run
+      volumes:
+      - name: cache
+        emptyDir: {}
+      - name: run
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -41,4 +68,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: LoadBalancer
+  type: ClusterIP  # Traefik handles external access via Ingress

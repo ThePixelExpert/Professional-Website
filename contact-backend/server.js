@@ -6,11 +6,16 @@ const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const PDFReceiptGenerator = require('./pdf-generator');
 
 const { db, initializeDatabase } = require('./database');
+const { requireAdmin } = require('./src/middleware/requireAdmin');
+const { requireAuth, optionalAuth } = require('./src/middleware/auth');
+const { createClient } = require('./src/lib/supabase-ssr');
+const { supabaseAdmin } = require('./src/config/supabase');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -18,18 +23,8 @@ const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'password';
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
-// Admin Auth Middleware
-function agh repo clone ThePixelExpert/Professional-WebsiteuthMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'No token provided' });
-  const token = authHeader.split(' ')[1];
-  try {
-    jwt.verify(token, JWT_SECRET);
-    next();
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-}
+// Admin Auth Middleware - REMOVED (migrated to Supabase Auth)
+// See: ./src/middleware/requireAdmin.js
 
 
 
@@ -46,6 +41,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/contact', limiter);
 
 // Health check endpoint (required for Kubernetes probes)
@@ -179,47 +175,41 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Admin Login Endpoint
-app.post('/api/admin/login', async (req, res) => {
-  const { username, password } = req.body;
-  
-  try {
-    // Get admin user from database
-    const adminUser = await db.getAdminUser(username);
-    
-    if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
-    }
-    
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, adminUser.password_hash);
-    
-    if (isValidPassword) {
-      // Update last login
-      await db.updateAdminLastLogin(username);
-      
-      // Create JWT token
-      const token = jwt.sign({ 
-        username: adminUser.username, 
-        id: adminUser.id 
-      }, JWT_SECRET, { expiresIn: '2h' });
-      
-      res.json({ 
-        success: true, 
-        token,
-        user: {
-          username: adminUser.username,
-          email: adminUser.email,
-          lastLogin: adminUser.last_login
-        }
-      });
-    } else {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
-    }
-  } catch (error) {
-    console.error('Error during admin login:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+// Admin Login Endpoint - REMOVED (migrated to Supabase OAuth)
+// Admin login now happens through Supabase Auth (Google OAuth)
+
+// Check current session status
+app.get('/api/auth/session', async (req, res) => {
+  const supabase = createClient({ req, res });
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return res.json({ authenticated: false, user: null });
   }
+
+  // Return user info (without sensitive data)
+  res.json({
+    authenticated: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.app_metadata?.user_role || null
+    }
+  });
+});
+
+// Sign out (revokes all sessions)
+app.post('/api/auth/signout', async (req, res) => {
+  const supabase = createClient({ req, res });
+
+  const { error } = await supabase.auth.signOut({ scope: 'global' });
+
+  if (error) {
+    console.error('Signout error:', error);
+    return res.status(500).json({ error: 'Failed to sign out' });
+  }
+
+  res.json({ success: true });
 });
 
 // Create Payment Intent for Stripe
@@ -320,32 +310,41 @@ app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async
   res.json({ received: true });
 });
 
-// Create order (enhanced with Stripe integration)
-app.post('/api/orders', async (req, res) => {
+// Create order (enhanced with Stripe integration and user linking)
+app.post('/api/orders', optionalAuth, async (req, res) => {
   console.log('Order endpoint called. Body:', req.body);
   try {
-    const { 
-      buyerEmail, 
-      items, 
-      buyerName, 
+    const {
+      buyerEmail,
+      items,
+      buyerName,
       buyerPhone,
       shippingAddress,
       billingAddress,
       address, // Legacy support
-      paymentIntentId, 
-      requiresPayment = false 
+      paymentIntentId,
+      requiresPayment = false
     } = req.body;
-    
+
     // Use new address format or fall back to legacy
     const finalShippingAddress = shippingAddress || address || '';
     const finalBillingAddress = billingAddress || finalShippingAddress;
-    
+
     // Calculate totals
     const subtotal = items.reduce((sum, item) => sum + (item.price || 50), 0);
     const tax = subtotal * 0.08; // 8% tax rate
     const total = subtotal + tax;
 
-    // Create order in database
+    // Get user ID if authenticated (set by optionalAuth middleware)
+    const userId = req.user?.id || null;
+
+    if (userId) {
+      console.log('Creating order for authenticated user:', userId);
+    } else {
+      console.log('Creating order for guest checkout');
+    }
+
+    // Create order in database - NOW WITH USER_ID
     const order = await db.createOrder({
       customerName: buyerName || '',
       customerEmail: buyerEmail,
@@ -356,7 +355,8 @@ app.post('/api/orders', async (req, res) => {
       items: items,
       subtotal: subtotal,
       tax: tax,
-      total: total
+      total: total,
+      userId: userId  // CRITICAL: Link order to user
     });
 
     // Create or update customer
@@ -369,11 +369,12 @@ app.post('/api/orders', async (req, res) => {
       billingAddress: finalBillingAddress
     });
 
-    // Send confirmation email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: buyerEmail,
-      subject: 'Order Confirmation - Edwards Engineering',
+    // Send confirmation email (don't block order creation if email fails)
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: buyerEmail,
+        subject: 'Order Confirmation - Edwards Engineering',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1976d2;">Thank you for your order!</h2>
@@ -412,7 +413,12 @@ app.post('/api/orders', async (req, res) => {
           Edwards Engineering</p>
         </div>
       `
-    });
+      });
+      console.log('✅ Order confirmation email sent');
+    } catch (emailError) {
+      console.error('⚠️ Failed to send order confirmation email:', emailError.message);
+      // Continue - order was created successfully even if email failed
+    }
 
     res.json({
       success: true,
@@ -434,8 +440,51 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
+// Get customer's own orders (authenticated customers only)
+app.get('/api/customer/orders', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Fetch orders for this user using Supabase admin client
+    const { data: orders, error } = await supabaseAdmin
+      .from('orders')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching customer orders:', error);
+      throw error;
+    }
+
+    res.json({
+      orders: orders.map(order => ({
+        id: order.id,
+        customerName: order.customer_name,
+        customerEmail: order.customer_email,
+        items: order.items,
+        subtotal: parseFloat(order.subtotal),
+        tax: parseFloat(order.tax),
+        total: parseFloat(order.total),
+        status: order.status,
+        paymentStatus: order.payment_status,
+        trackingNumber: order.tracking_number,
+        created_at: order.created_at,
+        updated_at: order.updated_at
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching customer orders:', error);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
 // List all orders (admin, protected)
-app.get('/api/orders', authMiddleware, async (req, res) => {
+app.get('/api/orders', requireAdmin, async (req, res) => {
   try {
     const orders = await db.getOrders();
     res.json(orders.map(order => ({
@@ -460,7 +509,7 @@ app.get('/api/orders', authMiddleware, async (req, res) => {
 });
 
 // Update order status (admin, protected)
-app.put('/api/orders/:id', authMiddleware, async (req, res) => {
+app.put('/api/orders/:id', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status, trackingNumber } = req.body;
@@ -504,7 +553,7 @@ app.put('/api/orders/:id', authMiddleware, async (req, res) => {
 });
 
 // Generate PDF receipt for an order
-app.get('/api/orders/:id/receipt', authMiddleware, async (req, res) => {
+app.get('/api/orders/:id/receipt', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const order = await db.getOrder(id);
@@ -526,7 +575,7 @@ app.get('/api/orders/:id/receipt', authMiddleware, async (req, res) => {
 });
 
 // Send PDF receipt via email
-app.post('/api/orders/:id/send-receipt', authMiddleware, async (req, res) => {
+app.post('/api/orders/:id/send-receipt', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const order = await db.getOrder(id);

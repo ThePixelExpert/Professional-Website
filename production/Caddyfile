@@ -1,0 +1,64 @@
+# Caddyfile - Backup/Reference Configuration
+# This file is NOT used by caddy-docker-proxy (uses Docker labels instead)
+# Keep this as documentation and fallback configuration
+#
+# To use this file directly:
+# 1. Replace caddy-docker-proxy with vanilla caddy image
+# 2. Mount this file to /etc/caddy/Caddyfile
+# 3. Remove Docker socket mount
+
+# Supabase API (Kong)
+supabase.edwardstech.dev {
+    # Proxy to Kong API Gateway
+    reverse_proxy kong:8000
+
+    # Security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Prevent clickjacking
+        X-Frame-Options "SAMEORIGIN"
+        # XSS protection
+        X-Content-Type-Options "nosniff"
+        # Remove server header
+        -Server
+    }
+
+    # Logging
+    log {
+        output file /var/log/caddy/supabase.log
+        format json
+    }
+}
+
+# Supabase Studio (optional - can be disabled for security)
+studio.edwardstech.dev {
+    reverse_proxy studio:3000
+
+    # Basic auth for Studio access (recommended)
+    # Generate hash: caddy hash-password
+    # basicauth {
+    #     admin $2a$14$... (hashed password)
+    # }
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Frame-Options "DENY"
+    }
+
+    log {
+        output file /var/log/caddy/studio.log
+        format json
+    }
+}
+
+# Alternative: Single domain with path-based routing
+# api.edwardstech.dev {
+#     handle /studio/* {
+#         uri strip_prefix /studio
+#         reverse_proxy studio:3000
+#     }
+#     handle {
+#         reverse_proxy kong:8000
+#     }
+# }

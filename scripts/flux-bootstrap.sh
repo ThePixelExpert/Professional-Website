@@ -60,8 +60,24 @@ flux check --pre
 echo -e "${GREEN}Pre-flight checks passed${NC}"
 echo ""
 
-# --- Step 2: Bootstrap Flux ---
-echo -e "${YELLOW}Step 2: Bootstrapping Flux...${NC}"
+# --- Step 2: Install Sealed Secrets controller BEFORE bootstrap ---
+# Must be installed first so the SealedSecret CRD exists when Flux
+# reconciles the sealed-secrets/ manifests already in the repo.
+echo -e "${YELLOW}Step 2: Installing Sealed Secrets controller...${NC}"
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+helm repo update
+
+helm upgrade --install sealed-secrets sealed-secrets/sealed-secrets \
+  --namespace flux-system \
+  --create-namespace \
+  --set-string fullnameOverride=sealed-secrets-controller \
+  --wait
+
+echo -e "${GREEN}Sealed Secrets controller installed${NC}"
+echo ""
+
+# --- Step 3: Bootstrap Flux ---
+echo -e "${YELLOW}Step 3: Bootstrapping Flux...${NC}"
 flux bootstrap github \
   --owner="${GITHUB_USER}" \
   --repository="${GITHUB_REPO}" \
@@ -72,19 +88,6 @@ flux bootstrap github \
   --personal
 
 echo -e "${GREEN}Flux bootstrapped successfully${NC}"
-echo ""
-
-# --- Step 3: Install Sealed Secrets ---
-echo -e "${YELLOW}Step 3: Installing Sealed Secrets controller...${NC}"
-helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
-helm repo update
-
-helm install sealed-secrets sealed-secrets/sealed-secrets \
-  --namespace flux-system \
-  --set-string fullnameOverride=sealed-secrets-controller \
-  --wait
-
-echo -e "${GREEN}Sealed Secrets controller installed${NC}"
 echo ""
 
 # --- Step 4: Verify Installation ---

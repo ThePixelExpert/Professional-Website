@@ -768,17 +768,26 @@ cd /opt/Professional-Website
 # (Backend deployment is handled via k8s, not directly on VM)
 
 # Create deploy script
-cat > deploy.sh << 'EOF'
+cat > /opt/Professional-Website/deploy.sh << 'EOF'
 #!/bin/bash
+set -e
 cd /opt/Professional-Website
 git pull origin master
-docker compose -f docker-compose.yml up -d --build
+docker build -f Dockerfile.backend -t backend:latest .
+docker stop backend || true
+docker rm backend || true
+docker run -d \
+  --name backend \
+  --restart=unless-stopped \
+  -p 3001:3001 \
+  --env-file /opt/Professional-Website/contact-backend/.env \
+  backend:latest
 EOF
 
-chmod +x deploy.sh
+chmod +x /opt/Professional-Website/deploy.sh
 
 # Test deploy script
-./deploy.sh
+/opt/Professional-Website/deploy.sh
 ```
 
 ---

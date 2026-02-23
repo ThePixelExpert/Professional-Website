@@ -18,7 +18,7 @@ ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
 -- RLS Policies:
 -- 1. Service role has full access (for admin operations)
 CREATE POLICY "Service role has full access" ON public.user_roles
-  FOR ALL USING (auth.jwt()->>'role' = 'service_role');
+  FOR ALL USING (auth.role() = 'service_role');
 
 -- 2. Users can read their own roles (for client-side role checks)
 CREATE POLICY "Users can read own roles" ON public.user_roles

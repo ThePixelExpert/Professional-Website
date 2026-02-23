@@ -867,47 +867,55 @@ Then reconnect — no need to recreate the devpod.
 
 ### 8.1 Choose Runner Host
 
-**Option A: Pi Master (Recommended)**
-- Already has access to Harbor registry
+**Option A: Pi Master**
 - Can build ARM64 images natively
 
-**Option B: Dedicated VM**
+**Option B: x86_64 VM (used in this guide)**
 - Separate build environment
-- Requires more resources
-
-We'll use **Pi Master** for this guide.
+- Must download x64 runner binary (not ARM64)
 
 ### 8.2 Install GitHub Actions Runner
 
 ```bash
-# SSH to Pi Master
-ssh pi@192.168.68.40
+# SSH to your runner host (VM example)
+ssh logan@<VM_IP>
 
 # Create runner directory
 mkdir -p ~/actions-runner && cd ~/actions-runner
 
-# Download latest ARM64 runner
-RUNNER_VERSION=2.314.1
-curl -o actions-runner-linux-arm64.tar.gz -L \
-  https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-arm64-${RUNNER_VERSION}.tar.gz
+# Check your architecture first
+uname -m  # x86_64 = use x64 binary, aarch64 = use arm64 binary
 
-tar xzf ./actions-runner-linux-arm64.tar.gz
-rm actions-runner-linux-arm64.tar.gz
+# Download latest x64 runner (for x86_64 VM)
+RUNNER_VERSION=2.314.1
+curl -o actions-runner-linux-x64.tar.gz -L \
+  https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+
+tar xzf ./actions-runner-linux-x64.tar.gz
+rm actions-runner-linux-x64.tar.gz
+
+# If running on ARM64 (Pi), use this instead:
+# curl -o actions-runner-linux-arm64.tar.gz -L \
+#   https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-arm64-${RUNNER_VERSION}.tar.gz
+# tar xzf ./actions-runner-linux-arm64.tar.gz
+# rm actions-runner-linux-arm64.tar.gz
 ```
 
 ### 8.3 Register Runner
 
-1. Go to GitHub: https://github.com/YOUR_USERNAME/Professional-Website/settings/actions/runners/new
+1. Go to GitHub: https://github.com/ThePixelExpert/Professional-Website/settings/actions/runners/new
 2. Copy the registration token (starts with `A...`)
 
 ```bash
-# Still on Pi Master
+# Run config — when prompted for runner group, press Enter to accept Default
 ./config.sh \
-  --url https://github.com/YOUR_USERNAME/Professional-Website \
+  --url https://github.com/ThePixelExpert/Professional-Website \
   --token <YOUR_REGISTRATION_TOKEN> \
-  --name pi-runner \
-  --labels self-hosted,ARM64 \
+  --name k3s-runner \
+  --labels self-hosted,X64,Linux \
   --work _work
+
+# Runner group: press Enter (uses Default group)
 
 # Install as systemd service
 sudo ./svc.sh install
@@ -921,8 +929,12 @@ Verify in GitHub: Settings → Actions → Runners (should show "pi-runner" as o
 
 ### 8.4 Create .env.production on Runner
 
+> **Note:** The `_work` directory is created automatically when the runner executes its first job.
+> Complete Phase 9 (Flux/GitOps setup) and trigger a workflow run first, then come back and run this.
+
 ```bash
-# On Pi Master
+# On runner host — run this after the first workflow job has executed
+mkdir -p ~/actions-runner/_work/Professional-Website/Professional-Website
 cd ~/actions-runner/_work/Professional-Website/Professional-Website
 
 # Create production environment file for frontend builds

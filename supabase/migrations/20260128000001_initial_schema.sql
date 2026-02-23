@@ -71,16 +71,16 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
 -- Create service role policies (full access for backend)
 CREATE POLICY "Service role has full access" ON orders
-  FOR ALL USING (auth.jwt()->>'role' = 'service_role');
+  FOR ALL USING (auth.role() = 'service_role');
 
 CREATE POLICY "Service role has full access" ON admin_users
-  FOR ALL USING (auth.jwt()->>'role' = 'service_role');
+  FOR ALL USING (auth.role() = 'service_role');
 
 CREATE POLICY "Service role has full access" ON customers
-  FOR ALL USING (auth.jwt()->>'role' = 'service_role');
+  FOR ALL USING (auth.role() = 'service_role');
 
 CREATE POLICY "Service role has full access" ON products
-  FOR ALL USING (auth.jwt()->>'role' = 'service_role');
+  FOR ALL USING (auth.role() = 'service_role');
 
 -- Create indexes for common query patterns
 CREATE INDEX idx_orders_email ON orders(customer_email);

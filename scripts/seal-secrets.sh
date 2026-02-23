@@ -41,7 +41,7 @@ fi
 
 # --- Harbor Credentials ---
 echo -e "${YELLOW}--- Harbor Registry Credentials ---${NC}"
-echo "Harbor registry: 192.168.0.40:5000"
+echo "Harbor registry: 192.168.68.67:5000"
 
 read -p "Harbor username [admin]: " HARBOR_USER
 HARBOR_USER=${HARBOR_USER:-admin}
@@ -58,7 +58,7 @@ echo -e "${YELLOW}Creating Harbor credentials SealedSecret...${NC}"
 
 kubectl create secret docker-registry harbor-credentials \
   --namespace=flux-system \
-  --docker-server=192.168.0.40:5000 \
+  --docker-server=192.168.68.67:5000 \
   --docker-username="${HARBOR_USER}" \
   --docker-password="${HARBOR_PASS}" \
   --dry-run=client -o yaml | \
@@ -69,7 +69,7 @@ echo ""
 
 # --- VM SSH Key ---
 echo -e "${YELLOW}--- VM SSH Key ---${NC}"
-echo "Target: ubuntu@192.168.0.50 (Proxmox VM)"
+echo "Target: ubuntu@192.168.68.64 (Backend VM)"
 
 DEFAULT_KEY="$HOME/.ssh/id_ed25519"
 read -p "Path to SSH private key [${DEFAULT_KEY}]: " SSH_KEY_PATH

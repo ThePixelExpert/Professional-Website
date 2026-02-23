@@ -55,7 +55,7 @@
 │     └─ K3s Agent (worker node)                                 │
 │                                                                 │
 │  SERVICES IN K3S                                                │
-│  ├─ Harbor Registry (192.168.68.40:5000)                       │
+│  ├─ Harbor Registry (192.168.68.67:5000)                       │
 │  │  └─ Private container registry                              │
 │  │                                                              │
 │  ├─ Frontend (website namespace)                               │
@@ -543,7 +543,7 @@ sudo docker run -d \
   registry:2
 
 # Test registry
-curl http://192.168.68.40:5000/v2/_catalog
+curl http://192.168.68.67:5000/v2/_catalog
 # Should return: {"repositories":[]}
 ```
 
@@ -573,7 +573,7 @@ nano harbor.yml
 # Install Harbor
 sudo ./install.sh
 
-# Harbor will be available at: http://192.168.68.40:5000
+# Harbor will be available at: http://192.168.68.67:5000
 # Login: admin / <your-password>
 ```
 
@@ -586,9 +586,9 @@ Since Harbor uses HTTP (not HTTPS) on LAN, configure all k3s nodes:
 for NODE in 192.168.68.40 192.168.68.41 192.168.68.42 192.168.68.43 192.168.68.81; do
   ssh pi@$NODE "sudo mkdir -p /etc/rancher/k3s && echo '
 mirrors:
-  \"192.168.68.40:5000\":
+  \"192.168.68.67:5000\":
     endpoint:
-      - \"http://192.168.68.40:5000\"
+      - \"http://192.168.68.67:5000\"
 ' | sudo tee /etc/rancher/k3s/registries.yaml && sudo systemctl restart k3s || sudo systemctl restart k3s-agent"
 done
 ```
@@ -1006,7 +1006,7 @@ cd ~/Projects/Professional-Website
 ```
 
 **Prompts:**
-- Harbor Registry URL: `192.168.68.40:5000`
+- Harbor Registry URL: `192.168.68.67:5000`
 - Harbor Username: `admin` (or your username)
 - Harbor Password: `<your-password>`
 - VM SSH Host: `ubuntu@192.168.68.66`
@@ -1245,9 +1245,9 @@ cat /etc/rancher/k3s/registries.yaml
 
 # Should contain:
 # mirrors:
-#   "192.168.68.40:5000":
+#   "192.168.68.67:5000":
 #     endpoint:
-#       - "http://192.168.68.40:5000"
+#       - "http://192.168.68.67:5000"
 
 # Restart k3s
 sudo systemctl restart k3s  # or k3s-agent
@@ -1257,8 +1257,8 @@ sudo systemctl restart k3s  # or k3s-agent
 ```bash
 # From any k3s node
 docker pull busybox
-docker tag busybox 192.168.68.40:5000/test/busybox
-docker push 192.168.68.40:5000/test/busybox
+docker tag busybox 192.168.68.67:5000/test/busybox
+docker push 192.168.68.67:5000/test/busybox
 ```
 
 ### Flux Issues
@@ -1459,7 +1459,7 @@ journalctl -u actions.runner.* -f
 - [ ] All nodes showing `Ready` status
 
 ### Services
-- [ ] Harbor registry running at 192.168.68.40:5000
+- [ ] Harbor registry running at 192.168.68.67:5000
 - [ ] Supabase accessible at 192.168.68.61:8000
 - [ ] Backend API responding at 192.168.68.66:3001
 - [ ] Frontend pods running in k3s (2 replicas)
@@ -1566,7 +1566,7 @@ journalctl -u actions.runner.* -f
          [Build Images]
                 ↓
          [Push to Harbor]
-         at 192.168.68.40:5000
+         at 192.168.68.67:5000
                 ↓
          [Flux CD detects new image]
                 ↓

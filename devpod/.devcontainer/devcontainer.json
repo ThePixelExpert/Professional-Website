@@ -8,7 +8,7 @@
       "minikube": "none"
     }
   },
-  "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/install-tools.sh",
+  "postCreateCommand": "sed -i 's/\\r//' ${containerWorkspaceFolder}/.devcontainer/install-tools.sh && bash ${containerWorkspaceFolder}/.devcontainer/install-tools.sh",
   "mounts": [
     "source=${localWorkspaceFolder}/kubeconfig.yaml,target=/home/vscode/.kube/config,type=bind,consistency=cached"
   ]

@@ -17,10 +17,12 @@ jobs:
 
       - name: Load production environment
         run: |
-          if [ ! -f .env.production ]; then
-            echo "Error: .env.production not found on runner"
+          if [ ! -f "$HOME/.env.production" ]; then
+            echo "Error: ~/.env.production not found on runner"
+            echo "Create it on the runner VM: cp your-values ~/.env.production"
             exit 1
           fi
+          cp "$HOME/.env.production" .env.production
 
       - name: Build and push images
         run: ./scripts/build-and-push.sh all

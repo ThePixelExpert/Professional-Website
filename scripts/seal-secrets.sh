@@ -44,10 +44,7 @@ echo "Fetching Sealed Secrets certificate via port-forward..."
 kubectl port-forward -n flux-system svc/sealed-secrets-controller 8080:8080 &
 PF_PID=$!
 sleep 3
-kubeseal --fetch-cert \
-  --controller-name=sealed-secrets-controller \
-  --controller-namespace=flux-system \
-  --server http://localhost:8080 > /tmp/sealed-secrets-cert.pem
+curl -s http://localhost:8080/v1/cert.pem > /tmp/sealed-secrets-cert.pem
 kill $PF_PID 2>/dev/null || true
 echo -e "${GREEN}Certificate fetched${NC}"
 echo ""

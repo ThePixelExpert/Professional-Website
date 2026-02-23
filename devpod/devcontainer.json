@@ -6,6 +6,6 @@
   },
   "remoteUser": "dev",
   "mounts": [
-    "source=${localWorkspaceFolder}/devpod/kubeconfig.yaml,target=/home/dev/.kube/config,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder}/kubeconfig.yaml,target=/home/dev/.kube/config,type=bind,consistency=cached"
   ]
 }

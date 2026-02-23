@@ -6,7 +6,7 @@ metadata:
   name: frontend
   namespace: flux-system
 spec:
-  image: 192.168.0.40:5000/frontend
+  image: 192.168.68.67:5000/frontend
   interval: 1m0s
   secretRef:
     name: harbor-credentials
@@ -18,7 +18,7 @@ metadata:
   name: backend
   namespace: flux-system
 spec:
-  image: 192.168.0.40:5000/backend
+  image: 192.168.68.67:5000/backend
   interval: 1m0s
   secretRef:
     name: harbor-credentials

@@ -10,6 +10,7 @@
   },
   "postCreateCommand": "sed -i 's/\\r//' ${containerWorkspaceFolder}/.devcontainer/install-tools.sh && bash ${containerWorkspaceFolder}/.devcontainer/install-tools.sh",
   "mounts": [
-    "source=${localWorkspaceFolder}/devpod/kubeconfig.yaml,target=/home/vscode/.kube/config,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder}/devpod/kubeconfig.yaml,target=/home/vscode/.kube/config,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly"
   ]
 }

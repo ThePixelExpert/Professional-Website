@@ -15,6 +15,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up QEMU for multi-arch builds
+        run: docker run --privileged --rm tonistiigi/binfmt --install all
+
       - name: Load production environment
         run: |
           if [ ! -f "$HOME/.env.production" ]; then

@@ -13,7 +13,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-REGISTRY="192.168.0.40:5000"
+REGISTRY="192.168.68.67:5000"
 GIT_SHA=$(git rev-parse --short HEAD)
 TIMESTAMP=$(date +%s)
 IMAGE_TAG="main-${GIT_SHA}-${TIMESTAMP}"
@@ -56,12 +56,20 @@ if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then
   set +a
 fi
 
+# Ensure a buildx builder with multi-arch support exists
+if ! docker buildx inspect multiarch &>/dev/null; then
+  echo -e "${YELLOW}Creating multiarch buildx builder...${NC}"
+  docker buildx create --name multiarch --driver docker-container --use
+else
+  docker buildx use multiarch
+fi
+
 # Build frontend
 if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then
-  echo -e "${GREEN}Building frontend image (ARM64 for Pi cluster)...${NC}"
+  echo -e "${GREEN}Building frontend image (linux/amd64 + linux/arm64)...${NC}"
 
   docker buildx build \
-    --platform linux/arm64 \
+    --platform linux/amd64,linux/arm64 \
     -f "${REPO_ROOT}/Dockerfile.frontend" \
     --build-arg REACT_APP_SUPABASE_URL="${REACT_APP_SUPABASE_URL}" \
     --build-arg REACT_APP_SUPABASE_ANON_KEY="${REACT_APP_SUPABASE_ANON_KEY}" \
@@ -80,10 +88,10 @@ fi
 
 # Build backend
 if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "backend" ]]; then
-  echo -e "${GREEN}Building backend image (AMD64 for Proxmox VM)...${NC}"
+  echo -e "${GREEN}Building backend image (linux/amd64 + linux/arm64)...${NC}"
 
   docker buildx build \
-    --platform linux/amd64 \
+    --platform linux/amd64,linux/arm64 \
     -f "${REPO_ROOT}/Dockerfile.backend" \
     -t "${REGISTRY}/backend:${IMAGE_TAG}" \
     -t "${REGISTRY}/backend:latest" \

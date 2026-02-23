@@ -263,7 +263,7 @@ const db = {
       .from('admin_users')
       .select('*')
       .eq('username', username)
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error('Database error fetching admin user:', error)

@@ -1,0 +1,11 @@
+{
+  "name": "homelab-devpod",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "remoteUser": "dev",
+  "mounts": [
+    "source=${localWorkspaceFolder}/devpod/kubeconfig.yaml,target=/home/dev/.kube/config,type=bind,consistency=cached"
+  ]
+}

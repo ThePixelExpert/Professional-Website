@@ -8,7 +8,7 @@ ARG HELM_VERSION=v3.17.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    curl wget git openssh-server sudo ca-certificates \
+    curl wget git sudo ca-certificates \
     bash-completion vim nano \
     && rm -rf /var/lib/apt/lists/*
 
@@ -39,20 +39,7 @@ RUN curl -LO "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" \
 RUN useradd -m -s /bin/bash -G sudo dev \
     && echo "dev ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# SSH setup
-RUN mkdir /var/run/sshd \
-    && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
-    && sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config \
-    && sed -i 's/#PasswordAuthentication no/PasswordAuthentication no/' /etc/ssh/sshd_config
-
-# kubectl bash completion
+# bash completions
 RUN echo 'source <(kubectl completion bash)' >> /home/dev/.bashrc \
     && echo 'source <(flux completion bash)' >> /home/dev/.bashrc \
     && echo 'source <(helm completion bash)' >> /home/dev/.bashrc
-
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-EXPOSE 22
-
-ENTRYPOINT ["/entrypoint.sh"]

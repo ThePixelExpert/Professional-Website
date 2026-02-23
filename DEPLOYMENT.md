@@ -819,32 +819,16 @@ sed -i 's/127.0.0.1/192.168.68.40/g' devpod/kubeconfig.yaml
 ### 7.2 Build and Start the DevPod
 
 ```bash
-cd ~/Projects/Professional-Website/devpod
+cd ~/Projects/Professional-Website
 
-# Export your SSH public key so the container can accept your connections
-export SSH_PUBLIC_KEY="$(cat ~/.ssh/id_ed25519.pub)"
-
-# Build and start
-docker compose up -d --build
+devpod up . --devcontainer-path devpod/devcontainer.json
 ```
 
 ### 7.3 SSH Into the DevPod
 
 ```bash
-ssh -p 2222 dev@localhost
+devpod ssh . --devcontainer-path devpod/devcontainer.json
 ```
-
-Add this to `~/.ssh/config` for convenience:
-
-```
-Host devpod
-    HostName localhost
-    Port 2222
-    User dev
-    IdentityFile ~/.ssh/id_ed25519
-```
-
-Then just run: `ssh devpod`
 
 ### 7.4 Verify Tools
 

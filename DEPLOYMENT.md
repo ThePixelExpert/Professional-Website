@@ -792,71 +792,71 @@ chmod +x /opt/Professional-Website/deploy.sh
 
 ---
 
-## Phase 7: Local Machine Tools
+## Phase 7: Local Machine Tools (DevPod)
 
-### 7.1 Install kubectl
+Instead of installing tools manually, use the DevPod — a Docker container with
+kubectl, flux, kubeseal, and helm pre-installed that you SSH into.
+
+### 7.1 Get Your kubeconfig
+
+SSH into the Pi Master and copy the contents of the kubeconfig file:
 
 ```bash
-# On your Arch machine
-sudo pacman -S kubectl
-
-# Or download latest
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-kubectl version --client
+ssh pi@192.168.68.40
+sudo cat /etc/rancher/k3s/k3s.yaml
 ```
 
-### 7.2 Configure kubectl Access
+Copy the output and save it as `devpod-kubeconfig.yaml` in the repo root on your
+local machine. Then update the server IP:
 
 ```bash
-# Copy kubeconfig from k3s cluster
-mkdir -p ~/.kube
-scp pi@192.168.68.40:/etc/rancher/k3s/k3s.yaml ~/.kube/config
+cd ~/Projects/Professional-Website
+sed -i 's/127.0.0.1/192.168.68.40/g' devpod-kubeconfig.yaml
+```
 
-# Update server IP to use control plane
-sed -i 's/127.0.0.1/192.168.68.40/g' ~/.kube/config
+**Note:** `devpod-kubeconfig.yaml` is gitignored — never commit it.
 
-# Test access
+### 7.2 Build and Start the DevPod
+
+```bash
+cd ~/Projects/Professional-Website
+
+# Export your SSH public key so the container can accept your connections
+export SSH_PUBLIC_KEY="$(cat ~/.ssh/id_ed25519.pub)"
+
+# Build and start
+docker compose -f docker-compose.devpod.yml up -d --build
+```
+
+### 7.3 SSH Into the DevPod
+
+```bash
+ssh -p 2222 dev@localhost
+```
+
+Add this to `~/.ssh/config` for convenience:
+
+```
+Host devpod
+    HostName localhost
+    Port 2222
+    User dev
+    IdentityFile ~/.ssh/id_ed25519
+```
+
+Then just run: `ssh devpod`
+
+### 7.4 Verify Tools
+
+```bash
+# Inside the devpod
 kubectl get nodes
-```
-
-**Expected:** List of 5 nodes (2 control planes + 3 workers)
-
-### 7.3 Install Flux CLI
-
-```bash
-# Arch Linux
-sudo pacman -S flux-bin
-
-# Or download manually
-curl -s https://fluxcd.io/install.sh | sudo bash
-
 flux --version
-```
-
-### 7.4 Install Kubeseal (Sealed Secrets)
-
-```bash
-KUBESEAL_VERSION=0.25.0
-wget "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz"
-tar xfz kubeseal-*.tar.gz
-sudo install -m 755 kubeseal /usr/local/bin/kubeseal
-rm kubeseal-*.tar.gz kubeseal
-
 kubeseal --version
-```
-
-### 7.5 Install Helm (Optional)
-
-```bash
-sudo pacman -S helm
-
-# Or
-curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
 helm version
 ```
+
+**Expected:** All tools respond and `kubectl get nodes` lists your 5 cluster nodes.
 
 ---
 

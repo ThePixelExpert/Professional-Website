@@ -934,8 +934,8 @@ Verify in GitHub: Settings → Actions → Runners (should show "pi-runner" as o
 
 ```bash
 # On runner host — run this after the first workflow job has executed
-mkdir -p ~/actions-runner/_work/Professional-Website/Professional-Website
-cd ~/actions-runner/_work/Professional-Website/Professional-Website
+mkdir -p ~/_work/Professional-Website/Professional-Website
+cd ~/_work/Professional-Website/Professional-Website
 
 # Create production environment file for frontend builds
 cat > .env.production << 'EOF'
@@ -1425,7 +1425,7 @@ docker compose exec postgres psql -U postgres -d postgres -f /tmp/migrations/000
 **Runner offline:**
 ```bash
 ssh pi@192.168.68.40
-cd ~/actions-runner
+cd ~
 
 # Check service status
 sudo ./svc.sh status

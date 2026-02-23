@@ -729,11 +729,10 @@ SUPABASE_URL=http://192.168.68.61:8000
 SUPABASE_ANON_KEY=<your-anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 
-# Email (Gmail example)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=<app-specific-password>
+# Email (Gmail - use an App Password, not your account password)
+# Generate at: myaccount.google.com → Security → 2-Step Verification → App passwords
+EMAIL_USER=your-email@gmail.com
+EMAIL_APP_PASSWORD=<16-char-app-password>
 
 # Stripe
 STRIPE_SECRET_KEY=sk_live_<your-key>

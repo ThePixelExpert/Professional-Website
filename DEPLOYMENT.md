@@ -794,46 +794,49 @@ chmod +x /opt/Professional-Website/deploy.sh
 
 ## Phase 7: Local Machine Tools (DevPod)
 
-Instead of installing tools manually, use the DevPod — a Docker container with
+Instead of installing tools manually, use the DevPod — a devcontainer with
 kubectl, flux, kubeseal, and helm pre-installed that you SSH into.
 
 ### 7.1 Get Your kubeconfig
 
-SSH into the Pi Master and copy the contents of the kubeconfig file:
+SSH into the Pi Master and copy the kubeconfig:
 
 ```bash
 ssh pi@192.168.68.40
 sudo cat /etc/rancher/k3s/k3s.yaml
 ```
 
-Copy the output and save it as `devpod/kubeconfig.yaml` on your local machine.
-Then update the server IP:
+Paste the output into `devpod/kubeconfig.yaml` on your local machine, then fix
+the server IP (k3s defaults to 127.0.0.1 which won't work from outside):
 
 ```bash
-cd ~/Projects/Professional-Website
-sed -i 's/127.0.0.1/192.168.68.40/g' devpod/kubeconfig.yaml
+sed -i 's/127.0.0.1/192.168.68.40/g' ~/Projects/Professional-Website/devpod/kubeconfig.yaml
 ```
 
 **Note:** `devpod/kubeconfig.yaml` is gitignored — never commit it.
 
-### 7.2 Build and Start the DevPod
+### 7.2 Start the DevPod
+
+Point DevPod at the `devpod/` folder as the workspace:
 
 ```bash
-cd ~/Projects/Professional-Website
-
-devpod up . --devcontainer-path devpod/devcontainer.json
+devpod up ~/Projects/Professional-Website/devpod --ide none
 ```
+
+DevPod will:
+1. Build the container using the official devcontainer base image
+2. Install kubectl and helm via devcontainer features
+3. Run `install-tools.sh` to add flux and kubeseal
 
 ### 7.3 SSH Into the DevPod
 
 ```bash
-devpod ssh . --devcontainer-path devpod/devcontainer.json
+ssh devpod.devpod
 ```
 
 ### 7.4 Verify Tools
 
 ```bash
-# Inside the devpod
 kubectl get nodes
 flux --version
 kubeseal --version
@@ -841,6 +844,22 @@ helm version
 ```
 
 **Expected:** All tools respond and `kubectl get nodes` lists your 5 cluster nodes.
+
+### Troubleshooting
+
+**`kubectl` not found after SSH:**
+DevPod may have used a cached image from before tools were installed. Delete and recreate:
+```bash
+devpod delete devpod
+devpod up ~/Projects/Professional-Website/devpod --ide none
+```
+
+**`connection refused` on `kubectl get nodes`:**
+The kubeconfig still has `127.0.0.1`. Fix it:
+```bash
+sed -i 's/127.0.0.1/192.168.68.40/g' ~/Projects/Professional-Website/devpod/kubeconfig.yaml
+```
+Then reconnect — no need to recreate the devpod.
 
 ---
 

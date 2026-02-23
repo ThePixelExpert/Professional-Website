@@ -73,6 +73,9 @@ helm upgrade --install sealed-secrets sealed-secrets/sealed-secrets \
   --set-string fullnameOverride=sealed-secrets-controller \
   --wait
 
+echo "Waiting for SealedSecret CRD to be established..."
+kubectl wait --for=condition=established crd/sealedsecrets.bitnami.com --timeout=60s
+
 echo -e "${GREEN}Sealed Secrets controller installed${NC}"
 echo ""
 

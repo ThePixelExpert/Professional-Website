@@ -39,6 +39,19 @@ if ! kubectl get pods -n flux-system -l app.kubernetes.io/name=sealed-secrets-co
   echo ""
 fi
 
+# Fetch cert via port-forward to avoid k3s API proxy 502 errors
+echo "Fetching Sealed Secrets certificate via port-forward..."
+kubectl port-forward -n flux-system svc/sealed-secrets-controller 8080:8080 &
+PF_PID=$!
+sleep 3
+kubeseal --fetch-cert \
+  --controller-name=sealed-secrets-controller \
+  --controller-namespace=flux-system \
+  --server http://localhost:8080 > /tmp/sealed-secrets-cert.pem
+kill $PF_PID 2>/dev/null || true
+echo -e "${GREEN}Certificate fetched${NC}"
+echo ""
+
 # --- Harbor Credentials ---
 echo -e "${YELLOW}--- Harbor Registry Credentials ---${NC}"
 echo "Harbor registry: 192.168.68.67:5000"
@@ -62,7 +75,7 @@ kubectl create secret docker-registry harbor-credentials \
   --docker-username="${HARBOR_USER}" \
   --docker-password="${HARBOR_PASS}" \
   --dry-run=client -o yaml | \
-  kubeseal --format yaml --controller-namespace flux-system > "${SEALED_DIR}/harbor-credentials.yaml"
+  kubeseal --format yaml --cert /tmp/sealed-secrets-cert.pem > "${SEALED_DIR}/harbor-credentials.yaml"
 
 echo -e "${GREEN}Sealed: ${SEALED_DIR}/harbor-credentials.yaml${NC}"
 echo ""
@@ -86,7 +99,7 @@ kubectl create secret generic vm-ssh-key \
   --namespace=website \
   --from-file=id_ed25519="${SSH_KEY_PATH}" \
   --dry-run=client -o yaml | \
-  kubeseal --format yaml --controller-namespace flux-system > "${SEALED_DIR}/vm-ssh-key.yaml"
+  kubeseal --format yaml --cert /tmp/sealed-secrets-cert.pem > "${SEALED_DIR}/vm-ssh-key.yaml"
 
 echo -e "${GREEN}Sealed: ${SEALED_DIR}/vm-ssh-key.yaml${NC}"
 echo ""

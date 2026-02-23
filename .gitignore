@@ -35,6 +35,7 @@ vault.yml
 inventory/hosts.yml
 kubeconfig*
 *.kubeconfig
+devpod/kubeconfig.yaml
 
 # Environment variables and credentials
 .env

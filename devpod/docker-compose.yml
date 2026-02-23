@@ -2,7 +2,7 @@ services:
   devpod:
     build:
       context: .
-      dockerfile: Dockerfile.devpod
+      dockerfile: Dockerfile
     container_name: devpod
     restart: unless-stopped
     ports:
@@ -12,4 +12,4 @@ services:
       SSH_PUBLIC_KEY: "${SSH_PUBLIC_KEY}"
     volumes:
       # Mount your kubeconfig into the container
-      - ./devpod-kubeconfig.yaml:/home/dev/.kube/config:ro
+      - ./kubeconfig.yaml:/home/dev/.kube/config:ro

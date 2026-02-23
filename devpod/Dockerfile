@@ -50,7 +50,7 @@ RUN echo 'source <(kubectl completion bash)' >> /home/dev/.bashrc \
     && echo 'source <(flux completion bash)' >> /home/dev/.bashrc \
     && echo 'source <(helm completion bash)' >> /home/dev/.bashrc
 
-COPY devpod-entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 22

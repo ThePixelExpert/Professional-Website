@@ -806,26 +806,26 @@ ssh pi@192.168.68.40
 sudo cat /etc/rancher/k3s/k3s.yaml
 ```
 
-Copy the output and save it as `devpod-kubeconfig.yaml` in the repo root on your
-local machine. Then update the server IP:
+Copy the output and save it as `devpod/kubeconfig.yaml` on your local machine.
+Then update the server IP:
 
 ```bash
 cd ~/Projects/Professional-Website
-sed -i 's/127.0.0.1/192.168.68.40/g' devpod-kubeconfig.yaml
+sed -i 's/127.0.0.1/192.168.68.40/g' devpod/kubeconfig.yaml
 ```
 
-**Note:** `devpod-kubeconfig.yaml` is gitignored — never commit it.
+**Note:** `devpod/kubeconfig.yaml` is gitignored — never commit it.
 
 ### 7.2 Build and Start the DevPod
 
 ```bash
-cd ~/Projects/Professional-Website
+cd ~/Projects/Professional-Website/devpod
 
 # Export your SSH public key so the container can accept your connections
 export SSH_PUBLIC_KEY="$(cat ~/.ssh/id_ed25519.pub)"
 
 # Build and start
-docker compose -f docker-compose.devpod.yml up -d --build
+docker compose up -d --build
 ```
 
 ### 7.3 SSH Into the DevPod

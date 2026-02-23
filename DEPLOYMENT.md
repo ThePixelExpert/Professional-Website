@@ -1319,6 +1319,54 @@ cd /opt/supabase/docker
 docker compose ps
 ```
 
+**`PGRST301` - JWT decode error:**
+
+This means the `SUPABASE_ANON_KEY` or `SUPABASE_SERVICE_ROLE_KEY` were not generated
+from the same `JWT_SECRET` Supabase is running with. Regenerate them on the Supabase VM:
+
+```bash
+ssh ubuntu@192.168.68.61
+grep JWT_SECRET /opt/supabase/docker/.env  # copy this value
+
+cat > /tmp/gen_keys.py << 'EOF'
+import hmac, hashlib, base64, json, time
+
+secret = '<your-JWT_SECRET>'
+
+def b64(d):
+    return base64.urlsafe_b64encode(json.dumps(d, separators=(',',':')).encode()).rstrip(b'=').decode()
+
+def make_jwt(payload):
+    h = b64({'alg':'HS256','typ':'JWT'})
+    p = b64(payload)
+    sig = hmac.new(secret.encode(), f'{h}.{p}'.encode(), hashlib.sha256).digest()
+    return f'{h}.{p}.{base64.urlsafe_b64encode(sig).rstrip(b"=").decode()}'
+
+iat = int(time.time())
+exp = iat + 315360000
+print('ANON_KEY=' + make_jwt({'role':'anon','iss':'supabase','iat':iat,'exp':exp}))
+print('SERVICE_ROLE_KEY=' + make_jwt({'role':'service_role','iss':'supabase','iat':iat,'exp':exp}))
+EOF
+
+python3 /tmp/gen_keys.py
+# Copy output into /opt/supabase/docker/.env and backend .env, then restart both
+sudo docker compose down && sudo docker compose up -d
+```
+
+**`Email configuration error: Missing credentials for "PLAIN"`:**
+
+The server uses `EMAIL_USER` and `EMAIL_APP_PASSWORD` — not `SMTP_USER`/`SMTP_PASS`.
+Also requires a Gmail App Password, not your account password.
+
+```bash
+# Generate App Password:
+# myaccount.google.com → Security → 2-Step Verification → App passwords
+
+# Ensure .env has:
+# EMAIL_USER=your-email@gmail.com
+# EMAIL_APP_PASSWORD=<16-char-app-password>   ← no spaces
+```
+
 ### Supabase Issues
 
 **Services not starting:**

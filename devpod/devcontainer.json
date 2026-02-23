@@ -1,11 +1,15 @@
 {
   "name": "homelab-devpod",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "."
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "version": "latest",
+      "helm": "latest",
+      "minikube": "none"
+    }
   },
-  "remoteUser": "dev",
+  "postCreateCommand": "bash .devcontainer/install-tools.sh",
   "mounts": [
-    "source=${localWorkspaceFolder}/kubeconfig.yaml,target=/home/dev/.kube/config,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder}/kubeconfig.yaml,target=/home/vscode/.kube/config,type=bind,consistency=cached"
   ]
 }

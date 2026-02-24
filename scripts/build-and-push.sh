@@ -60,7 +60,7 @@ fi
 # Ensure a buildx builder with multi-arch + insecure registry support exists
 BUILDKIT_CONFIG="/tmp/buildkitd.toml"
 cat > "${BUILDKIT_CONFIG}" << EOF
-[registry."${REGISTRY}"]
+[registry."${REGISTRY_HOST}"]
   http = true
   insecure = true
 EOF

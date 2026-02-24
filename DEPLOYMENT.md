@@ -550,8 +550,8 @@ curl http://192.168.68.67:5000/v2/_catalog
 ### 4.2 Option B: Full Harbor Installation (Better UI, Scanning)
 
 ```bash
-# SSH to Pi Master
-ssh logan@192.168.68.40
+# SSH to K3s master VM
+ssh logan@192.168.68.67
 
 # Download Harbor
 HARBOR_VERSION=v2.10.0
@@ -565,7 +565,7 @@ cp harbor.yml.tmpl harbor.yml
 nano harbor.yml
 
 # Edit these lines:
-# hostname: 192.168.68.40
+# hostname: 192.168.68.67
 # http.port: 5000
 # harbor_admin_password: <your-secure-password>
 # data_volume: /opt/harbor
@@ -575,6 +575,26 @@ sudo ./install.sh
 
 # Harbor will be available at: http://192.168.68.67:5000
 # Login: admin / <your-password>
+```
+
+### 4.3 Add Admin to Library Project
+
+After install, you must explicitly grant admin access to the `library` project or pushes will return `unauthorized`:
+
+1. Open `http://192.168.68.67:5000` and log in as `admin`
+2. Go to **Projects** → **library** → **Members**
+3. Click **+ Member**, add `admin` with role **Project Admin**
+
+### 4.4 Reset Harbor Admin Password (if locked out)
+
+The `harbor_admin_password` in `harbor.yml` only applies on first install. To reset after that:
+
+```bash
+cd ~/harbor
+sudo docker compose down
+# Edit harbor.yml and set harbor_admin_password to new value
+sudo ./prepare
+sudo docker compose up -d
 ```
 
 ### 4.3 Configure Insecure Registry on All Nodes
@@ -942,23 +962,36 @@ Verify in GitHub: Settings → Actions → Runners (should show "pi-runner" as o
 
 ### 8.4 Create .env.production on Runner
 
-> **Note:** The `_work` directory is created automatically when the runner executes its first job.
-> Complete Phase 9 (Flux/GitOps setup) and trigger a workflow run first, then come back and run this.
+The workflow copies `~/.env.production` from the runner's home directory into the workspace before building. Create it there — **not** in `_work/`.
+
+**Important:**
+- No leading spaces on any line
+- Use `REACT_APP_STRIPE_PUBLISHABLE_KEY` (not `REACT_APP_STRIPE_PUBLIC_KEY`)
 
 ```bash
-# On runner host — run this after the first workflow job has executed
-mkdir -p ~/_work/Professional-Website/Professional-Website
-cd ~/_work/Professional-Website/Professional-Website
-
-# Create production environment file for frontend builds
-cat > .env.production << 'EOF'
-REACT_APP_STRIPE_PUBLIC_KEY=pk_live_<your-key>
+# On runner host
+cat > ~/.env.production << 'EOF'
+REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_live_<your-key>
 REACT_APP_API_URL=https://api.edwardstech.dev
 REACT_APP_SUPABASE_URL=http://192.168.68.59:8000
 REACT_APP_SUPABASE_ANON_KEY=<your-anon-key>
 EOF
 
-chmod 600 .env.production
+chmod 600 ~/.env.production
+```
+
+### 8.5 Add SSH Key to All VMs
+
+The deploy job SSHs from the k3s cluster into the backend VM. The key sealed in `vm-ssh-key` must be in `~/.ssh/authorized_keys` on the backend VM (and any other VMs the runner needs to access):
+
+```bash
+# From your local machine
+ssh-copy-id -i ~/.ssh/id_ed25519.pub logan@192.168.68.64
+```
+
+To verify the key fingerprint in the sealed secret matches:
+```bash
+kubectl get secret -n website vm-ssh-key -o jsonpath='{.data.id_ed25519}' | base64 -d > /tmp/deploy_key && chmod 600 /tmp/deploy_key && ssh-keygen -l -f /tmp/deploy_key && rm /tmp/deploy_key
 ```
 
 ---
@@ -1220,6 +1253,25 @@ git push origin master
    ```
 
 5. **Verify change** (refresh browser, see test comment timestamp)
+
+---
+
+## Known Gotchas
+
+Things that will bite you if you skip them:
+
+| # | Problem | Fix |
+|---|---------|-----|
+| 1 | Frontend pods `ImagePullBackOff` | Add `registries.yaml` on **all** k3s nodes (control + workers) and restart k3s/k3s-agent |
+| 2 | Backend VM can't pull from Harbor | Add `{"insecure-registries":["192.168.68.67:5000"]}` to `/etc/docker/daemon.json` and restart Docker |
+| 3 | Deploy job SSH fails | Add the deploy key's public key to `~/.ssh/authorized_keys` on backend VM via `ssh-copy-id` |
+| 4 | Deploy job `mkdir: Permission denied` | Pre-create `/opt/backend` and `/opt/Professional-Website` with `chown logan:logan` |
+| 5 | Flux image automation never updates tag | Image policy must use `order: desc` not `asc` |
+| 6 | Flux image automation template error | Use static `messageTemplate` — dynamic `.Changed.Objects` fields vary by Flux version |
+| 7 | Harbor push `unauthorized` despite successful login | Add `admin` as **Project Admin** member on the `library` project in Harbor UI |
+| 8 | Frontend blank after React style change | JSX requires object syntax: `style={{color: '#fff'}}` not `style="color: #fff"` |
+| 9 | `.env.production` values not picked up in build | File must be at `~/.env.production` on runner (not `_work/`), no leading spaces on any line |
+| 10 | Wrong Stripe key name | Build script expects `REACT_APP_STRIPE_PUBLISHABLE_KEY` not `REACT_APP_STRIPE_PUBLIC_KEY` |
 
 ---
 

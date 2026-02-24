@@ -56,13 +56,25 @@ if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then
   set +a
 fi
 
-# Ensure a buildx builder with multi-arch support exists
+# Ensure a buildx builder with multi-arch + insecure registry support exists
+BUILDKIT_CONFIG="/tmp/buildkitd.toml"
+cat > "${BUILDKIT_CONFIG}" << EOF
+[registry."${REGISTRY}"]
+  http = true
+  insecure = true
+EOF
+
 if ! docker buildx inspect multiarch &>/dev/null; then
   echo -e "${YELLOW}Creating multiarch buildx builder...${NC}"
-  docker buildx create --name multiarch --driver docker-container --use
+  docker buildx create --name multiarch --driver docker-container \
+    --config "${BUILDKIT_CONFIG}" --use
 else
-  docker buildx use multiarch
+  # Recreate to ensure config is applied
+  docker buildx rm multiarch
+  docker buildx create --name multiarch --driver docker-container \
+    --config "${BUILDKIT_CONFIG}" --use
 fi
+docker buildx inspect --bootstrap multiarch
 
 # Build frontend
 if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then

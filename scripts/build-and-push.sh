@@ -135,7 +135,7 @@ if ! command -v jq &>/dev/null; then
 else
   # Clean up frontend tags
   if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then
-    frontendTags=$(curl -s "http://${REGISTRY_HOST}/v2/library/frontend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
+    frontendTags=$(curl -s "http://${REGISTRY_HOST}/v2/library/frontend/tags/list" | jq -r '(.tags // [])[]' 2>/dev/null | sort -r | tail -n +6)
     if [ ! -z "$frontendTags" ]; then
       echo -e "${YELLOW}Removing old frontend tags...${NC}"
       echo "$frontendTags" | while read -r oldTag; do
@@ -153,7 +153,7 @@ else
 
   # Clean up backend tags
   if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "backend" ]]; then
-    backendTags=$(curl -s "http://${REGISTRY_HOST}/v2/library/backend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
+    backendTags=$(curl -s "http://${REGISTRY_HOST}/v2/library/backend/tags/list" | jq -r '(.tags // [])[]' 2>/dev/null | sort -r | tail -n +6)
     if [ ! -z "$backendTags" ]; then
       echo -e "${YELLOW}Removing old backend tags...${NC}"
       echo "$backendTags" | while read -r oldTag; do

@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   backend:
-    image: 192.168.68.67:5000/library/backend:main-f9b1f11-1771908326 # {"$imagepolicy": "flux-system:backend"}
+    image: 192.168.68.67:5000/library/backend:main-43a6523-1771949251 # {"$imagepolicy": "flux-system:backend"}
     container_name: edwards-backend
     restart: unless-stopped
     env_file: .env

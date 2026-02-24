@@ -32,13 +32,13 @@
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  PROXMOX SERVER (192.168.68.10)                                │
-│  ├─ Supabase VM (192.168.68.61)                                │
+│  ├─ Supabase VM (192.168.68.59)                                │
 │  │  └─ Docker Compose: PostgreSQL, Auth, Storage, Realtime     │
 │  │                                                              │
-│  ├─ Backend API VM (192.168.68.66)                             │
+│  ├─ Backend API VM (192.168.68.64)                             │
 │  │  └─ Docker: Express.js backend                              │
 │  │                                                              │
-│  └─ K3s Control Plane VM (192.168.68.81) ← HA Control Plane #1 │
+│  └─ K3s Control Plane VM (192.168.68.67) ← HA Control Plane #1 │
 │     └─ K3s Server (control-plane role)                         │
 │                                                                 │
 │  RASPBERRY PI CLUSTER                                           │
@@ -127,9 +127,9 @@ Reserve static IPs on your router/DHCP server:
 | Device | IP Address | Hostname | Purpose |
 |--------|------------|----------|---------|
 | Proxmox Server | 192.168.68.10 | proxmox | Hypervisor |
-| Supabase VM | 192.168.68.61 | supabase-vm | Database, Auth |
-| Backend VM | 192.168.68.66 | backend-vm | Express API |
-| K3s VM Control Plane | 192.168.68.81 | k3s-control-vm | HA Control Plane #1 |
+| Supabase VM | 192.168.68.59 | supabase-vm | Database, Auth |
+| Backend VM | 192.168.68.64 | backend-vm | Express API |
+| K3s VM Control Plane | 192.168.68.67 | k3s-control-vm | HA Control Plane #1 |
 | Pi Master (Control Plane) | 192.168.68.40 | pi-master | HA Control Plane #2 |
 | Pi Worker 1 | 192.168.68.41 | pi-node-1 | K3s Worker |
 | Pi Worker 2 | 192.168.68.42 | pi-node-2 | K3s Worker |
@@ -147,9 +147,9 @@ Ensure these ports are open between devices:
 | K3s API | 6443 | All nodes | Control planes | TCP |
 | K3s Agent | 10250 | Control planes | Workers | TCP |
 | Harbor Registry | 5000 | All nodes | Pi Master | TCP |
-| Supabase API | 8000 | Backend, Frontend | 192.168.68.61 | TCP |
-| Backend API | 3001 | K3s Ingress | 192.168.68.66 | TCP |
-| PostgreSQL | 5432 | Backend VM | 192.168.68.61 | TCP |
+| Supabase API | 8000 | Backend, Frontend | 192.168.68.59 | TCP |
+| Backend API | 3001 | K3s Ingress | 192.168.68.64 | TCP |
+| PostgreSQL | 5432 | Backend VM | 192.168.68.59 | TCP |
 | SSH | 22 | Your machine | All nodes | TCP |
 
 ---
@@ -199,7 +199,7 @@ You'll need to create VMs through the Proxmox web interface:
 
 9. **Start VM** and complete Ubuntu installation:
    - Set hostname: `supabase-vm`, `backend-vm`, or `k3s-control-vm`
-   - Create user: `ubuntu` with secure password
+   - Create user: `logan` with secure password
    - Enable OpenSSH server
    - Set static IP during installation or via netplan later
 
@@ -213,7 +213,7 @@ Since Supabase VM doesn't have a second disk, we'll use manual setup for all VMs
 
 ```bash
 # SSH to Supabase VM
-ssh ubuntu@192.168.68.61
+ssh logan@192.168.68.59
 
 # Update system
 sudo apt update && sudo apt upgrade -y
@@ -240,11 +240,11 @@ sudo mkdir -p /opt/supabase
 sudo reboot
 ```
 
-**Repeat for Backend VM (192.168.68.66) and K3s Control VM (192.168.68.81):**
+**Repeat for Backend VM (192.168.68.64) and K3s Control VM (192.168.68.67):**
 
 ```bash
 # SSH to VM
-ssh ubuntu@192.168.68.66  # or .81 for k3s-control
+ssh logan@192.168.68.64  # or .81 for k3s-control
 
 # Update system
 sudo apt update && sudo apt upgrade -y
@@ -282,7 +282,7 @@ sudo reboot
 4. **Important**: In imager, click settings (gear icon):
    - Set hostname: `pi-master`, `pi-node-1`, `pi-node-2`, `pi-node-3`
    - Enable SSH (password authentication)
-   - Set username: `pi`, password: `<your-secure-password>`
+   - Set username: `logan`, password: `<your-secure-password>`
    - Configure WiFi (optional, but Ethernet recommended)
    - Set locale/timezone
 
@@ -304,7 +304,7 @@ SSH to each Pi and edit `/etc/dhcpcd.conf`:
 
 ```bash
 # Example for Pi Master (192.168.68.40)
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 
 sudo nano /etc/dhcpcd.conf
 
@@ -324,7 +324,7 @@ Repeat with appropriate IPs for each Pi.
 
 ```bash
 # SSH to each Pi and run:
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 sudo apt update && sudo apt full-upgrade -y && sudo apt install -y iptables
 sudo reboot
 
@@ -341,15 +341,15 @@ ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "" -C "logan@arch-homelab"
 
 # Copy to all nodes
 for IP in 192.168.68.40 192.168.68.41 192.168.68.42 192.168.68.43 \
-           192.168.68.61 192.168.68.66 192.168.68.81; do
-    ssh-copy-id pi@$IP  # or ubuntu@$IP for VMs
+           192.168.68.59 192.168.68.64 192.168.68.67; do
+    ssh-copy-id logan@$IP  # or logan@$IP for VMs
 done
 ```
 
 Test passwordless access:
 
 ```bash
-ssh pi@192.168.68.40 "hostname"
+ssh logan@192.168.68.40 "hostname"
 # Should print: pi-master
 ```
 
@@ -360,20 +360,20 @@ ssh pi@192.168.68.40 "hostname"
 ### 3.1 Architecture Decision
 
 We'll create an HA cluster with:
-- **2 Control Planes**: Pi Master (192.168.68.40) + K3s VM (192.168.68.81)
+- **2 Control Planes**: Pi Master (192.168.68.40) + K3s VM (192.168.68.67)
 - **3 Workers**: Pi Node 1-3 (192.168.68.41-43)
 
 ### 3.2 Install K3s on First Control Plane (Pi Master)
 
 ```bash
 # SSH to Pi Master
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 
 # Install k3s server with cluster init
 curl -sfL https://get.k3s.io | sh -s - server \
   --cluster-init \
   --tls-san=192.168.68.40 \
-  --tls-san=192.168.68.81 \
+  --tls-san=192.168.68.67 \
   --disable=traefik
 
 # Wait for k3s to start
@@ -393,14 +393,14 @@ sudo kubectl get nodes
 
 ```bash
 # SSH to K3s Control VM
-ssh ubuntu@192.168.68.81
+ssh logan@192.168.68.67
 
 # Join as server (control plane) to existing cluster
 curl -sfL https://get.k3s.io | sh -s - server \
   --server https://192.168.68.40:6443 \
   --token K10007b5fe9cc996b4908958834a2de08d3c2b700feeae4c408da0e86b7c8376cfd::server:7a0c1833f18eda8c4bc1a6eba71acb38 \
   --tls-san=192.168.68.40 \
-  --tls-san=192.168.68.81
+  --tls-san=192.168.68.67
 
 # Wait for k3s to start
 sudo systemctl status k3s
@@ -423,19 +423,19 @@ k3s-control-vm   Ready    control-plane,etcd,master   1m    v1.34.3+k3s1
 # Note: Use the token from step 3.2
 
 # Pi Node 1
-ssh pi@192.168.68.41
+ssh logan@192.168.68.41
 curl -sfL https://get.k3s.io | K3S_URL=https://192.168.68.40:6443 \
   K3S_TOKEN='K10007b5fe9cc996b4908958834a2de08d3c2b700feeae4c408da0e86b7c8376cfd::server:7a0c1833f18eda8c4bc1a6eba71acb38' \
   sh -
 
 # Pi Node 2
-ssh pi@192.168.68.42
+ssh logan@192.168.68.42
 curl -sfL https://get.k3s.io | K3S_URL=https://192.168.68.40:6443 \
   K3S_TOKEN='K10007b5fe9cc996b4908958834a2de08d3c2b700feeae4c408da0e86b7c8376cfd::server:7a0c1833f18eda8c4bc1a6eba71acb38' \
   sh -
 
 # Pi Node 3
-ssh pi@192.168.68.43
+ssh logan@192.168.68.43
 curl -sfL https://get.k3s.io | K3S_URL=https://192.168.68.40:6443 \
   K3S_TOKEN='K10007b5fe9cc996b4908958834a2de08d3c2b700feeae4c408da0e86b7c8376cfd::server:7a0c1833f18eda8c4bc1a6eba71acb38' \
   sh -
@@ -445,7 +445,7 @@ curl -sfL https://get.k3s.io | K3S_URL=https://192.168.68.40:6443 \
 
 ```bash
 # From any control plane node
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 sudo kubectl get nodes -o wide
 ```
 
@@ -453,7 +453,7 @@ sudo kubectl get nodes -o wide
 ```
 NAME             STATUS   ROLES                       AGE   VERSION        INTERNAL-IP
 pi-master        Ready    control-plane,etcd,master   10m   v1.34.3+k3s1   192.168.68.40
-k3s-control-vm   Ready    control-plane,etcd,master   5m    v1.34.3+k3s1   192.168.68.81
+k3s-control-vm   Ready    control-plane,etcd,master   5m    v1.34.3+k3s1   192.168.68.67
 pi-node-1        Ready    <none>                      2m    v1.34.3+k3s1   192.168.68.41
 pi-node-2        Ready    <none>                      2m    v1.34.3+k3s1   192.168.68.42
 pi-node-3        Ready    <none>                      2m    v1.34.3+k3s1   192.168.68.43
@@ -465,7 +465,7 @@ pi-node-3        Ready    <none>                      2m    v1.34.3+k3s1   192.1
 
 ```bash
 # From Pi Master
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 
 # Install Traefik via Helm
 sudo kubectl create namespace traefik
@@ -529,7 +529,7 @@ EOF
 
 ```bash
 # SSH to Pi Master
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 
 # Create registry directory
 sudo mkdir -p /opt/harbor
@@ -551,7 +551,7 @@ curl http://192.168.68.67:5000/v2/_catalog
 
 ```bash
 # SSH to Pi Master
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 
 # Download Harbor
 HARBOR_VERSION=v2.10.0
@@ -583,8 +583,8 @@ Since Harbor uses HTTP (not HTTPS) on LAN, configure all k3s nodes:
 
 ```bash
 # Run this on ALL k3s nodes (control planes + workers)
-for NODE in 192.168.68.40 192.168.68.41 192.168.68.42 192.168.68.43 192.168.68.81; do
-  ssh pi@$NODE "sudo mkdir -p /etc/rancher/k3s && echo '
+for NODE in 192.168.68.40 192.168.68.41 192.168.68.42 192.168.68.43 192.168.68.67; do
+  ssh logan@$NODE "sudo mkdir -p /etc/rancher/k3s && echo '
 mirrors:
   \"192.168.68.67:5000\":
     endpoint:
@@ -601,7 +601,7 @@ done
 
 ```bash
 # SSH to Supabase VM
-ssh ubuntu@192.168.68.61
+ssh logan@192.168.68.59
 
 # Clone Supabase
 cd /opt
@@ -660,9 +660,9 @@ sudo docker compose down && sudo docker compose up -d
 ```
 
 **Supabase services should be accessible:**
-- API: http://192.168.68.61:8000
-- Studio Dashboard: http://192.168.68.61:3000
-- PostgreSQL: 192.168.68.61:5432
+- API: http://192.168.68.59:8000
+- Studio Dashboard: http://192.168.68.59:3000
+- PostgreSQL: 192.168.68.59:5432
 
 ### 5.2 Apply Database Schema
 
@@ -671,10 +671,10 @@ sudo docker compose down && sudo docker compose up -d
 cd ~/Projects/Professional-Website
 
 # Copy migration files to Supabase VM
-scp -r supabase/migrations ubuntu@192.168.68.61:/tmp/
+scp -r supabase/migrations logan@192.168.68.59:/tmp/
 
 # SSH to Supabase VM
-ssh ubuntu@192.168.68.61
+ssh logan@192.168.68.59
 
 # Apply all migrations in order
 cd /opt/supabase/docker
@@ -694,11 +694,11 @@ done
    - Name: "Supabase Auth"
    - Authorized redirect URIs:
      ```
-     http://192.168.68.61:8000/auth/v1/callback
+     http://192.168.68.59:8000/auth/v1/callback
      https://edwardstech.dev/auth/v1/callback
      ```
 5. Copy **Client ID** and **Client Secret**
-6. Add to Supabase dashboard: http://192.168.68.61:3000
+6. Add to Supabase dashboard: http://192.168.68.59:3000
    - Navigate to: Authentication → Providers → Google
    - Enable Google
    - Paste Client ID and Secret
@@ -712,7 +712,7 @@ done
 
 ```bash
 # SSH to Backend VM
-ssh ubuntu@192.168.68.66
+ssh logan@192.168.68.64
 
 # Clone repository
 cd /opt
@@ -725,7 +725,7 @@ NODE_ENV=production
 PORT=3001
 
 # Supabase
-SUPABASE_URL=http://192.168.68.61:8000
+SUPABASE_URL=http://192.168.68.59:8000
 SUPABASE_ANON_KEY=<your-anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 
@@ -752,7 +752,7 @@ sudo docker run -d \
   backend:latest
 
 # Verify backend is running
-curl http://192.168.68.66:3001/api/health
+curl http://192.168.68.64:3001/api/health
 # Should return: {"status":"ok"}
 ```
 
@@ -802,7 +802,7 @@ kubectl, flux, kubeseal, and helm pre-installed that you SSH into.
 SSH into the Pi Master and copy the kubeconfig:
 
 ```bash
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 sudo cat /etc/rancher/k3s/k3s.yaml
 ```
 
@@ -941,7 +941,7 @@ cd ~/_work/Professional-Website/Professional-Website
 cat > .env.production << 'EOF'
 REACT_APP_STRIPE_PUBLIC_KEY=pk_live_<your-key>
 REACT_APP_API_URL=https://api.edwardstech.dev
-REACT_APP_SUPABASE_URL=http://192.168.68.61:8000
+REACT_APP_SUPABASE_URL=http://192.168.68.59:8000
 REACT_APP_SUPABASE_ANON_KEY=<your-anon-key>
 EOF
 
@@ -1009,7 +1009,7 @@ cd ~/Projects/Professional-Website
 - Harbor Registry URL: `192.168.68.67:5000`
 - Harbor Username: `admin` (or your username)
 - Harbor Password: `<your-password>`
-- VM SSH Host: `ubuntu@192.168.68.66`
+- VM SSH Host: `logan@192.168.68.64`
 - VM SSH Key Path: `~/.ssh/id_ed25519`
 
 **This creates encrypted secrets for:**
@@ -1067,13 +1067,13 @@ kubectl get svc -n website
 
 ```bash
 # SSH to Backend VM
-ssh ubuntu@192.168.68.66
+ssh logan@192.168.68.64
 
 # Check backend container
 docker ps | grep backend
 
 # Test health endpoint
-curl http://192.168.68.66:3001/api/health
+curl http://192.168.68.64:3001/api/health
 # Should return: {"status":"ok"}
 ```
 
@@ -1081,12 +1081,12 @@ curl http://192.168.68.66:3001/api/health
 
 ```bash
 # Test Supabase API
-curl http://192.168.68.61:8000/rest/v1/
+curl http://192.168.68.59:8000/rest/v1/
 
 # Should return: {"message":"Welcome to PostgREST"}
 
 # Test PostgreSQL connection
-ssh ubuntu@192.168.68.61
+ssh logan@192.168.68.59
 cd /opt/supabase/docker
 docker compose exec postgres psql -U postgres -c '\l'
 # Should list databases
@@ -1110,8 +1110,8 @@ echo "192.168.68.40 edwardstech.dev api.edwardstech.dev" | sudo tee -a /etc/host
 3. Add A records:
    ```
    edwardstech.dev        → 192.168.68.40 (Proxy off)
-   api.edwardstech.dev    → 192.168.68.66 (Proxy off)
-   supabase.edwardstech.dev → 192.168.68.61 (Proxy off)
+   api.edwardstech.dev    → 192.168.68.64 (Proxy off)
+   supabase.edwardstech.dev → 192.168.68.59 (Proxy off)
    ```
 
 #### 10.4.2 Frontend Test
@@ -1217,7 +1217,7 @@ git push origin master
 **Nodes not joining:**
 ```bash
 # Check k3s service on worker
-ssh pi@192.168.68.41
+ssh logan@192.168.68.41
 sudo systemctl status k3s-agent
 sudo journalctl -u k3s-agent -n 50
 
@@ -1230,7 +1230,7 @@ sudo journalctl -u k3s-agent -n 50
 **Duplicate hostname error:**
 ```bash
 # Set unique hostnames
-ssh pi@192.168.68.41
+ssh logan@192.168.68.41
 sudo hostnamectl set-hostname pi-node-1
 echo "127.0.1.1 pi-node-1" | sudo tee -a /etc/hosts
 sudo systemctl restart k3s-agent
@@ -1318,7 +1318,7 @@ kubectl get pods -n traefik
 
 **Backend not responding:**
 ```bash
-ssh ubuntu@192.168.68.66
+ssh logan@192.168.68.64
 
 # Check container status
 docker ps | grep backend
@@ -1334,11 +1334,11 @@ docker restart backend
 **Cannot connect to Supabase:**
 ```bash
 # Test connection from backend VM
-ssh ubuntu@192.168.68.66
-curl http://192.168.68.61:8000/rest/v1/
+ssh logan@192.168.68.64
+curl http://192.168.68.59:8000/rest/v1/
 
 # Verify Supabase is running
-ssh ubuntu@192.168.68.61
+ssh logan@192.168.68.59
 cd /opt/supabase/docker
 docker compose ps
 ```
@@ -1349,7 +1349,7 @@ This means the `SUPABASE_ANON_KEY` or `SUPABASE_SERVICE_ROLE_KEY` were not gener
 from the same `JWT_SECRET` Supabase is running with. Regenerate them on the Supabase VM:
 
 ```bash
-ssh ubuntu@192.168.68.61
+ssh logan@192.168.68.59
 grep JWT_SECRET /opt/supabase/docker/.env  # copy this value
 
 cat > /tmp/gen_keys.py << 'EOF'
@@ -1395,7 +1395,7 @@ Also requires a Gmail App Password, not your account password.
 
 **Services not starting:**
 ```bash
-ssh ubuntu@192.168.68.61
+ssh logan@192.168.68.59
 cd /opt/supabase/docker
 
 # Check all services
@@ -1424,7 +1424,7 @@ docker compose exec postgres psql -U postgres -d postgres -f /tmp/migrations/000
 
 **Runner offline:**
 ```bash
-ssh pi@192.168.68.40
+ssh logan@192.168.68.40
 cd ~
 
 # Check service status
@@ -1460,8 +1460,8 @@ journalctl -u actions.runner.* -f
 
 ### Services
 - [ ] Harbor registry running at 192.168.68.67:5000
-- [ ] Supabase accessible at 192.168.68.61:8000
-- [ ] Backend API responding at 192.168.68.66:3001
+- [ ] Supabase accessible at 192.168.68.59:8000
+- [ ] Backend API responding at 192.168.68.64:3001
 - [ ] Frontend pods running in k3s (2 replicas)
 - [ ] Traefik ingress routing traffic
 
@@ -1547,12 +1547,12 @@ journalctl -u actions.runner.* -f
                     └─────────────────────┘
                                   ↓
                         [Backend API Container]
-                        on Backend VM (192.168.68.66)
+                        on Backend VM (192.168.68.64)
                                   ↓
                       [Supabase Client Library]
                                   ↓
                         [Supabase PostgreSQL]
-                        on Supabase VM (192.168.68.61)
+                        on Supabase VM (192.168.68.59)
                         + Auth + Storage + Realtime
 
          [GitOps Automation]

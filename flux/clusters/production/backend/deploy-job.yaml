@@ -25,7 +25,7 @@ spec:
           chmod 600 /root/.ssh/id_ed25519
 
           SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
-          VM_HOST="ubuntu@192.168.0.50"
+          VM_HOST="logan@192.168.68.64"
           DEPLOY_DIR="/opt/backend"
 
           echo "=== Backend Deployment to VM ==="

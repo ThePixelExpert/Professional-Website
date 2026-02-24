@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies first (cacheable)
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --fetch-timeout=600000 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 --fetch-retries=5
 
 # Copy only the source and public folders
 COPY public/ ./public/

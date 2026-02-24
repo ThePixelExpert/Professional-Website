@@ -89,6 +89,7 @@ if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then
     --build-arg REACT_APP_STRIPE_PUBLISHABLE_KEY="${REACT_APP_STRIPE_PUBLISHABLE_KEY:-}" \
     -t "${REGISTRY}/frontend:${IMAGE_TAG}" \
     -t "${REGISTRY}/frontend:latest" \
+    --provenance=false \
     --push \
     "${REPO_ROOT}"
 
@@ -107,6 +108,7 @@ if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "backend" ]]; then
     -f "${REPO_ROOT}/Dockerfile.backend" \
     -t "${REGISTRY}/backend:${IMAGE_TAG}" \
     -t "${REGISTRY}/backend:latest" \
+    --provenance=false \
     --push \
     "${REPO_ROOT}"
 

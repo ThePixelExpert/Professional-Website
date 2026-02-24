@@ -13,7 +13,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-REGISTRY="192.168.68.67:5000"
+REGISTRY_HOST="192.168.68.67:5000"
+REGISTRY="${REGISTRY_HOST}/library"
 GIT_SHA=$(git rev-parse --short HEAD)
 TIMESTAMP=$(date +%s)
 IMAGE_TAG="main-${GIT_SHA}-${TIMESTAMP}"
@@ -134,15 +135,15 @@ if ! command -v jq &>/dev/null; then
 else
   # Clean up frontend tags
   if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "frontend" ]]; then
-    frontendTags=$(curl -s "http://${REGISTRY}/v2/frontend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
+    frontendTags=$(curl -s "http://${REGISTRY_HOST}/v2/library/frontend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
     if [ ! -z "$frontendTags" ]; then
       echo -e "${YELLOW}Removing old frontend tags...${NC}"
       echo "$frontendTags" | while read -r oldTag; do
         if [ ! -z "$oldTag" ]; then
           # Get manifest digest first
-          manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://${REGISTRY}/v2/frontend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
+          manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://${REGISTRY_HOST}/v2/library/frontend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
           if [ ! -z "$manifest" ]; then
-            curl -s -X DELETE "http://${REGISTRY}/v2/frontend/manifests/$manifest" 2>/dev/null || true
+            curl -s -X DELETE "http://${REGISTRY_HOST}/v2/library/frontend/manifests/$manifest" 2>/dev/null || true
             echo "  Deleted: frontend:$oldTag"
           fi
         fi
@@ -152,15 +153,15 @@ else
 
   # Clean up backend tags
   if [[ "$BUILD_TARGET" == "all" || "$BUILD_TARGET" == "backend" ]]; then
-    backendTags=$(curl -s "http://${REGISTRY}/v2/backend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
+    backendTags=$(curl -s "http://${REGISTRY_HOST}/v2/library/backend/tags/list" | jq -r '.tags[]' 2>/dev/null | sort -r | tail -n +6)
     if [ ! -z "$backendTags" ]; then
       echo -e "${YELLOW}Removing old backend tags...${NC}"
       echo "$backendTags" | while read -r oldTag; do
         if [ ! -z "$oldTag" ]; then
           # Get manifest digest first
-          manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://${REGISTRY}/v2/backend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
+          manifest=$(curl -s -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" "http://${REGISTRY_HOST}/v2/library/backend/manifests/$oldTag" 2>/dev/null | grep -i "Docker-Content-Digest" | awk '{print $2}' | tr -d '\r')
           if [ ! -z "$manifest" ]; then
-            curl -s -X DELETE "http://${REGISTRY}/v2/backend/manifests/$manifest" 2>/dev/null || true
+            curl -s -X DELETE "http://${REGISTRY_HOST}/v2/library/backend/manifests/$manifest" 2>/dev/null || true
             echo "  Deleted: backend:$oldTag"
           fi
         fi

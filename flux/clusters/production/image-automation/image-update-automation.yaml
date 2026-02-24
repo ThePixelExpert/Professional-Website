@@ -20,10 +20,6 @@ spec:
         name: fluxcdbot
       messageTemplate: |
         chore(flux): update image tags
-
-        {{ range $obj, $images := .Changed.Objects -}}
-        {{ $obj.Kind }}/{{ $obj.Name }}: {{ range $images }}{{ .String }} {{ end }}
-        {{ end -}}
     push:
       branch: master
   update:

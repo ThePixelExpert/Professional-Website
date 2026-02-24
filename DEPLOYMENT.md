@@ -716,7 +716,7 @@ ssh logan@192.168.68.64
 
 # Clone repository
 cd /opt
-sudo git clone https://github.com/YOUR_USERNAME/Professional-Website.git
+sudo git clone https://github.com/ThePixelExpert/Professional-Website.git
 cd Professional-Website/contact-backend
 
 # Create .env file (must be in contact-backend/)

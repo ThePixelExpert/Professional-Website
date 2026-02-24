@@ -35,10 +35,10 @@ spec:
 
           # Copy the Flux-managed docker-compose file from git repo on VM
           # The VM has the repo cloned; we pull latest which includes Flux's tag update
-          ssh $SSH_OPTS $VM_HOST "cd /opt/professional-website && git pull origin master"
+          ssh $SSH_OPTS $VM_HOST "cd /opt/Professional-Website && git pull origin master"
 
           # Copy the Flux-managed compose file to the deploy directory
-          ssh $SSH_OPTS $VM_HOST "cp /opt/professional-website/flux/clusters/production/backend/docker-compose.backend.yml ${DEPLOY_DIR}/docker-compose.yml"
+          ssh $SSH_OPTS $VM_HOST "cp /opt/Professional-Website/flux/clusters/production/backend/docker-compose.backend.yml ${DEPLOY_DIR}/docker-compose.yml"
 
           # Pull the new image and restart
           ssh $SSH_OPTS $VM_HOST "cd ${DEPLOY_DIR} && docker compose pull && docker compose up -d"

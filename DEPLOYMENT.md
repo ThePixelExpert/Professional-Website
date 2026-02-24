@@ -708,7 +708,20 @@ done
 
 ## Phase 6: Backend API VM
 
-### 6.1 Deploy Backend Container
+### 6.1 Configure Docker for Harbor (Insecure Registry)
+
+Harbor runs on HTTP, so Docker must be told to allow it:
+
+```bash
+# SSH to Backend VM
+ssh logan@192.168.68.64
+
+sudo mkdir -p /etc/docker
+echo '{"insecure-registries":["192.168.68.67:5000"]}' | sudo tee /etc/docker/daemon.json
+sudo systemctl restart docker
+```
+
+### 6.2 Deploy Backend Container
 
 ```bash
 # SSH to Backend VM

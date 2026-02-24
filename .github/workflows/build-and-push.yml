@@ -27,5 +27,8 @@ jobs:
           fi
           cp "$HOME/.env.production" .env.production
 
+      - name: Login to Harbor registry
+        run: echo "${{ secrets.HARBOR_PASSWORD }}" | docker login 192.168.68.67:5000 -u "${{ secrets.HARBOR_USERNAME }}" --password-stdin
+
       - name: Build and push images
         run: ./scripts/build-and-push.sh all

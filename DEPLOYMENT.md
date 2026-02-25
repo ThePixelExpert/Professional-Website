@@ -851,7 +851,7 @@ VALUES ('<user-uuid>', 'admin');
 \q
 ```
 
-**Step 3: Register the Custom Access Token Hook in Studio**
+**Step 3: Register the Custom Access Token Hook in Studio (if available)**
 
 In Studio → Authentication → Hooks → Custom Access Token, enable the hook and set:
 ```
@@ -860,6 +860,10 @@ pg-functions://postgres/public/custom_access_token_hook
 
 This hook runs every time a JWT is issued and adds `user_role` to the token claims.
 Without it, `isAdmin()` in the frontend always returns false even if the role is in the DB.
+
+> **Note:** The JWT hook UI only appears in self-hosted Supabase v1.24+. If it is missing
+> from the Authentication → Hooks page, use the direct database approach instead — see the
+> Troubleshooting section under "Google OAuth succeeds but admin page redirects back to login".
 
 **Step 4: Sign the user out and back in**
 
@@ -1011,7 +1015,7 @@ DevPod will:
 ### 7.3 SSH Into the DevPod
 
 ```bash
-ssh devpod.devpod
+ssh professional-website.devpod
 ```
 
 ### 7.4 Verify Tools
@@ -1120,12 +1124,17 @@ The workflow copies `~/.env.production` from the runner's home directory into th
 cat > ~/.env.production << 'EOF'
 REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_live_<your-key>
 REACT_APP_API_URL=https://api.edwardstech.dev
-REACT_APP_SUPABASE_URL=http://192.168.68.59:8000
+REACT_APP_SUPABASE_URL=https://supabase.edwardstech.dev
 REACT_APP_SUPABASE_ANON_KEY=<your-anon-key>
 EOF
 
 chmod 600 ~/.env.production
 ```
+
+> **CRITICAL:** `REACT_APP_SUPABASE_URL` must use `https://`, not `http://` or the LAN IP.
+> The React bundle is served over HTTPS — the browser will block any fetch to an HTTP
+> origin as mixed content, silently breaking the entire OAuth flow.
+> The tunnel at `supabase.edwardstech.dev` provides the HTTPS endpoint.
 
 ### 8.5 Add SSH Key to All VMs
 
@@ -1413,12 +1422,16 @@ Things that will bite you if you skip them:
 | 2 | Backend VM can't pull from Harbor | Add `{"insecure-registries":["192.168.68.67:5000"]}` to `/etc/docker/daemon.json` and restart Docker |
 | 3 | Deploy job SSH fails | Add the deploy key's public key to `~/.ssh/authorized_keys` on backend VM via `ssh-copy-id` |
 | 4 | Deploy job `mkdir: Permission denied` | Pre-create `/opt/backend` and `/opt/Professional-Website` with `chown logan:logan` |
-| 5 | Flux image automation never updates tag | Image policy must use `order: desc` not `asc` |
+| 5 | Flux image automation never updates tag | Image policy uses `numerical: order: asc` with `extract: '$1'` on the timestamp group — alphabetical sorting picks by SHA hex prefix (e.g. `f > 6 > 0`) which does not reflect build order |
 | 6 | Flux image automation template error | Use static `messageTemplate` — dynamic `.Changed.Objects` fields vary by Flux version |
 | 7 | Harbor push `unauthorized` despite successful login | Add `admin` as **Project Admin** member on the `library` project in Harbor UI |
 | 8 | Frontend blank after React style change | JSX requires object syntax: `style={{color: '#fff'}}` not `style="color: #fff"` |
 | 9 | `.env.production` values not picked up in build | File must be at `~/.env.production` on runner (not `_work/`), no leading spaces on any line |
 | 10 | Wrong Stripe key name | Build script expects `REACT_APP_STRIPE_PUBLISHABLE_KEY` not `REACT_APP_STRIPE_PUBLIC_KEY` |
+| 11 | OAuth callback blocked with mixed content error | `REACT_APP_SUPABASE_URL` in `~/.env.production` must be `https://supabase.edwardstech.dev` — using `http://` or the LAN IP causes the browser to block the fetch from the HTTPS page |
+| 12 | Docker build produces old URL despite updated env file | BuildKit can cache the `npm run build` layer from a previous build. Add any new `RUN` instruction before `RUN npm run build` to bust the cache, or pass `--no-cache` to docker buildx build |
+| 13 | Flux image automation says "repository up-to-date" but deployment has old image | Run `flux reconcile source git flux-system` first to pull the latest git commits, then reconcile the image repository and image update |
+| 14 | DevPod shows divergent branches after Flux auto-commit | Flux pushes a "chore(flux): update image tags" commit directly to master. Sync with: `git fetch origin && git reset --hard origin/master` |
 
 ---
 
@@ -1501,6 +1514,41 @@ kubectl delete secret harbor-creds -n flux-system
 git add flux/clusters/production/sealed-secrets/
 git commit -m "fix: re-seal secrets"
 git push origin master
+```
+
+**Image automation says "repository up-to-date" but deployment has old image:**
+
+The image policy selected the wrong tag (alphabetical sort by SHA prefix, not build time).
+The policy was updated to numerical sort on the timestamp group — see `image-policies.yaml`.
+If the image automation still doesn't update after a build, reconcile in order:
+
+```bash
+# 1. Pull latest git state (Flux may have auto-committed a tag update)
+flux reconcile source git flux-system -n flux-system
+
+# 2. Scan Harbor for new image tags
+flux reconcile image repository frontend -n flux-system
+
+# 3. Run automation to write new tag to git
+flux reconcile image update flux-system -n flux-system
+
+# 4. Apply updated deployment.yaml
+flux reconcile kustomization frontend -n flux-system
+kubectl rollout status deployment/frontend -n website
+```
+
+To verify what tag the policy has selected:
+```bash
+kubectl -n flux-system get imagepolicy frontend -o jsonpath='{.status.latestImage}'
+```
+
+**DevPod shows divergent branches after Flux auto-commit:**
+
+Flux pushes "chore(flux): update image tags" commits directly to `master`. If the DevPod
+has local commits at the same time, `git pull` will fail with "divergent branches":
+
+```bash
+git fetch origin && git reset --hard origin/master
 ```
 
 ### Frontend Not Loading
@@ -1654,6 +1702,36 @@ grep SUPABASE_URL ~/.env.production
 ```
 
 After fixing, push to master to trigger a rebuild.
+
+**OAuth callback shows "Blocked loading mixed active content http://supabase.edwardstech.dev":**
+
+Symptoms: Browser console shows `Blocked loading mixed active content "http://supabase.edwardstech.dev/auth/v1/user"` and the OAuth callback lands on the home page.
+
+Cause: `REACT_APP_SUPABASE_URL` was baked into the React bundle as `http://` instead of `https://`. The browser blocks HTTP fetches from an HTTPS page. This can persist even after fixing the env file because Docker BuildKit caches the `npm run build` layer — the cached layer contains the old URL.
+
+**Step 1: Fix the env file on the runner**
+```bash
+# On runner VM (.67):
+grep SUPABASE_URL ~/.env.production
+# Must show: REACT_APP_SUPABASE_URL=https://supabase.edwardstech.dev
+# If it shows http:// or a LAN IP, correct it:
+sed -i 's|REACT_APP_SUPABASE_URL=.*|REACT_APP_SUPABASE_URL=https://supabase.edwardstech.dev|' ~/.env.production
+```
+
+**Step 2: Bust the Docker build cache**
+
+Even after fixing the env file, the cached `npm run build` layer may still contain the old
+URL because BuildKit reuses the layer if the source files haven't changed. Verify by
+inspecting the built image:
+
+```bash
+docker run --rm --entrypoint sh 192.168.68.67:5000/library/frontend:latest \
+  -c "grep -ro 'http[s]*://supabase.edwardstech.dev' /usr/share/nginx/html/static/js/" | head -3
+```
+
+If it still shows `http://`, the cache needs busting. The most targeted fix is adding any
+new `RUN` instruction before `RUN npm run build` in `Dockerfile.frontend` — this changes
+the parent layer and forces npm to rebuild. Remove it after the corrected build succeeds.
 
 **OAuth completes successfully but redirects back to login page (double-hash bug):**
 

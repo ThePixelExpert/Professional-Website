@@ -1611,6 +1611,28 @@ grep SUPABASE_URL ~/.env.production
 
 After fixing, push to master to trigger a rebuild.
 
+**OAuth completes successfully but redirects back to login page (double-hash bug):**
+
+Symptoms: Google auth succeeds (302 with valid JWT in the Location header) but the app
+doesn't log you in and returns to the login page.
+
+Cause: The `redirectTo` URL passed to `signInWithOAuth` contains a hash path (e.g.
+`https://www.edwardstech.dev/#/admin`). GoTrue then appends `#access_token=...` to it,
+producing a double-hash URL (`/#/admin#access_token=...`). The Supabase JS client cannot
+parse the token because it appears after a second `#` in the fragment.
+
+Fix in `src/components/AdminLogin.js` — remove the hash path from `redirectTo`:
+```javascript
+// WRONG - produces double hash:
+redirectTo: `${window.location.origin}${window.location.pathname}#/admin`,
+
+// CORRECT - Supabase appends token to clean URL, useEffect handles the /admin redirect:
+redirectTo: window.location.origin,
+```
+
+The component's `useEffect` already handles redirecting to `#/admin` once the authenticated
+user is detected, so no other changes are needed.
+
 **Migrations not applying:**
 ```bash
 # Verify PostgreSQL is accessible

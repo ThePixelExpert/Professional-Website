@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: 192.168.68.67:5000/library/frontend:main-04ed353-1771984219 # {"$imagepolicy": "flux-system:frontend"}
+        image: 192.168.68.67:5000/library/frontend:main-6c70839-1772049147 # {"$imagepolicy": "flux-system:frontend"}
         imagePullPolicy: Always
         ports:
         - containerPort: 80

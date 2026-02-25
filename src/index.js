@@ -12,6 +12,7 @@ import CheckoutPage from './CheckoutPage';
 import OrderTracking from './OrderTracking';
 import CustomerAuth from './components/CustomerAuth';
 import AccountPage from './components/AccountPage';
+import OAuthCallback from './components/OAuthCallback';
 import { AuthProvider } from './contexts/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -30,7 +31,11 @@ function render() {
     );
   };
 
-  if (hash.startsWith('#/all-projects')) {
+  if (hash.startsWith('#access_token=') || hash.startsWith('#error=')) {
+    // OAuth callback: Supabase returns #access_token=... after Google login.
+    // Route to OAuthCallback which waits for the async session before redirecting.
+    renderWithAuth(OAuthCallback);
+  } else if (hash.startsWith('#/all-projects')) {
     renderWithAuth(AllProjects);
   } else if (hash.startsWith('#/infrastructure-docs')) {
     renderWithAuth(InfrastructureDocs);

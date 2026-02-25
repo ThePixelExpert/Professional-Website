@@ -827,6 +827,50 @@ nano ~/.env.production
 
 Then trigger a rebuild by pushing to master. Flux will automatically deploy the new image.
 
+### 5.6 Assign Admin Role
+
+The app uses a `user_roles` table + custom JWT hook for role-based access. After a user
+signs in for the first time via Google OAuth, you must manually assign their admin role.
+
+**Step 1: Get the user's UUID from Supabase Studio**
+
+Access Studio locally at `http://192.168.68.59:3000` → Authentication → Users.
+Find the user and copy their UUID.
+
+**Step 2: Insert the admin role into the database**
+
+```bash
+ssh logan@192.168.68.59
+cd /opt/supabase/docker
+docker exec -it supabase-db psql -U postgres -d postgres
+```
+
+```sql
+INSERT INTO public.user_roles (user_id, role)
+VALUES ('<user-uuid>', 'admin');
+\q
+```
+
+**Step 3: Register the Custom Access Token Hook in Studio**
+
+In Studio → Authentication → Hooks → Custom Access Token, enable the hook and set:
+```
+pg-functions://postgres/public/custom_access_token_hook
+```
+
+This hook runs every time a JWT is issued and adds `user_role` to the token claims.
+Without it, `isAdmin()` in the frontend always returns false even if the role is in the DB.
+
+**Step 4: Sign the user out and back in**
+
+The existing JWT won't have the role claim. The user must sign out and sign back in
+to get a new JWT with `user_role: admin` baked in.
+
+> **Note:** Check whether the hook sets `user_role` at the top level of JWT claims or
+> inside `app_metadata`. The frontend `isAdmin()` currently checks
+> `user?.app_metadata?.user_role === 'admin'`. If the hook sets it at the top level,
+> update `isAdmin()` in `src/contexts/AuthContext.js` to check `user?.user_role` instead.
+
 ---
 
 ## Phase 6: Backend API VM
@@ -1632,6 +1676,18 @@ redirectTo: window.location.origin,
 
 The component's `useEffect` already handles redirecting to `#/admin` once the authenticated
 user is detected, so no other changes are needed.
+
+**Google OAuth succeeds but admin page redirects back to login (role not assigned):**
+
+Symptoms: OAuth completes, JWT is valid, user appears in Supabase Studio's Auth → Users,
+but navigating to `#/admin` immediately bounces back to the login page with
+"Access denied. Admin privileges required."
+
+Cause: `isAdmin()` checks `user?.app_metadata?.user_role === 'admin'`. The user exists
+in Supabase but has no entry in `public.user_roles`, so the JWT hook adds no role claim.
+
+Fix: See Section 5.6 — insert the user into `user_roles`, register the JWT hook in Studio,
+then sign out and back in to get a fresh JWT with the role claim included.
 
 **Migrations not applying:**
 ```bash

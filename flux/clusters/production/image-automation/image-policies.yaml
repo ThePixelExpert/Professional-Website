@@ -1,4 +1,4 @@
-# ImagePolicy CRDs - Select latest image tag using alphabetical sorting
+# ImagePolicy CRDs - Select latest image tag using timestamp numerical sorting
 ---
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImagePolicy
@@ -9,11 +9,11 @@ spec:
   imageRepositoryRef:
     name: frontend
   policy:
-    alphabetical:
-      order: desc
+    numerical:
+      order: asc
   filterTags:
-    pattern: '^main-[a-f0-9]{7}-[0-9]{10}$'
-    extract: '$0'
+    pattern: '^main-[a-f0-9]{7}-([0-9]{10})$'
+    extract: '$1'
 ---
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImagePolicy
@@ -24,8 +24,8 @@ spec:
   imageRepositoryRef:
     name: backend
   policy:
-    alphabetical:
-      order: desc
+    numerical:
+      order: asc
   filterTags:
-    pattern: '^main-[a-f0-9]{7}-[0-9]{10}$'
-    extract: '$0'
+    pattern: '^main-[a-f0-9]{7}-([0-9]{10})$'
+    extract: '$1'

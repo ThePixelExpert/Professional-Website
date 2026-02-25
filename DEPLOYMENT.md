@@ -714,15 +714,118 @@ done
    - Name: "Supabase Auth"
    - Authorized redirect URIs:
      ```
-     http://192.168.68.59:8000/auth/v1/callback
-     https://edwardstech.dev/auth/v1/callback
+     https://supabase.edwardstech.dev/auth/v1/callback
      ```
 5. Copy **Client ID** and **Client Secret**
-6. Add to Supabase dashboard: http://192.168.68.59:3000
-   - Navigate to: Authentication → Providers → Google
-   - Enable Google
-   - Paste Client ID and Secret
-   - Save
+6. Add credentials to `/opt/supabase/docker/.env`:
+   ```
+   GOTRUE_EXTERNAL_GOOGLE_ENABLED=true
+   GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID=<your-client-id>
+   GOTRUE_EXTERNAL_GOOGLE_SECRET=<your-client-secret>
+   GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI=https://supabase.edwardstech.dev/auth/v1/callback
+   ```
+
+> **CRITICAL: The official Supabase docker-compose.yml does NOT pass Google OAuth env vars
+> to the auth container.** You must create a `docker-compose.override.yml` to inject them:
+
+```bash
+python3 << 'PYEOF'
+content = """services:
+  auth:
+    environment:
+      GOTRUE_EXTERNAL_GOOGLE_ENABLED: "${GOTRUE_EXTERNAL_GOOGLE_ENABLED}"
+      GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID: "${GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID}"
+      GOTRUE_EXTERNAL_GOOGLE_SECRET: "${GOTRUE_EXTERNAL_GOOGLE_SECRET}"
+      GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI: "${GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI}"
+"""
+with open('/opt/supabase/docker/docker-compose.override.yml', 'w') as f:
+    f.write(content)
+print("Done")
+PYEOF
+```
+
+> Use Python to write this file — heredocs and nano can silently introduce Windows-style
+> line endings (`\r\n`) which break Docker Compose env var parsing in a very hard to debug way.
+> If the auth container crash-loops with a type conversion error on `GOTRUE_EXTERNAL_GOOGLE_ENABLED`,
+> run: `sed -i 's/\r//' /opt/supabase/docker/.env` to strip carriage returns.
+
+Restart after any changes:
+```bash
+cd /opt/supabase/docker && docker compose down && docker compose up -d
+docker exec supabase-auth env | grep GOOGLE  # verify all 4 vars appear
+```
+
+> **Studio is only accessible locally** at `http://192.168.68.59:3000` — do not expose it publicly.
+
+### 5.4 Cloudflare Tunnel (External Supabase Access)
+
+Port 80/443 on the router forwards to `.67` (Harbor/k3s), not `.59`. To expose the Supabase
+API externally without changing port forwarding, use a Cloudflare Tunnel on the Supabase VM.
+
+**Do NOT add a Cloudflare DNS A record for `supabase.edwardstech.dev`** — the tunnel creates
+a CNAME automatically.
+
+```bash
+ssh logan@192.168.68.59
+
+# Install cloudflared
+curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
+  -o /usr/local/bin/cloudflared
+chmod +x /usr/local/bin/cloudflared
+
+# Authenticate (copy the URL into a browser)
+cloudflared tunnel login
+
+# Create tunnel
+cloudflared tunnel create supabase-vm
+
+# Write config (use python to avoid encoding issues)
+python3 << 'PYEOF'
+content = """tunnel: <YOUR-TUNNEL-UUID>
+credentials-file: /home/logan/.cloudflared/<YOUR-TUNNEL-UUID>.json
+
+ingress:
+  - hostname: supabase.edwardstech.dev
+    service: http://localhost:8000
+  - service: http_status:404
+"""
+with open('/home/logan/.cloudflared/config.yml', 'w') as f:
+    f.write(content)
+print("Done")
+PYEOF
+
+# Route DNS through tunnel (creates CNAME in Cloudflare automatically)
+cloudflared tunnel route dns supabase-vm supabase.edwardstech.dev
+
+# Test
+cloudflared tunnel run supabase-vm
+
+# Install as system service
+sudo mkdir -p /etc/cloudflared
+sudo cp ~/.cloudflared/config.yml /etc/cloudflared/
+sudo cp ~/.cloudflared/*.json /etc/cloudflared/
+sudo sed -i 's|/home/logan/.cloudflared|/etc/cloudflared|' /etc/cloudflared/config.yml
+sudo cloudflared service install
+sudo systemctl enable cloudflared
+sudo systemctl start cloudflared
+```
+
+> **Do NOT add `studio.edwardstech.dev` to the tunnel** — Studio has no authentication and
+> would be publicly accessible. Access Studio only from the local network at `http://192.168.68.59:3000`.
+
+### 5.5 Frontend Production URL
+
+The frontend Docker image bakes in `REACT_APP_SUPABASE_URL` at build time from
+`~/.env.production` on the GitHub Actions runner (`.67`). After setting up the tunnel,
+update this file on the runner:
+
+```bash
+ssh logan@192.168.68.67
+nano ~/.env.production
+# Set: REACT_APP_SUPABASE_URL=https://supabase.edwardstech.dev
+```
+
+Then trigger a rebuild by pushing to master. Flux will automatically deploy the new image.
 
 ---
 
@@ -1475,6 +1578,38 @@ docker compose logs -f auth
 docker compose down
 docker compose up -d
 ```
+
+**Auth container crash-loops with `converting 'true GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID=...' to type bool`:**
+
+All Google OAuth env vars are being read as a single value. Two possible causes:
+1. The `.env` file has Windows line endings (`\r\n`) — fix with: `sed -i 's/\r//' /opt/supabase/docker/.env`
+2. The `docker-compose.override.yml` used `KEY=VALUE` format instead of `KEY: VALUE` (YAML requires colon)
+
+Verify the override file uses proper YAML colon syntax and recreate it with Python if needed (see Section 5.3).
+
+**Google OAuth returns `unsupported_provider` / `provider is not enabled`:**
+
+The auth container isn't receiving the Google env vars. The official Supabase `docker-compose.yml`
+does not include `GOTRUE_EXTERNAL_GOOGLE_*` in the auth service environment. You must create
+`/opt/supabase/docker/docker-compose.override.yml` — see Section 5.3.
+
+Verify the vars are actually in the container:
+```bash
+docker exec supabase-auth env | grep GOOGLE
+# Should show all 4 GOTRUE_EXTERNAL_GOOGLE_* variables
+```
+
+**OAuth returns `OAuth state parameter missing` on the frontend:**
+
+The frontend is pointing to the wrong Supabase URL. The OAuth flow starts against one GoTrue
+instance but the callback hits a different one, so the state doesn't match. Check:
+```bash
+# On runner VM (.67):
+grep SUPABASE_URL ~/.env.production
+# Must be: REACT_APP_SUPABASE_URL=https://supabase.edwardstech.dev
+```
+
+After fixing, push to master to trigger a rebuild.
 
 **Migrations not applying:**
 ```bash

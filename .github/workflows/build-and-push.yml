@@ -7,6 +7,7 @@ on:
       - '**.md'
       - '.planning/**'
       - 'flux/**'
+  workflow_dispatch:
 
 jobs:
   build:

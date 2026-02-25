@@ -1432,6 +1432,7 @@ Things that will bite you if you skip them:
 | 12 | Docker build produces old URL despite updated env file | BuildKit can cache the `npm run build` layer from a previous build. Add any new `RUN` instruction before `RUN npm run build` to bust the cache, or pass `--no-cache` to docker buildx build |
 | 13 | Flux image automation says "repository up-to-date" but deployment has old image | Run `flux reconcile source git flux-system` first to pull the latest git commits, then reconcile the image repository and image update |
 | 14 | DevPod shows divergent branches after Flux auto-commit | Flux pushes a "chore(flux): update image tags" commit directly to master. Sync with: `git fetch origin && git reset --hard origin/master` |
+| 15 | Contact form returns error / `/api/contact` returns 503 | The `backend-service` Endpoints object was manually applied with the wrong VM IP (`192.168.0.50` instead of `192.168.68.64`) and was not tracked by Flux. It is now in `flux/clusters/production/backend/service.yaml` — Flux creates it automatically on reconciliation |
 
 ---
 
@@ -1590,6 +1591,25 @@ docker inspect backend | grep -A 20 Env
 # Restart backend
 docker restart backend
 ```
+
+**Contact form returns error / `/api/contact` returns 503:**
+
+Traefik routes `www.edwardstech.dev/api` to the `backend-service` Kubernetes Service, which
+forwards to the backend VM via a manual Endpoints object. If that Endpoints object is missing
+or has the wrong IP, Traefik returns 503 and the contact form throws an error.
+
+```bash
+# Check Endpoints exist and have the correct IP
+kubectl -n website get endpoints backend-service -o yaml
+# Should show ip: 192.168.68.64
+
+# If missing or wrong, force Flux to reconcile (service.yaml now manages this):
+flux reconcile source git flux-system
+flux reconcile kustomization backend-deploy
+```
+
+The Service and Endpoints are defined in `flux/clusters/production/backend/service.yaml`
+and are created automatically by Flux — no manual `kubectl apply` needed.
 
 **Cannot connect to Supabase:**
 ```bash

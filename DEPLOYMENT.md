@@ -1680,14 +1680,76 @@ user is detected, so no other changes are needed.
 **Google OAuth succeeds but admin page redirects back to login (role not assigned):**
 
 Symptoms: OAuth completes, JWT is valid, user appears in Supabase Studio's Auth → Users,
-but navigating to `#/admin` immediately bounces back to the login page with
-"Access denied. Admin privileges required."
+but navigating to `#/admin` immediately bounces back to the login page.
 
-Cause: `isAdmin()` checks `user?.app_metadata?.user_role === 'admin'`. The user exists
-in Supabase but has no entry in `public.user_roles`, so the JWT hook adds no role claim.
+Cause: `isAdmin()` checks `user?.app_metadata?.user_role === 'admin'`. The JWT does not
+contain this claim. Two sub-causes:
 
-Fix: See Section 5.6 — insert the user into `user_roles`, register the JWT hook in Studio,
-then sign out and back in to get a fresh JWT with the role claim included.
+**Sub-cause A — JWT hook not available (self-hosted Supabase < v1.24)**
+
+The Supabase Studio "Custom Access Token Hook" UI only appears in newer versions. If it is
+missing from Authentication → Hooks, set the role directly in `auth.users` instead:
+
+```bash
+ssh logan@192.168.68.59
+cd /opt/supabase/docker
+docker exec -it supabase-db psql -U postgres -d postgres
+```
+```sql
+-- Replace <uuid> with the user's UUID from Studio → Authentication → Users
+UPDATE auth.users
+SET raw_app_meta_data = raw_app_meta_data || '{"user_role": "admin"}'::jsonb
+WHERE id = '<uuid>';
+
+-- Also insert into user_roles for future compatibility
+INSERT INTO public.user_roles (user_id, role)
+VALUES ('<uuid>', 'admin')
+ON CONFLICT DO NOTHING;
+\q
+```
+Then sign out and sign back in to receive a fresh JWT.
+
+**Sub-cause B — Wrong Google account**
+
+If multiple Google accounts are configured in the browser, OAuth may authenticate a
+different account than expected. Check the JWT email field:
+
+```js
+// Run in browser console after OAuth completes
+const key = Object.keys(localStorage).find(k => k.includes('supabase'));
+const data = key ? JSON.parse(localStorage.getItem(key)) : null;
+if (data?.access_token) {
+  console.log(JSON.parse(atob(data.access_token.split('.')[1])));
+}
+```
+
+The `email` field in the decoded payload shows which account was used. If it is the wrong
+account, repeat the `UPDATE auth.users` fix above for that account's UUID.
+
+**OAuth callback lands on home page instead of admin dashboard:**
+
+Symptoms: After Google OAuth, the browser is redirected to
+`https://www.edwardstech.dev/#access_token=...`. The app shows the home page
+instead of `#/admin`.
+
+Cause (race condition): The hash router sees `#access_token=...` as an unknown route and
+renders the home page. The Supabase client processes the token asynchronously, but
+`getSession()` in `AuthContext` fires before the session is stored — returns null —
+sets `loading=false` — so `AdminRoute` kicks the user to the login page before the session
+is ready.
+
+Fix: Added `src/components/OAuthCallback.js` (deployed in Flux PR #21). The router now
+matches `#access_token=` and renders this component, which waits for the `SIGNED_IN`
+event before redirecting to `#/admin`. The `INITIAL_SESSION` event is intentionally
+ignored — it can carry a stale old session that predates the admin role being set,
+causing a false "access denied" redirect to home before the new token is processed.
+
+Router entry in `src/index.js`:
+```js
+if (hash.startsWith('#access_token=') || hash.startsWith('#error=')) {
+  renderWithAuth(OAuthCallback);
+}
+```
 
 **Migrations not applying:**
 ```bash

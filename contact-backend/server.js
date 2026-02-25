@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
@@ -23,6 +24,14 @@ const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'password';
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
+// Warn loudly if critical secrets are using insecure defaults in production
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET) console.error('SECURITY: JWT_SECRET is not set — using insecure default');
+  if (!process.env.ADMIN_PASS) console.error('SECURITY: ADMIN_PASS is not set — using insecure default');
+  if (!process.env.FRONTEND_URL) console.error('SECURITY: FRONTEND_URL is not set — CORS defaulting to localhost');
+  if (!process.env.STRIPE_WEBHOOK_SECRET) console.error('SECURITY: STRIPE_WEBHOOK_SECRET is not set — webhook verification disabled');
+}
+
 // Admin Auth Middleware - REMOVED (migrated to Supabase Auth)
 // See: ./src/middleware/requireAdmin.js
 
@@ -36,13 +45,18 @@ const limiter = rateLimit({
 });
 
 // Middleware
+app.use(helmet());
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
+
+// Rate limiting
 app.use('/api/contact', limiter);
+app.use('/api/orders/track', limiter);
+app.use('/api/orders/:id/customer-receipt', limiter);
 
 // Health check endpoint (required for Kubernetes probes)
 app.get('/api/health', async (req, res) => {
@@ -213,15 +227,27 @@ app.post('/api/auth/signout', async (req, res) => {
 });
 
 // Create Payment Intent for Stripe
+// Amount is taken from the server-side order record — never trusted from the client.
 app.post('/api/create-payment-intent', async (req, res) => {
   try {
-    const { amount, currency = 'usd', orderId, customerInfo } = req.body;
-    
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Valid amount is required' });
+    const { orderId, currency = 'usd', customerInfo } = req.body;
+
+    if (!orderId) {
+      return res.status(400).json({ error: 'orderId is required' });
     }
 
-    // Create payment intent with Stripe
+    // Look up the order to get the authoritative total — do not trust client-provided amount
+    const order = await db.getOrder(orderId);
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const amount = order.total_amount ?? order.total;
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid order amount' });
+    }
+
+    // Create payment intent with Stripe using the server-verified amount
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Stripe expects cents
       currency: currency,
@@ -229,7 +255,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
         enabled: true,
       },
       metadata: {
-        orderId: orderId || '',
+        orderId: orderId,
         customerName: customerInfo?.name || '',
         customerEmail: customerInfo?.email || '',
       },
@@ -250,10 +276,10 @@ app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async
   const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  // Skip webhook verification if no secret is configured
+  // Reject unverified webhooks — missing secret means misconfigured deployment
   if (!endpointSecret) {
-    console.log('Webhook configuration incomplete');
-    return res.status(200).json({ received: true });
+    console.error('SECURITY: STRIPE_WEBHOOK_SECRET not set — rejecting webhook');
+    return res.status(500).json({ error: 'Webhook not configured' });
   }
 
   let event;
@@ -312,7 +338,6 @@ app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async
 
 // Create order (enhanced with Stripe integration and user linking)
 app.post('/api/orders', optionalAuth, async (req, res) => {
-  console.log('Order endpoint called. Body:', req.body);
   try {
     const {
       buyerEmail,
@@ -338,11 +363,7 @@ app.post('/api/orders', optionalAuth, async (req, res) => {
     // Get user ID if authenticated (set by optionalAuth middleware)
     const userId = req.user?.id || null;
 
-    if (userId) {
-      console.log('Creating order for authenticated user:', userId);
-    } else {
-      console.log('Creating order for guest checkout');
-    }
+    // userId is set by optionalAuth middleware if the request carries a valid session
 
     // Create order in database - NOW WITH USER_ID
     const order = await db.createOrder({
